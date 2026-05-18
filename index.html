@@ -2806,7 +2806,6 @@
         <h2 data-i18n="contact.title">Behöver projektet granskas?</h2>
         <p data-i18n="contact.body">Skicka komponentlistan tillsammans med ritning, taktyp och önskad styrning till Aura Light för verifiering och offert.</p>
       </div>
-      <a class="contact-link" id="offerLink" href="mailto:Info@auralight.com?subject=Sevede%20RAMP%20konfiguration" data-i18n="contact.cta">Skapa offert</a>
     </section>
   </main>
 
@@ -4313,6 +4312,7 @@
     }
 
     function updateOfferLink() {
+      if (!offerLink) return;
       const subject = encodeURIComponent(t("offer.subject"));
       const body = encodeURIComponent(buildResultSummary());
       offerLink.href = `mailto:Info@auralight.com?subject=${subject}&body=${body}`;
