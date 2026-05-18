@@ -1,0 +1,5109 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sevede RAMP configurator</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2300877a'/%3E%3Cpath d='M8 21h16v3H8zM9 8h14v3H9zm1 6h12v3H10z' fill='white'/%3E%3C/svg%3E">
+  <style>
+    @font-face {
+      font-family: "KievitPro";
+      src:
+        url("https://www.auralight.com/ui/fonts/KievitPro-Regular.woff2") format("woff2"),
+        url("https://www.auralight.com/ui/fonts/KievitPro-Regular.woff") format("woff");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "KievitPro";
+      src:
+        url("https://www.auralight.com/ui/fonts/KievitPro-Light.woff2") format("woff2"),
+        url("https://www.auralight.com/ui/fonts/KievitPro-Light.woff") format("woff");
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "KievitPro";
+      src:
+        url("https://www.auralight.com/ui/fonts/KievitPro-Medium.woff2") format("woff2"),
+        url("https://www.auralight.com/ui/fonts/KievitPro-Medium.woff") format("woff");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: light;
+      --aura-green: #007e48;
+      --aura-lime: #95c11f;
+      --aura-deep: #002d3a;
+      --ink: #152027;
+      --muted: #64727b;
+      --line: #e2e8e5;
+      --surface: #ffffff;
+      --soft: #f5f8f5;
+      --shade: #e9efeb;
+      --aura: var(--aura-green);
+      --aura-dark: var(--aura-deep);
+      --sun: #fff4bd;
+      --warn: #f5b84b;
+      --steel: #78909c;
+      --blue: #235b7a;
+      --legend-start: var(--aura-green);
+      --legend-mid: #f5b84b;
+      --legend-end: #c92f2f;
+      --legend-joint: #101820;
+      --shadow: 0 14px 40px rgba(0, 45, 58, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "KievitPro", Frutiger, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--ink);
+      background: var(--soft);
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .shell {
+      width: 100%;
+      margin: 0;
+      padding: 0 0 40px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      min-height: 76px;
+      margin-bottom: 0;
+      padding: 16px clamp(20px, 4vw, 56px);
+      background: rgba(255, 255, 255, .94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      text-decoration: none;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      display: block;
+      width: 162px;
+      height: auto;
+    }
+
+    .language-select {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--aura-deep);
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .language-select select {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .language-buttons {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lang-btn {
+      border: 1px solid #d9e1d5;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--aura-dark);
+      padding: .32rem .58rem;
+      min-width: 2.35rem;
+      min-height: auto;
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      line-height: 1;
+      transition: all .15s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--aura-lime);
+      background: #f4f8ed;
+      color: var(--aura-dark);
+    }
+
+    .lang-btn.active {
+      background: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    .language-select select.is-visible {
+      min-height: 36px;
+      width: 86px;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    h1, h2, h3, h4, p {
+      margin: 0;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    h1 {
+      font-size: clamp(36px, 4.8vw, 62px);
+      font-weight: 300;
+      line-height: 1.3;
+      max-width: 640px;
+    }
+
+    h2 {
+      line-height: 1.3;
+    }
+
+    h3 {
+      line-height: 1.3;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    .eyebrow {
+      color: var(--aura-lime);
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      margin-bottom: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 2.25rem;
+      border-radius: .32rem;
+      padding: .48rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .38rem;
+      color: #0c1f27;
+      background: #fff;
+      border: 1px solid #0c1f27;
+      font-size: .875rem;
+      font-weight: 500;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      background: #0c1f27;
+      color: #fff;
+      border-color: #0c1f27;
+    }
+
+    .topbar .btn {
+      border-color: #cfd8d1;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .topbar .btn:hover {
+      background: #f3f7ed;
+      color: var(--aura-dark);
+      border-color: var(--aura-lime);
+    }
+
+    .btn.primary {
+      color: white;
+      background: var(--aura-green);
+      border-color: var(--aura-green);
+    }
+
+    .topbar .btn.primary {
+      background: #fff;
+      color: var(--ink);
+      border-color: #cfd8d1;
+    }
+
+    .topbar .btn.primary:hover {
+      background: #f3f7ed;
+      color: var(--aura-dark);
+      border-color: var(--aura-lime);
+    }
+
+    .ui-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1rem;
+      height: 1rem;
+      line-height: 0;
+      flex: 0 0 auto;
+    }
+
+    .ui-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: center;
+      min-height: 292px;
+      margin-bottom: 18px;
+      padding: clamp(22px, 3.4vw, 40px) clamp(20px, 6vw, 88px) clamp(22px, 3vw, 34px);
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, .64), rgba(0, 0, 0, .18)),
+        url("assets/sevede-hero-closeup.jpeg");
+      background-size: cover;
+      background-position: center 34%;
+      transition: min-height .2s ease, padding .2s ease;
+    }
+
+    .hero-toggle {
+      order: -1;
+      width: 1.18rem;
+      height: 1.18rem;
+      min-width: 1.18rem;
+      min-height: 1.18rem;
+      padding: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      background: #f7faf5;
+      color: var(--aura-deep);
+      border: 1px solid rgba(0, 45, 58, .18);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+      transition: background .15s, border-color .15s, color .15s, transform .15s;
+    }
+
+    .hero-toggle:hover {
+      background: #e9efd0;
+      border-color: var(--aura-lime);
+      transform: translateY(-1px);
+    }
+
+    .hero-toggle:focus-visible {
+      outline: 2px solid var(--aura-lime);
+      outline-offset: 2px;
+    }
+
+    .hero-toggle .ui-icon {
+      width: .78rem;
+      height: .78rem;
+    }
+
+    .hero.is-collapsed {
+      min-height: 74px;
+      padding: 14px clamp(20px, 6vw, 88px);
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero.is-collapsed .intro {
+      min-height: 0;
+    }
+
+    .hero.is-collapsed .eyebrow {
+      display: none;
+    }
+
+    .hero.is-collapsed h1 {
+      font-size: clamp(26px, 2.5vw, 34px);
+      margin: 0;
+      max-width: none;
+    }
+
+    .hero.is-collapsed .intro {
+      grid-template-columns: minmax(260px, 1fr) minmax(360px, 540px);
+      align-items: center;
+      gap: 18px;
+    }
+
+    .hero.is-collapsed .stats {
+      display: grid;
+    }
+
+    .hero.is-collapsed .stat {
+      padding: 10px 12px;
+    }
+
+    .hero.is-collapsed .stat strong {
+      font-size: 22px;
+    }
+
+    .hero.is-collapsed .stat span {
+      font-size: 11px;
+    }
+
+    .intro, .visual {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .intro {
+      padding: 0;
+      display: grid;
+      grid-template-columns: minmax(320px, 520px) minmax(420px, 540px);
+      align-items: center;
+      gap: clamp(24px, 3.5vw, 48px);
+      min-height: 168px;
+    }
+
+    .hero .eyebrow {
+      margin-bottom: 7px;
+    }
+
+    .lead {
+      color: #fff;
+      font-size: clamp(17px, 1.7vw, 20px);
+      line-height: 1.42;
+      max-width: 580px;
+      margin-top: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0;
+    }
+
+    .stat {
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 6px;
+      padding: 13px;
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: #dce9e5;
+      font-size: 12px;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .visual,
+    .visual-caption {
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: min(2160px, calc(100% - 8px));
+      margin: 0 auto 16px;
+    }
+
+    .tab {
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--aura-green);
+      color: white;
+      border-color: var(--aura-green);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 14px;
+      align-items: start;
+      width: min(2160px, calc(100% - 8px));
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      color: var(--aura-deep);
+      font-size: 19px;
+      font-weight: 400;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      flex-wrap: wrap;
+      padding: 0 18px 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    input, select {
+      min-height: 38px;
+      border: 1px solid #cbd6d8;
+      border-radius: 6px;
+      padding: 0 10px;
+      background: white;
+      color: var(--ink);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      text-align: center;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 0 0 8px 8px;
+    }
+
+    table {
+      width: auto;
+      border-collapse: collapse;
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 5px 5px;
+      text-align: right;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 11px;
+    }
+
+    th {
+      background: #f7faf8;
+      color: var(--aura-deep);
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    td:first-child, th:first-child {
+      text-align: left;
+    }
+
+    tbody tr:nth-child(odd) td {
+      background: #fbfcfc;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: white;
+    }
+
+    .table-total-row td {
+      background: #e8f1ed !important;
+      font-weight: 900;
+    }
+
+    .table-total-row td:not(:first-child):not(:nth-child(2)) {
+      text-align: center;
+    }
+
+    .table-total-row td:last-child {
+      background: var(--aura-green) !important;
+      color: #fff;
+    }
+
+    .table-total-label {
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .input-cell {
+      background: #fff6c5 !important;
+      text-align: center;
+    }
+
+    .input-cell input {
+      background: #fff9d9;
+      border-color: #e5c957;
+      min-height: 28px;
+      padding: 2px 4px;
+      font-size: 11px;
+    }
+
+    input[type="number"] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .input-cell.input-start {
+      background: rgba(0, 126, 72, .14) !important;
+    }
+
+    .input-cell.input-start input {
+      background: rgba(0, 126, 72, .18);
+      border-color: var(--legend-start);
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    .input-cell.input-mid {
+      background: rgba(245, 184, 75, .2) !important;
+    }
+
+    .input-cell.input-mid input {
+      background: rgba(245, 184, 75, .24);
+      border-color: var(--legend-mid);
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    .input-cell.input-end {
+      background: rgba(201, 47, 47, .13) !important;
+    }
+
+    .input-cell.input-end input {
+      background: rgba(201, 47, 47, .16);
+      border-color: var(--legend-end);
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    .length-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 46px;
+      max-width: 100%;
+      min-height: 24px;
+      border-radius: 6px;
+      padding: 0 6px;
+      background: var(--shade);
+      color: var(--aura-deep);
+      font-weight: 800;
+      font-size: 11px;
+      cursor: help;
+    }
+
+    .length-pill[data-tooltip]:hover::after,
+    .length-pill[data-tooltip]:focus-visible::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      z-index: 25;
+      width: max-content;
+      max-width: 220px;
+      transform: translateX(-50%);
+      padding: 7px 9px;
+      border-radius: 6px;
+      background: var(--aura-deep);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(0, 45, 58, .18);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.25;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .length-pill[data-tooltip]:hover::before,
+    .length-pill[data-tooltip]:focus-visible::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 3px);
+      z-index: 25;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top: 0;
+      border-bottom-color: var(--aura-deep);
+      pointer-events: none;
+    }
+
+    .product-name {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+      font-size: 11px;
+    }
+
+    .product-name strong {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product-key {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .length-input-group {
+      display: inline-grid;
+      grid-template-columns: 54px 30px;
+      gap: 4px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fit-under-btn {
+      min-width: 30px;
+      min-height: 30px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid #cddbd7;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--aura-deep);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+
+    .fit-under-btn:hover,
+    .fit-under-btn:focus-visible {
+      border-color: var(--aura-green);
+      background: #f7faf8;
+      color: var(--aura-deep);
+    }
+
+    .fit-under-btn:focus-visible {
+      outline: 2px solid #f0a000;
+      outline-offset: 1px;
+    }
+
+    .table-symbol {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--legend-start);
+      box-shadow: 0 1px 4px rgba(0, 45, 58, .16);
+      flex: 0 0 auto;
+    }
+
+    .table-symbol.mid {
+      background: var(--legend-mid);
+    }
+
+    .table-symbol.end {
+      background: var(--legend-end);
+    }
+
+    .thumb {
+      width: 48px;
+      height: 40px;
+      object-fit: contain;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px;
+      flex: 0 0 auto;
+    }
+
+    .table-line-thumb {
+      display: block;
+      width: 56px;
+      height: 42px;
+      margin: 0 auto;
+      object-fit: contain;
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    #configTable th:first-child,
+    #configTable td:first-child {
+      width: 142px;
+    }
+
+    #configTable th:nth-child(2),
+    #configTable td:nth-child(2) {
+      width: 54px;
+      background: #eef3f1;
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    #configTable tr.system-row td:first-child,
+    #configTable tr.system-row td:nth-child(2) {
+      background: #eef3f1 !important;
+      color: var(--aura-deep);
+      font-weight: 800;
+    }
+
+    #configTable tr.system-row .input-cell {
+      background: #eef3f1 !important;
+    }
+
+    #configTable tr.system-row .input-cell input {
+      background: rgba(255, 255, 255, .72);
+    }
+
+    #configTable th:last-child,
+    #configTable td:last-child {
+      width: 58px;
+      background: var(--aura-green);
+      color: #fff;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    #configTable th:not(:first-child):not(:nth-child(2)):not(:last-child),
+    #configTable td:not(:first-child):not(:nth-child(2)):not(:last-child) {
+      width: 68px;
+    }
+
+    #configTable tbody tr:first-child td:not(:first-child):not(:nth-child(2)):not(:last-child) {
+      text-align: center;
+    }
+
+    #configTable .system-letter-row th {
+      padding-top: 7px;
+      padding-bottom: 5px;
+      background: #eef3f1;
+      color: rgba(0, 45, 58, .7);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    #configTable .system-letter-row th:first-child,
+    #configTable .system-letter-row th:nth-child(2) {
+      background: #eef3f1;
+    }
+
+    #configTable .system-letter-row th:last-child {
+      background: var(--aura-green);
+      color: #fff;
+    }
+
+    #configTable .mount-select-row th,
+    #configTable .mount-image-row th {
+      background: #eef3f1;
+      color: var(--aura-deep);
+      text-align: center;
+    }
+
+    #configTable .mount-select-row th:first-child {
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    #configTable .mount-select-row th:last-child,
+    #configTable .mount-image-row th:last-child {
+      background: var(--aura-green);
+      color: #fff;
+    }
+
+    #configTable .mount-select-row select {
+      display: block;
+      width: 58px;
+      min-height: 28px;
+      margin: 0 auto;
+      padding: 2px 4px;
+      border: 1px solid #cddbd7;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--aura-deep);
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    #configTable .mount-select-row select:focus {
+      outline: 2px solid #f0a000;
+      outline-offset: 1px;
+    }
+
+    #configTable .mount-image-row th {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    #configTable th input {
+      display: block;
+      margin: 0 auto;
+      min-height: 30px;
+      padding: 2px 4px;
+      font-size: 11px;
+      text-align: center;
+      width: 40px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    #configTable td input {
+      width: 36px;
+      min-height: 30px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    #configTable.is-transposed {
+      width: 100%;
+      min-width: 980px;
+      table-layout: fixed;
+    }
+
+    #configTable.is-transposed th,
+    #configTable.is-transposed td {
+      text-align: center;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    #configTable.is-transposed th:first-child,
+    #configTable.is-transposed td:first-child {
+      width: 54px;
+      text-align: center;
+      background: #eef3f1;
+      color: var(--aura-deep);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .system-row-head {
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      min-width: 34px;
+      min-height: 34px;
+    }
+
+    .system-row-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      min-height: 24px;
+    }
+
+    .system-remove-btn {
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #c93535;
+      border-radius: 50%;
+      background: #fff;
+      color: #c93535;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%) scale(.92);
+      transition: opacity .14s ease, transform .14s ease, background .14s ease, color .14s ease;
+    }
+
+    .preset-row:hover .system-remove-btn,
+    .preset-row:focus-within .system-remove-btn,
+    .system-remove-btn:focus-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-50%) scale(1);
+    }
+
+    .system-remove-btn:hover,
+    .system-remove-btn:focus-visible {
+      background: #c93535;
+      color: #fff;
+      outline: none;
+    }
+
+    #configTable.is-transposed th:nth-child(2),
+    #configTable.is-transposed td:nth-child(2) {
+      width: 86px;
+      background: #eef3f1;
+    }
+
+    #configTable.is-transposed th:nth-child(3),
+    #configTable.is-transposed td:nth-child(3) {
+      width: 72px;
+      background: #eef3f1;
+    }
+
+    #configTable.is-transposed th:nth-child(4),
+    #configTable.is-transposed td:nth-child(4) {
+      width: 74px;
+      background: #eef3f1;
+    }
+
+    #configTable.is-transposed th:nth-child(5),
+    #configTable.is-transposed td:nth-child(5),
+    #configTable.is-transposed th:nth-child(6),
+    #configTable.is-transposed td:nth-child(6),
+    #configTable.is-transposed th:nth-child(7),
+    #configTable.is-transposed td:nth-child(7) {
+      width: 72px;
+      background: #eef3f1;
+      color: var(--aura-deep);
+      font-weight: 900;
+    }
+
+    #configTable.is-transposed th:nth-child(n+8):not(:last-child),
+    #configTable.is-transposed td:nth-child(n+8):not(:last-child) {
+      width: 92px;
+    }
+
+    #configTable.is-transposed th:last-child,
+    #configTable.is-transposed td:last-child {
+      width: 72px;
+      background: var(--aura-green);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    #configTable.is-transposed .selected-row th,
+    #configTable.is-transposed .selected-row td {
+      box-shadow: inset 0 1px 0 rgba(0, 133, 79, .22), inset 0 -1px 0 rgba(0, 133, 79, .22);
+    }
+
+    #configTable.is-transposed .table-product-head {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      line-height: 1.15;
+      text-transform: none;
+    }
+
+    #configTable.is-transposed .table-product-name {
+      max-width: 82px;
+      color: var(--aura-deep);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    #configTable.is-transposed .table-product-head small {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    #configTable.is-transposed .table-mount-select,
+    #configTable.is-transposed .table-color-select,
+    #configTable.is-transposed .table-length-input {
+      display: block;
+      min-height: 30px;
+      margin: 0 auto;
+      padding: 2px 4px;
+      border: 1px solid #cddbd7;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--aura-deep);
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    #configTable.is-transposed .table-mount-select {
+      width: 76px;
+    }
+
+    #configTable.is-transposed .table-color-select {
+      width: 68px;
+    }
+
+    #configTable.is-transposed .table-length-input {
+      width: 54px;
+    }
+
+    #configTable.is-transposed .table-mount-select:focus,
+    #configTable.is-transposed .table-color-select:focus,
+    #configTable.is-transposed .table-length-input:focus {
+      outline: 2px solid #f0a000;
+      outline-offset: 1px;
+    }
+
+    #configTable.is-transposed .table-line-thumb {
+      width: 58px;
+      height: 38px;
+      border: 0;
+      padding: 0;
+    }
+
+    #configTable.is-transposed .system-cell {
+      min-width: 0;
+      gap: 0;
+    }
+
+    #configTable.is-transposed .system-cell input,
+    #configTable.is-transposed td input {
+      margin: 0 auto;
+    }
+
+    #configTable.is-transposed .add-line-row td {
+      padding: 12px 14px;
+      background: #fff !important;
+      color: var(--aura-deep);
+      text-align: left;
+    }
+
+    #configTable.is-transposed .add-line-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 8px 14px;
+      border: 1px solid #cddbd7;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--aura-deep);
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 8px 24px rgba(0, 45, 58, .06);
+    }
+
+    #configTable.is-transposed .add-line-btn:hover,
+    #configTable.is-transposed .add-line-btn:focus-visible {
+      border-color: var(--aura-green);
+      outline: none;
+    }
+
+    #configTable.is-transposed .add-line-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--aura-green);
+      color: #fff;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    @media (max-width: 2200px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: start;
+      }
+    }
+
+    .preview-block {
+      padding: 16px 18px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdfb;
+    }
+
+    .preview-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .preview-top h2 {
+      color: var(--aura-deep);
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    .preview-metric {
+      min-width: 110px;
+      padding: 10px 12px;
+      color: #fff;
+      background: var(--aura-deep);
+      border-radius: 6px;
+      text-align: right;
+    }
+
+    .preview-metric strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .preview-metric span {
+      color: #dce9e5;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .drawing-stage {
+      min-height: 136px;
+      background:
+        linear-gradient(var(--shade) 1px, transparent 1px),
+        linear-gradient(90deg, var(--shade) 1px, transparent 1px),
+        #fbfdfb;
+      background-size: 34px 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: min-height .18s ease;
+    }
+
+    #previewSvg {
+      display: block;
+      width: 100%;
+      height: 136px;
+    }
+
+    .preview-track {
+      stroke: var(--aura-deep);
+      stroke-width: 8;
+      stroke-linecap: square;
+    }
+
+    .preview-light {
+      stroke: var(--aura-lime);
+      stroke-width: 2;
+      stroke-linecap: square;
+    }
+
+    .preview-marker {
+      stroke: #fff;
+      stroke-width: 2;
+    }
+
+    .preview-marker.start {
+      fill: var(--legend-start);
+    }
+
+    .preview-marker.mid {
+      fill: var(--legend-mid);
+    }
+
+    .preview-marker.end {
+      fill: var(--legend-end);
+    }
+
+    .preview-system-badge {
+      fill: var(--aura-deep);
+      stroke: #fff;
+      stroke-width: 2;
+      filter: drop-shadow(0 2px 5px rgba(0, 45, 58, .18));
+    }
+
+    .preview-system-number {
+      fill: #fff;
+      font-size: 10px;
+      font-weight: 500;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .preview-label {
+      fill: var(--aura-deep);
+      font-size: 13px;
+      font-weight: 400;
+      paint-order: stroke;
+      stroke: #fbfdfb;
+      stroke-width: 5px;
+      stroke-linejoin: round;
+    }
+
+    .preview-empty {
+      fill: var(--muted);
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--aura-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .legend-line {
+      width: 34px;
+      height: 10px;
+      background: linear-gradient(var(--aura-lime), var(--aura-lime)) center / 100% 3px no-repeat, var(--aura-deep);
+      border-radius: 999px;
+    }
+
+    .legend-symbol {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .legend-feed,
+    .legend-start {
+      background: var(--legend-start);
+    }
+
+    .legend-joint {
+      background: var(--legend-joint);
+    }
+
+    .legend-end {
+      background: var(--legend-end);
+    }
+
+    .legend-module,
+    .legend-mid {
+      background: var(--legend-mid);
+    }
+
+    .required-assets {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .required-card {
+      min-height: 166px;
+      min-width: 0;
+      display: grid;
+      grid-template-rows: 96px auto;
+      gap: 7px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .required-image {
+      position: relative;
+      min-width: 0;
+      background: #eef3f1;
+      border-radius: 5px;
+    }
+
+    .required-card.is-zero {
+      background: #fbfcfc;
+    }
+
+    .component.is-zero {
+      background: #fbfcfc;
+    }
+
+    .required-card img {
+      width: 100%;
+      height: 96px;
+      object-fit: contain;
+      background: #f8faf8;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 4px;
+    }
+
+    .required-card img.is-black-product,
+    .component img.is-black-product,
+    .thumb.is-black-product,
+    .table-line-thumb.is-black-product {
+      background: transparent;
+      border-color: transparent;
+      filter: brightness(.62) contrast(1.58) saturate(1.06);
+    }
+
+    .required-card img.is-white-product,
+    .component img.is-white-product,
+    .thumb.is-white-product {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .required-card img.is-transparent-asset,
+    .component img.is-transparent-asset {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .required-symbol {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--legend-start);
+      border: 0;
+      box-shadow: 0 2px 8px rgba(0, 45, 58, .18);
+    }
+
+    .required-symbol.mid {
+      background: var(--legend-mid);
+    }
+
+    .required-symbol.end {
+      background: var(--legend-end);
+    }
+
+    .required-symbol.accessory {
+      background: var(--legend-joint);
+    }
+
+    .required-card.is-zero div {
+      opacity: .62;
+    }
+
+    .required-copy {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      hyphens: auto;
+    }
+
+    .required-card strong {
+      display: block;
+      color: var(--aura-deep);
+      font-size: clamp(11px, .95vw, 13px);
+      line-height: 1.18;
+      overflow-wrap: normal;
+    }
+
+    .required-card span {
+      color: var(--muted);
+      font-size: clamp(10px, .86vw, 12px);
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-card {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-card:last-child {
+      border-bottom: 0;
+    }
+
+    .summary-block {
+      position: relative;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .summary-block + .summary-block {
+      margin-top: 12px;
+    }
+
+    .summary-block:last-child {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-block.is-selected {
+      border-left: 5px solid var(--aura-lime);
+      background: #fbfdf8;
+    }
+
+    .summary-block.is-total {
+      border-color: rgba(0, 126, 72, .34);
+      border-left: 5px solid var(--aura-green);
+      background: #f0f7f3;
+    }
+
+    .summary-block.is-total .metric-row {
+      border-color: rgba(0, 126, 72, .16);
+    }
+
+    .summary-block-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--aura-deep);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .summary-badge {
+      min-width: 28px;
+      min-height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--aura-deep);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .summary-block.is-total .summary-badge {
+      min-width: 52px;
+      padding: 0 10px;
+      background: var(--aura-green);
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf1f2;
+      color: var(--muted);
+    }
+
+    .metric-row:last-child {
+      border-bottom: 0;
+    }
+
+    .metric-row strong {
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .component-grid {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .results,
+    .info-band {
+      width: min(100% - 32px, 1420px);
+      margin: 26px auto 0;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .result-summary,
+    .result-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .result-summary {
+      padding: 24px;
+    }
+
+    .result-summary h2,
+    .info-band h2 {
+      margin: 0;
+      color: var(--aura-deep);
+      font-size: 26px;
+      line-height: 1.3;
+      font-weight: 400;
+    }
+
+    .result-summary p:not(.eyebrow),
+    .info-band p {
+      margin-top: 16px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .result-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .result-table-wrap {
+      overflow: auto;
+    }
+
+    .result-table {
+      width: 100%;
+      min-width: 840px;
+      border-collapse: collapse;
+    }
+
+    .result-table th,
+    .result-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .result-table th {
+      color: var(--aura-deep);
+      background: #f7faf8;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .result-table td {
+      font-size: 14px;
+    }
+
+    .result-table td:nth-child(4) {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .result-thumb-cell {
+      width: 88px;
+    }
+
+    .result-thumb-wrap {
+      position: relative;
+      width: 64px;
+      height: 48px;
+    }
+
+    .result-thumb {
+      display: block;
+      width: 64px;
+      height: 48px;
+      padding: 4px;
+      object-fit: contain;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .result-kind-dot {
+      position: absolute;
+      right: -6px;
+      top: -6px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0, 45, 58, .16);
+    }
+
+    .result-kind-dot.start {
+      background: var(--legend-start);
+    }
+
+    .result-kind-dot.mid {
+      background: var(--legend-mid);
+    }
+
+    .result-kind-dot.end {
+      background: var(--legend-end);
+    }
+
+    .result-empty {
+      color: var(--muted);
+    }
+
+    .info-band {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 44px;
+      padding: 26px;
+      color: #fff;
+      background: var(--aura-deep);
+      border-radius: 8px;
+    }
+
+    .info-band h2,
+    .info-band p {
+      color: #fff;
+    }
+
+    .contact-link {
+      min-height: 46px;
+      min-width: 210px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--aura-green);
+      border: 1px solid var(--aura-green);
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .component-stepper {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) 38px;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px 0;
+    }
+
+    .system-tabs {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .system-tab {
+      min-width: 34px;
+      min-height: 28px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--aura-deep);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .system-tab.is-active {
+      background: var(--aura);
+      border-color: var(--aura);
+      color: #fff;
+    }
+
+    .step-btn {
+      min-height: 38px;
+      border-radius: 6px;
+      color: var(--aura-deep);
+      background: #fff;
+      border: 1px solid var(--aura-deep);
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .step-btn:disabled {
+      cursor: default;
+      opacity: .38;
+    }
+
+    .step-current {
+      min-width: 0;
+      padding: 8px 10px;
+      background: #f7faf8;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .step-current strong {
+      display: block;
+      color: var(--aura-deep);
+      font-size: 13px;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .step-current span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .system-cell {
+      position: relative;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .system-cell input {
+      position: relative;
+    }
+
+    .system-cell .system-letter {
+      display: none !important;
+    }
+
+    .component {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfc;
+    }
+
+    .component img {
+      width: 82px;
+      height: 64px;
+      object-fit: contain;
+      background: #eef3f1;
+      border-radius: 6px;
+      border: 1px solid #edf1f2;
+      padding: 4px;
+    }
+
+    .component-thumb-wrap {
+      position: relative;
+      width: 82px;
+      height: 64px;
+    }
+
+    .component-thumb-wrap .component-kind-dot {
+      position: absolute;
+      right: -6px;
+      top: -6px;
+      width: 18px;
+      height: 18px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0, 45, 58, .16);
+    }
+
+    .component-kind-dot.start {
+      background: var(--legend-start);
+    }
+
+    .component-kind-dot.mid {
+      background: var(--legend-mid);
+    }
+
+    .component-kind-dot.end {
+      background: var(--legend-end);
+    }
+
+    .component.is-zero > div:not(.qty) {
+      opacity: .62;
+    }
+
+    .component h3 {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    .component p {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .qty {
+      min-width: 58px;
+      min-height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--aura);
+      color: white;
+      font-weight: 500;
+      padding: 0 10px;
+    }
+
+    .assumption {
+      margin: 0 16px 16px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff8df;
+      border: 1px solid #edd47a;
+      color: #69521a;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .source-list {
+      padding: 14px 18px 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .source-list a {
+      color: var(--aura-dark);
+      font-weight: 750;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      max-width: min(420px, calc(100vw - 36px));
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: var(--ink);
+      color: white;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(23, 33, 38, .42);
+    }
+
+    .modal {
+      width: min(760px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      display: grid;
+      grid-template-rows: auto minmax(220px, 1fr) auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      overflow: hidden;
+    }
+
+    .modal-head, .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-actions {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .modal textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 280px;
+      resize: none;
+      border: 0;
+      border-radius: 0;
+      padding: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--ink);
+      background: #f8faf9;
+    }
+
+    .guide-backdrop {
+      z-index: 50;
+    }
+
+    .guide-modal {
+      width: min(1080px, 100%);
+      max-height: min(880px, calc(100vh - 28px));
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .guide-head {
+      align-items: flex-start;
+    }
+
+    .guide-close {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      padding: 0;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .guide-body {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      overflow: auto;
+      background: #f7faf8;
+    }
+
+    .guide-visual {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      overflow: visible;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgba(0, 45, 58, .02);
+    }
+
+    .guide-shot {
+      position: relative;
+      overflow: visible;
+      border: 1px solid #dfe8dc;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(16, 42, 51, .04);
+    }
+
+    .guide-shot::before {
+      content: "";
+      display: block;
+      aspect-ratio: 1274 / 964;
+    }
+
+    .guide-shot-full::before {
+      aspect-ratio: 1274 / 2042;
+    }
+
+    .guide-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: inherit;
+      background: #fff;
+      pointer-events: none;
+    }
+
+    .guide-shot-title {
+      margin: 0 0 8px;
+      color: var(--aura-deep);
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.3;
+    }
+
+    .guide-shot-note {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .guide-bar {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(170px, auto) 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .guide-logo img {
+      width: 150px;
+      display: block;
+    }
+
+    .guide-pills,
+    .guide-actions,
+    .guide-controls-mini,
+    .guide-stats-mini {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .guide-pills span,
+    .guide-controls-mini span {
+      color: var(--aura-dark);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .guide-pills b,
+    .guide-actions span,
+    .guide-controls-mini button,
+    .guide-controls-mini span {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d6e0db;
+      border-radius: 999px;
+      padding: 6px 11px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--aura-dark);
+    }
+
+    .guide-pills b:first-of-type,
+    .guide-controls-mini button:first-child {
+      background: #000;
+      color: #fff;
+      border-color: #000;
+    }
+
+    .guide-actions span {
+      border-radius: 6px;
+      border-color: #bfcbd1;
+    }
+
+    .guide-hero-mini {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      min-height: 175px;
+      align-items: end;
+      padding: 34px 44px;
+      color: #fff;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, .62), rgba(0, 0, 0, .18)),
+        url("assets/sevede-hero-closeup.jpeg") center / cover;
+    }
+
+    .guide-hero-mini small {
+      display: block;
+      color: var(--aura-lime);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .guide-hero-mini strong {
+      display: block;
+      max-width: 360px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: .98;
+    }
+
+    .guide-stats-mini span {
+      min-width: 92px;
+      min-height: 66px;
+      display: grid;
+      align-content: center;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 6px;
+      background: rgba(255,255,255,.12);
+    }
+
+    .guide-stats-mini b {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .guide-stats-mini small {
+      color: rgba(255,255,255,.82);
+      margin: 4px 0 0;
+    }
+
+    .guide-panel-mini {
+      position: relative;
+      padding: 16px 18px 18px;
+      background: #f8faf8;
+    }
+
+    .guide-controls-mini {
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .guide-controls-mini button {
+      border-radius: 6px;
+    }
+
+    .guide-preview-mini {
+      position: relative;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .guide-preview-mini strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+      color: var(--aura-dark);
+    }
+
+    .guide-grid-mini {
+      height: 120px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 32px 32px;
+      display: grid;
+      place-items: center;
+    }
+
+    .guide-line-mini {
+      position: relative;
+      width: min(480px, 80%);
+      height: 10px;
+      border-radius: 999px;
+      background: var(--aura-dark);
+      box-shadow: inset 0 0 0 2px var(--aura-dark);
+    }
+
+    .guide-line-mini::before {
+      content: "";
+      position: absolute;
+      inset: 4px 12px;
+      background: var(--aura-lime);
+      border-radius: 999px;
+    }
+
+    .guide-line-mini i {
+      position: absolute;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid var(--legend-mid);
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+
+    .guide-line-mini i:nth-child(1) { left: 10%; border-color: var(--legend-start); }
+    .guide-line-mini i:nth-child(2) { left: 32%; }
+    .guide-line-mini i:nth-child(3) { left: 54%; }
+    .guide-line-mini i:nth-child(4) { left: 76%; }
+    .guide-line-mini i:nth-child(5) { left: 92%; border-color: var(--legend-end); }
+
+    .guide-components-mini {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .guide-components-mini article {
+      min-height: 112px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .guide-components-mini img {
+      width: 120px;
+      height: 52px;
+      object-fit: contain;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .guide-components-mini b {
+      color: var(--aura-dark);
+    }
+
+    .guide-table-mini {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #eaf1ed;
+    }
+
+    .guide-table-mini div {
+      text-align: center;
+      color: #48656f;
+      font-weight: 800;
+    }
+
+    .guide-table-mini input {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid #c4d1cb;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 800;
+      background: #fff;
+      color: var(--aura-dark);
+    }
+
+    .guide-summary-mini {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .guide-summary-mini span:not(.guide-marker) {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--aura-dark);
+      font-weight: 800;
+    }
+
+    .guide-marker {
+      position: absolute;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--aura-green);
+      border: 3px solid var(--aura-lime);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 126, 72, .26);
+    }
+
+    .guide-marker::after {
+      content: attr(data-guide-tooltip);
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      inline-size: min(340px, 72vw);
+      padding: 10px 12px;
+      border: 1px solid #d9e5dd;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 14px 32px rgba(0, 45, 58, .18);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.35;
+      opacity: 0;
+      pointer-events: none;
+      text-align: left;
+      transform: translate(-50%, 6px);
+      transition: opacity .15s ease, transform .15s ease;
+      visibility: hidden;
+      z-index: 8;
+    }
+
+    .guide-marker:hover,
+    .guide-marker:focus-visible {
+      z-index: 9;
+      outline: 0;
+    }
+
+    .guide-marker:hover::after,
+    .guide-marker:focus-visible::after {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      visibility: visible;
+    }
+
+    .guide-shot-marker-1 { left: 44%; top: 1.5%; }
+    .guide-shot-marker-2 { right: 2.3%; top: 1.5%; }
+    .guide-shot-marker-3 { left: 8%; top: 15%; }
+    .guide-shot-marker-4 { left: 3%; top: 39%; }
+    .guide-shot-marker-5 { right: 2.5%; top: 39%; }
+    .guide-shot-marker-6 { left: 49%; top: 54%; }
+    .guide-shot-marker-7 { left: 50%; top: 77%; }
+    .guide-full-marker-8 { left: 4%; top: 48%; }
+    .guide-full-marker-9 { left: 43%; top: 48%; }
+    .guide-full-marker-10 { right: 2.5%; top: 48%; }
+    .guide-full-marker-11 { left: 7%; top: 55%; }
+    .guide-full-marker-12 { left: 30%; top: 55%; }
+    .guide-full-marker-13 { left: 38%; top: 55%; }
+    .guide-full-marker-14 { left: 8%; top: 70%; }
+    .guide-full-marker-15 { left: 9%; top: 80%; }
+    .guide-full-marker-16 { left: 50%; top: 80%; }
+    .guide-full-marker-17 { right: 12%; top: 80%; }
+    .guide-full-marker-18 { left: 52%; top: 38%; }
+
+    .guide-marker-1 { right: 16px; top: 12px; }
+    .guide-marker-2 { right: 48%; top: 26px; }
+    .guide-marker-3 { right: 18px; top: 12px; }
+    .guide-marker-4 { left: 50%; top: 74px; }
+    .guide-marker-5 { right: 16px; top: 14px; }
+    .guide-marker-6 { right: 18px; top: 10px; }
+    .guide-marker-7 { right: 18px; top: 10px; }
+
+    .guide-steps {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .guide-steps li {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .guide-steps li > span {
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--aura-green);
+      border: 3px solid var(--aura-lime);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .guide-steps p {
+      color: #31434c;
+      line-height: 1.45;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1120px) {
+      .hero, .layout, .results {
+        grid-template-columns: 1fr;
+      }
+
+      .required-assets {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: 100%;
+        padding-top: 0;
+      }
+
+      .topbar, .panel-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .topbar {
+        position: static;
+      }
+
+      .brand img {
+        width: 150px;
+      }
+
+      .language-select {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .guide-body {
+        padding: 12px;
+      }
+
+      .guide-bar,
+      .guide-hero-mini {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-hero-mini {
+        padding: 24px;
+      }
+
+      .guide-components-mini,
+      .guide-summary-mini {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-table-mini {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .intro {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .intro {
+        min-height: 0;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .component {
+        grid-template-columns: 72px minmax(0, 1fr);
+      }
+
+      .preview-top {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .preview-metric {
+        text-align: left;
+      }
+
+      .results,
+      .info-band {
+        width: min(100% - 24px, 1420px);
+      }
+
+      .info-band {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .required-assets {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .component img {
+        width: 72px;
+        height: 56px;
+      }
+
+      .qty {
+        grid-column: 2;
+        justify-self: start;
+      }
+    }
+
+    @media print {
+      body { background: white; }
+      .actions, .tabs, .controls { display: none; }
+      .toast, .modal-backdrop { display: none !important; }
+      .shell, .layout { width: 100%; padding: 0; }
+      .panel, .intro, .visual { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" class="svg-sprite" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="icon-print" viewBox="0 0 24 24">
+      <path d="M7 8V4.5h10V8"></path><path d="M7 17.5H5a2 2 0 0 1-2-2V10h18v5.5a2 2 0 0 1-2 2h-2"></path><path d="M7 14h10v5.5H7z"></path>
+    </symbol>
+    <symbol id="icon-clipboard" viewBox="0 0 24 24">
+      <path d="M8 5.5H6.5v14h11v-14H16"></path><path d="M9 4.5h6v3H9z"></path>
+    </symbol>
+    <symbol id="icon-chevron-up" viewBox="0 0 24 24">
+      <path d="m7 14 5-5 5 5"></path>
+    </symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24">
+      <path d="m7 10 5 5 5-5"></path>
+    </symbol>
+    <symbol id="icon-document" viewBox="0 0 24 24">
+      <path d="M6.5 4.5h7l4 4v11h-11z"></path><path d="M13.5 4.5v4h4"></path><path d="M9 13h6"></path><path d="M9 16h5"></path>
+    </symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24">
+      <path d="M5 4.5h12.5L19 6v13.5H5z"></path><path d="M8 4.5v5h8v-5"></path><path d="M8 14h8v5.5H8z"></path>
+    </symbol>
+    <symbol id="icon-folder" viewBox="0 0 24 24">
+      <path d="M3.5 7.5h6l2 2h9v9.5h-17z"></path><path d="M3.5 7.5v-2h5.8l2 2"></path>
+    </symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24">
+      <path d="M6.8 8.2A7 7 0 1 1 5 13"></path><path d="M6.8 8.2H3.8V5.2"></path>
+    </symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24">
+      <path d="M12 19.5a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z"></path><path d="M9.8 9.5a2.4 2.4 0 0 1 4.6.8c0 1.8-2.4 1.8-2.4 3.5"></path><path d="M12 16.5h.01"></path>
+    </symbol>
+  </svg>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-area">
+        <button class="hero-toggle" id="heroToggleBtn" type="button" aria-expanded="true" aria-controls="heroOverview" title="Minimera">
+          <span class="ui-icon" aria-hidden="true"><svg><use href="#icon-chevron-up"></use></svg></span>
+        </button>
+        <a class="brand" href="#" aria-label="Aura Light">
+          <img src="assets/auralight-logo.svg" alt="Aura Light">
+        </a>
+      </div>
+      <div class="language-select" aria-label="Språk">
+        <span data-i18n="language.label">Språk</span>
+        <select id="languageSelect">
+          <option value="sv">SV</option>
+          <option value="en">EN</option>
+          <option value="no">NO</option>
+          <option value="fi">FI</option>
+          <option value="de">DE</option>
+        </select>
+        <div class="language-buttons" role="group" aria-label="Språk">
+          <button class="lang-btn" type="button" data-lang-btn="sv" title="Svenska">SV</button>
+          <button class="lang-btn" type="button" data-lang-btn="en" title="English">EN</button>
+          <button class="lang-btn" type="button" data-lang-btn="no" title="Norsk">NO</button>
+          <button class="lang-btn" type="button" data-lang-btn="fi" title="Suomi">FI</button>
+          <button class="lang-btn" type="button" data-lang-btn="de" title="Deutsch">DE</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="resetBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-reset"></use></svg></span><span data-i18n="action.reset">Återställ</span></button>
+        <button class="btn" id="csvBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-save"></use></svg></span><span data-i18n="action.save">Spara</span></button>
+        <button class="btn" id="loadConfigBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-folder"></use></svg></span><span data-i18n="action.load">Ladda sparad kalkyl</span></button>
+        <button class="btn primary" id="printBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-print"></use></svg></span><span data-i18n="action.print">Skriv ut</span></button>
+        <button class="btn" id="guideBtn" type="button" aria-haspopup="dialog"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-help"></use></svg></span><span data-i18n="guide.button">Guide</span></button>
+      </div>
+    </header>
+
+    <section class="hero" id="heroOverview" aria-label="Sevede översikt" data-i18n-aria="hero.aria">
+      <div class="intro">
+        <div>
+          <div class="eyebrow" data-i18n="hero.eyebrow">Ljuslinjekonfigurator</div>
+          <h1 data-i18n="hero.title">Sevede RAMP konfigurator</h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout" id="konfigurator">
+      <div class="panel">
+        <div class="preview-block">
+          <div class="preview-top">
+            <div>
+              <p class="eyebrow" data-i18n="preview.eyebrow">Förhandsvisning</p>
+              <h2 data-i18n="preview.title">Sevede ljuslinjer</h2>
+            </div>
+            <div class="preview-metric">
+              <strong id="previewTotalLength">0 m</strong>
+              <span data-i18n="preview.totalLength">Total längd</span>
+            </div>
+          </div>
+          <div class="drawing-stage">
+            <svg id="previewSvg" viewBox="0 0 720 136" role="img" aria-label="Sevede preview"></svg>
+          </div>
+          <div class="legend" aria-label="Teckenförklaring">
+            <div class="legend-item"><span class="legend-symbol legend-start"></span><span data-i18n="preview.legendStart">Start</span></div>
+            <div class="legend-item"><span class="legend-symbol legend-mid"></span><span data-i18n="preview.legendMid">Mid</span></div>
+            <div class="legend-item"><span class="legend-symbol legend-end"></span><span data-i18n="preview.legendEnd">End</span></div>
+          </div>
+          <div class="required-assets" id="requiredAssets"></div>
+        </div>
+        <div class="table-wrap">
+          <table id="configTable" aria-label="Sevede konfigurering"></table>
+        </div>
+      </div>
+
+      <aside class="summary" id="komponenter">
+        <div class="panel" id="kallor">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="summary.title">Summering</h2>
+              <p class="sub" data-i18n="summary.body">Aktivt läge och alla multiplicerade system.</p>
+            </div>
+          </div>
+          <div class="summary-card" id="modeSummary"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="components.title">Komponenter</h2>
+              <p class="sub" data-i18n="components.body">Armaturer och tillbehör med bilder.</p>
+            </div>
+          </div>
+          <div class="component-stepper" id="componentStepper"></div>
+          <div class="component-grid" id="components"></div>
+          <p class="assumption" id="assumption"></p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="sources.title">Källor</h2>
+              <p class="sub" data-i18n="sources.body">Produktbilder och produkttexter.</p>
+            </div>
+          </div>
+          <div class="source-list">
+            <a href="https://www.auralight.com/en/product-families/sevede-family">Sevede family</a><br>
+            <a href="https://www.auralight.com/en/luminaires/sevede-ce">Sevede CE</a><br>
+            <a href="https://www.auralight.com/en/luminaires/sevede-pe">Sevede PE</a><br>
+            <a href="https://www.auralight.com/en/luminaires/sevede-re">Sevede RE</a><br>
+            <a href="https://www.auralight.com/en/luminaires/accessories-luminaires/joint-bracket-kit">Joint bracket kit</a><br>
+            <a href="https://www.auralight.com/en/luminaires/accessories-luminaires/bracket-kit-sevede-re-plaster-ceiling">Bracket kit Sevede RE plaster ceiling</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="results" id="artiklar">
+      <div class="result-summary">
+        <p class="eyebrow" data-i18n="results.eyebrow">Resultat</p>
+        <h2 data-i18n="results.title">Beräknad komponentlista</h2>
+        <p data-i18n="results.body">Underlaget är avsett för snabb offertberedning. Kontrollera alltid mot projektets ritning och aktuell produktdata före order.</p>
+        <div class="result-actions">
+          <button class="btn primary" id="copyResultBtn" type="button" data-i18n="action.copySummary">Kopiera sammanställning</button>
+          <button class="btn" id="exportResultCsvBtn" type="button" data-i18n="action.exportCsv">Exportera CSV</button>
+        </div>
+      </div>
+      <div class="result-table-wrap">
+        <table class="result-table" aria-label="Valda artiklar" data-i18n-aria="results.tableAria">
+          <thead>
+            <tr>
+              <th data-i18n="results.image">Bild</th>
+              <th data-i18n="results.article">Aura-artikel</th>
+              <th data-i18n="results.name">Benämning</th>
+              <th data-i18n="results.qty">Antal</th>
+              <th data-i18n="results.comment">Kommentar</th>
+            </tr>
+          </thead>
+          <tbody id="resultBomTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="info-band" id="offert">
+      <div>
+        <p class="eyebrow">Aura Light</p>
+        <h2 data-i18n="contact.title">Behöver projektet granskas?</h2>
+        <p data-i18n="contact.body">Skicka komponentlistan tillsammans med ritning, taktyp och önskad styrning till Aura Light för verifiering och offert.</p>
+      </div>
+      <a class="contact-link" id="offerLink" href="mailto:Info@auralight.com?subject=Sevede%20RAMP%20konfiguration" data-i18n="contact.cta">Skapa offert</a>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop hidden" id="csvModal" role="dialog" aria-modal="true" aria-labelledby="csvTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="csvTitle">CSV-export</h2>
+          <p class="sub" data-i18n="csv.preview">Förhandsgranskning av aktuell komponentlista.</p>
+        </div>
+        <button class="btn" id="closeCsvBtn" type="button" data-i18n="action.close">Stäng</button>
+      </div>
+      <textarea id="csvText" readonly></textarea>
+      <div class="modal-actions">
+        <button class="btn" id="copyCsvBtn" type="button" data-i18n="action.copy">Kopiera</button>
+        <button class="btn primary" id="downloadCsvBtn" type="button" data-i18n="action.downloadCsv">Ladda ned CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden guide-backdrop" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="modal guide-modal">
+      <div class="modal-head guide-head">
+        <div>
+          <h2 id="guideTitle" data-i18n="guide.title">Hjälp - användargränssnitt och navigation</h2>
+          <p class="sub" data-i18n="guide.lead">Guiden täcker toppmeny, översikt, förhandsvisning, radtabell, komponenter, export och utskrift. Markerade siffror i bilden förklaras först, därefter listas samtliga funktioner i tjänsten.</p>
+        </div>
+        <button class="btn guide-close" id="closeGuideBtn" type="button" data-i18n-aria="guide.closeAria" aria-label="Stäng guide">×</button>
+      </div>
+      <div class="guide-body">
+        <div class="guide-visual" aria-label="Guidebild" data-i18n-aria="guide.visualAria">
+          <section>
+            <h3 class="guide-shot-title" data-i18n="guide.imageTopTitle">Översikt och huvudflöde</h3>
+            <p class="guide-shot-note" data-i18n="guide.imageTopNote">Bilden visar toppmeny, hero, förhandsvisning, komponentkort och starten av tabellen.</p>
+            <div class="guide-shot">
+              <iframe class="guide-frame" data-guide-frame="top" tabindex="-1" title="Sevede-konfiguratorns övre gränssnitt med markerade funktioner" data-i18n-title="guide.imageTopAlt" aria-label="Sevede-konfiguratorns övre gränssnitt med markerade funktioner" data-i18n-aria="guide.imageTopAlt"></iframe>
+              <span class="guide-marker guide-shot-marker-1">1</span>
+              <span class="guide-marker guide-shot-marker-2">2</span>
+              <span class="guide-marker guide-shot-marker-3">3</span>
+              <span class="guide-marker guide-shot-marker-4">4</span>
+              <span class="guide-marker guide-shot-marker-5">5</span>
+              <span class="guide-marker guide-shot-marker-6">6</span>
+              <span class="guide-marker guide-shot-marker-7">7</span>
+            </div>
+          </section>
+          <section>
+            <h3 class="guide-shot-title" data-i18n="guide.imageFullTitle">Tabell, rader och summeringar</h3>
+            <p class="guide-shot-note" data-i18n="guide.imageFullNote">Bilden visar hela arbetsytan så att tabellens rader, komponentkolumner och summeringar kan kopplas till punkterna nedan.</p>
+            <div class="guide-shot guide-shot-full">
+              <iframe class="guide-frame" data-guide-frame="full" tabindex="-1" title="Helbild av Sevede-konfiguratorn med markerade tabell- och summeringsfunktioner" data-i18n-title="guide.imageFullAlt" aria-label="Helbild av Sevede-konfiguratorn med markerade tabell- och summeringsfunktioner" data-i18n-aria="guide.imageFullAlt"></iframe>
+              <span class="guide-marker guide-full-marker-8">8</span>
+              <span class="guide-marker guide-full-marker-9">9</span>
+              <span class="guide-marker guide-full-marker-10">10</span>
+              <span class="guide-marker guide-full-marker-11">11</span>
+              <span class="guide-marker guide-full-marker-12">12</span>
+              <span class="guide-marker guide-full-marker-13">13</span>
+              <span class="guide-marker guide-full-marker-14">14</span>
+              <span class="guide-marker guide-full-marker-15">15</span>
+              <span class="guide-marker guide-full-marker-16">16</span>
+              <span class="guide-marker guide-full-marker-17">17</span>
+              <span class="guide-marker guide-full-marker-18">18</span>
+            </div>
+          </section>
+        </div>
+        <ol class="guide-steps">
+          <li><span>1</span><p data-i18n="guide.step1">Toppmenyn ligger kvar överst. Här byter du språk, återställer tabellen, exporterar CSV, skriver ut och öppnar guiden.</p></li>
+          <li><span>2</span><p data-i18n="guide.step2">Översikten visar valt läge, antal ljuslinjer, antal moduler och total längd. Pilen vid logotypen minimerar eller visar översikten.</p></li>
+          <li><span>3</span><p data-i18n="guide.step3">Välj CE/PE eller RE och ställ in montage, färg och nya ljuslinjer innan du fyller i tabellen.</p></li>
+          <li><span>4</span><p data-i18n="guide.step4">Förhandsvisningen ritar ljuslinjerna utifrån värdena i tabellen. Markörerna visar Start, Mid och End.</p></li>
+          <li><span>5</span><p data-i18n="guide.step5">Komponentbilderna visar vilka Start-, Mid- och End-moduler som krävs och hur många av varje som behövs.</p></li>
+          <li><span>6</span><p data-i18n="guide.step6">Skriv önskad ljuslinjelängd i meter med en decimal. Konfiguratorn föreslår automatiskt komponenter som kommer så nära längden som möjligt.</p></li>
+          <li><span>7</span><p data-i18n="guide.step7">Summeringen visar både valt system och totalen för alla system. Källorna länkar till Aura Lights produktsidor.</p></li>
+          <li><span>8</span><p data-i18n="guide.step8">Raderna A, B, C och vidare är separata ljuslinjer. Börja med A och använd + Ny ljuslinje för att lägga till fler rader.</p></li>
+          <li><span>9</span><p data-i18n="guide.step9">För muspekaren över en systembokstav för att visa minusknappen. När du tar bort en rad visas först en bekräftelse.</p></li>
+          <li><span>10</span><p data-i18n="guide.step10">Montage väljs per ljuslinje. CE tak, PE pendel och RE styr vilken installationsbild som visas och hur raden märks.</p></li>
+          <li><span>11</span><p data-i18n="guide.step11">Färgvalet Vit eller Svart byter armaturbilderna i tabellen, komponentkort och förhandsvisningsunderlag.</p></li>
+          <li><span>12</span><p data-i18n="guide.step12">Längd M är önskat mått i meter med en decimal. Ljuslinjelängd visar faktiskt föreslaget mått; håll musen över värdet för exakt längd.</p></li>
+          <li><span>13</span><p data-i18n="guide.step13">Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och TOTALT ST summerar varje rad och hela tabellen.</p></li>
+          <li><span>14</span><p data-i18n="guide.step14">Komponentpanelen låter dig stega mellan system A, B, C och vidare för att se mängder per system, medan sammanfattningen visar valt system och totalen.</p></li>
+          <li><span>15</span><p data-i18n="guide.step15">Återställ nollställer tabellen, CSV skapar en export, Skriv ut öppnar utskrift och Källor går till Aura Lights produktsidor.</p></li>
+          <li><span>16</span><p data-i18n="guide.step16">Tabellen arbetar i höjdled: varje systemrad A, B, C och vidare är en ljuslinje, medan Start, Mid och End ligger som komponentkolumner med summering längst till höger och längst ned.</p></li>
+          <li><span>17</span><p data-i18n="guide.step17">Varje ljuslinje kan ha eget montage och egen färg. Montagevalet styr miniatyrbilden och färgvalet byter mellan vita och svarta armaturer.</p></li>
+          <li><span>18</span><p data-i18n="guide.step18">Förhandsvisningen visar antal system bredvid varje ljuslinje, faktisk längd och Start/Mid/End-positioner så att tabellen kan kontrolleras visuellt.</p></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pageParams = new URLSearchParams(window.location.search);
+    const guidePreviewMode = pageParams.get("guidePreview");
+    const requestedLanguage = pageParams.get("lang");
+    const supportedLanguages = ["sv", "en", "no", "fi", "de"];
+    document.documentElement.classList.toggle("is-guide-preview", Boolean(guidePreviewMode));
+
+    const translations = {
+      sv: {
+        "language.label": "Språk",
+        "unit.pcs": "st",
+        "nav.configurator": "Konfigurator",
+        "nav.components": "Komponenter",
+        "nav.sources": "Källor",
+        "action.reset": "Återställ",
+        "action.print": "Skriv ut",
+        "action.save": "Spara som",
+        "action.load": "Ladda sparad kalkyl",
+        "action.new": "Ny",
+        "action.newLine": "Ny ljuslinje",
+        "action.removeLine": "Ta bort ljuslinje",
+        "action.close": "Stäng",
+        "action.copy": "Kopiera",
+        "action.downloadCsv": "Ladda ned CSV",
+        "action.copySummary": "Kopiera sammanställning",
+        "action.exportCsv": "Exportera CSV",
+        "action.previous": "Föregående",
+        "action.next": "Nästa",
+        "action.fitUnder": "Hitta närmaste kortare lösning",
+        "action.collapseOverview": "Minimera översikt",
+        "action.expandOverview": "Visa översikt",
+        "guide.button": "Hjälp",
+        "guide.title": "Hjälp - användargränssnitt och navigation",
+        "guide.lead": "Guiden täcker toppmeny, översikt, förhandsvisning, radtabell, komponenter, export och utskrift. Markerade siffror i bilden förklaras först, därefter listas samtliga funktioner i tjänsten.",
+        "guide.closeAria": "Stäng guide",
+        "guide.visualAria": "Guidebild för Sevede-konfiguratorn",
+        "guide.imageTopTitle": "Översikt och huvudflöde",
+        "guide.imageTopNote": "Bilden visar toppmeny, hero, förhandsvisning, komponentkort och starten av tabellen.",
+        "guide.imageTopAlt": "Sevede-konfiguratorns övre gränssnitt med markerade funktioner",
+        "guide.imageFullTitle": "Tabell, rader och summeringar",
+        "guide.imageFullNote": "Bilden visar hela arbetsytan så att tabellens rader, komponentkolumner och summeringar kan kopplas till punkterna nedan.",
+        "guide.imageFullAlt": "Helbild av Sevede-konfiguratorn med markerade tabell- och summeringsfunktioner",
+        "guide.step1": "Toppmenyn ligger kvar överst. Här byter du språk, återställer tabellen, sparar konfigurationen som fil, laddar sparad kalkyl, skriver ut och öppnar guiden.",
+        "guide.step2": "Översikten visar valt läge, antal ljuslinjer, antal moduler och total längd. Pilen vid logotypen minimerar eller visar översikten.",
+        "guide.step3": "Välj CE/PE eller RE och ställ in montage, färg och nya ljuslinjer innan du fyller i tabellen.",
+        "guide.step4": "Förhandsvisningen ritar ljuslinjerna utifrån värdena i tabellen. Markörerna visar Start, Mid och End.",
+        "guide.step5": "Komponentbilderna visar vilka Start-, Mid- och End-moduler som krävs och hur många av varje som behövs.",
+        "guide.step6": "Skriv önskad ljuslinjelängd i meter med en decimal. Konfiguratorn föreslår automatiskt komponenter som kommer så nära längden som möjligt.",
+        "guide.step7": "Summeringen visar både valt system och totalen för alla system. Källorna länkar till Aura Lights produktsidor.",
+        "guide.step8": "Raderna A, B, C och vidare är separata ljuslinjer. Börja med A och använd + Ny ljuslinje för att lägga till fler rader.",
+        "guide.step9": "För muspekaren över en systembokstav för att visa minusknappen. När du tar bort en rad visas först en bekräftelse.",
+        "guide.step10": "Montage väljs per ljuslinje. CE tak, PE pendel och RE styr vilken installationsbild som visas och hur raden märks.",
+        "guide.step11": "Färgvalet Vit eller Svart byter armaturbilderna i tabellen, komponentkort och förhandsvisningsunderlag.",
+        "guide.step12": "Längd M är önskat mått i meter med en decimal. Ljuslinjelängd visar faktiskt föreslaget mått; håll musen över värdet för exakt längd.",
+        "guide.step13": "Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och TOTALT ST summerar varje rad och hela tabellen.",
+        "guide.step14": "Komponentpanelen låter dig stega mellan system A, B, C och vidare för att se mängder per system, medan sammanfattningen visar valt system och totalen.",
+        "guide.step15": "Återställ nollställer tabellen, Spara som sparar aktuell konfiguration som fil, Ladda sparad kalkyl läser in en sparad konfiguration, Skriv ut öppnar utskrift och Källor går till Aura Lights produktsidor.",
+        "guide.step16": "Tabellen arbetar i höjdled: varje systemrad A, B, C och vidare är en ljuslinje, medan Start, Mid och End ligger som komponentkolumner med summering längst till höger och längst ned.",
+        "guide.step17": "Varje ljuslinje kan ha eget montage och egen färg. Montagevalet styr miniatyrbilden och färgvalet byter mellan vita och svarta armaturer.",
+        "guide.step18": "Förhandsvisningen visar antal system bredvid varje ljuslinje, faktisk längd och Start/Mid/End-positioner så att tabellen kan kontrolleras visuellt.",
+        "hero.aria": "Sevede översikt",
+        "hero.eyebrow": "Ljuslinjekonfigurator",
+        "hero.title": "Sevede RAMP konfigurator",
+        "hero.lead": "Förifylld från <strong>Mall ramp Sevede.xlsx</strong>. Gula fält är ändringsbara mängder per ljuslinje, med totalsummering av armaturer och tillbehör.",
+        "tabs.aria": "Konfiguratorläge",
+        "control.mounting": "Montage",
+        "control.color": "Färg",
+        "control.addLine": "Lägg till ljuslinje",
+        "color.white": "Vit",
+        "color.black": "Svart",
+        "mount.ce": "CE tak",
+        "mount.pe": "PE pendel",
+        "mount.re": "RE infälld",
+        "mode.cepe.subtitle": "Tak- eller pendelmontage baserat på CE/PE-blocket i Excel-mallen.",
+        "mode.re.subtitle": "Infällt montage baserat på RE-blocket i Excel-mallen.",
+        "summary.title": "Summering",
+        "summary.body": "Valt system och total för alla system.",
+        "summary.lines": "Ljuslinjer",
+        "summary.modules": "Armaturmoduler",
+        "summary.length": "Total längd",
+        "summary.selectedSystem": "Valt system",
+        "summary.allSystems": "Totalt alla system",
+        "results.eyebrow": "Resultat",
+        "results.title": "Beräknad komponentlista",
+        "results.body": "Underlaget är avsett för snabb offertberedning. Kontrollera alltid mot projektets ritning och aktuell produktdata före order.",
+        "results.tableAria": "Valda artiklar",
+        "results.image": "Bild",
+        "results.article": "Aura-artikel",
+        "results.name": "Benämning",
+        "results.qty": "Antal",
+        "results.comment": "Kommentar",
+        "results.empty": "Fyll i minst en ljuslinje för att visa valda artiklar.",
+        "results.projectArticle": "Projekt-/variantberoende",
+        "results.luminaireComment": "Vald armaturmodul. Artikelnummer fastställs utifrån projektvariant, montage och färg.",
+        "results.accessoryComment": "Tillbehör beräknat utifrån aktuell konfiguration.",
+        "contact.title": "Behöver projektet granskas?",
+        "contact.body": "Skicka komponentlistan tillsammans med ritning, taktyp och önskad styrning till Aura Light för verifiering och offert.",
+        "contact.cta": "Skapa offert",
+        "offer.subject": "Sevede RAMP konfiguration",
+        "stat.mode": "Läge",
+        "stat.lines": "Ljuslinjer",
+        "stat.modules": "Moduler",
+        "stat.length": "Längd",
+        "components.title": "Komponenter",
+        "components.body": "Armaturer och tillbehör med bilder.",
+        "components.systemView": "Visar per system",
+        "components.systemCount": "Antal system",
+        "components.systemLabel": "System",
+        "preview.eyebrow": "Förhandsvisning",
+        "preview.title": "Sevede ljuslinjer",
+        "preview.totalLength": "Total längd",
+        "preview.empty": "Fyll i gula fält för att visa ljuslinjer",
+        "preview.legendLine": "Ljuslinje",
+        "preview.legendFeed": "Start/matning",
+        "preview.legendJoint": "Koppling",
+        "preview.legendModule": "Armaturmodul",
+        "preview.legendStart": "Start",
+        "preview.legendMid": "Mid",
+        "preview.legendEnd": "End",
+        "preview.legendJointKit": "Joint bracket kit",
+        "required.start": "Startmoduler",
+        "required.mid": "Midmoduler",
+        "required.end": "Endmoduler",
+        "required.accessory": "Tillbehör",
+        "sources.title": "Källor",
+        "sources.body": "Produktbilder och produkttexter.",
+        "csv.preview": "Förhandsgranskning av aktuell komponentlista.",
+        "csv.mode": "Läge",
+        "csv.totalLength": "Total längd m",
+        "csv.lightLines": "Ljuslinjer",
+        "csv.modules": "Moduler",
+        "csv.component": "Komponent",
+        "csv.lengthMm": "Längd mm",
+        "csv.totalPcs": "Totalt st",
+        "article.configured": "Art.nr: projekt-/variantberoende",
+        "table.component": "Olika skenlängder",
+        "table.lengthMm": "Längd m",
+        "table.totalPcs": "Totalt st",
+        "table.totalLabel": "Totalt",
+        "table.lineLength": "Ljuslinjelängd",
+        "table.systemQty": "Antal system",
+        "aria.lineName": "Längd ljuslinje m",
+        "aria.systemQty": "Antal system",
+        "accessory.cepe.description": "Lämplig för Sevede CE & PE.",
+        "accessory.re.description": "Tillbehör för montage i fasta undertak.",
+        "assumption.cepe": "Antagande: Joint bracket kit räknas som en koppling mellan två armaturmoduler i samma ljuslinje, alltså total modulmängd minus antal ljuslinjer. PE levereras enligt Aura Light med wire suspension upp till 1000 mm per armatur.",
+        "assumption.re": "Antagande: RE plaster ceiling bracket kit räknas som ett montagekit per armaturmodul. Vid annan undertakslösning bör tillbehörslogiken justeras mot slutligt montageunderlag.",
+        "toast.addLine": "Ny ljuslinje tillagd.",
+        "toast.removeLine": "Ljuslinje borttagen.",
+        "toast.keepOneLine": "Minst en ljuslinje måste finnas kvar.",
+        "toast.reset": "Konfiguratorn är återställd.",
+        "confirm.removeLine": "Vill du ta bort ljuslinje {line}?",
+        "toast.print": "Utskriftsvyn öppnas.",
+        "toast.saved": "Konfigurationen är sparad.",
+        "toast.saveFallback": "Spara som-dialogen kunde inte användas. Filen laddas ned i stället.",
+        "toast.saveError": "Konfigurationen kunde inte sparas.",
+        "toast.loaded": "Sparad kalkyl är inläst.",
+        "toast.loadError": "Kunde inte läsa filen. Välj en sparad Sevede RAMP-konfiguration.",
+        "toast.csvCreated": "CSV skapad. Om nedladdning stoppas kan du kopiera från rutan.",
+        "toast.csvFallback": "CSV skapad. Kopiera från rutan.",
+        "toast.csvDownload": "CSV-nedladdning startad.",
+        "toast.csvCopied": "CSV kopierad.",
+        "toast.summaryCopied": "Sammanställningen är kopierad.",
+        "toast.summaryCopyFallback": "Sammanställningen kunde inte kopieras automatiskt.",
+        "toast.noShorterSolution": "Ingen kortare lösning hittades för valt mått.",
+        "toast.csvCopyFallback": "CSV markerad och kopierad där webbläsaren tillåter."
+      },
+      en: {
+        "language.label": "Language",
+        "unit.pcs": "pcs",
+        "nav.configurator": "Configurator",
+        "nav.components": "Components",
+        "nav.sources": "Sources",
+        "action.reset": "Reset",
+        "action.print": "Print",
+        "action.save": "Save as",
+        "action.load": "Load saved calculation",
+        "action.new": "New",
+        "action.newLine": "New light line",
+        "action.removeLine": "Remove light line",
+        "action.close": "Close",
+        "action.copy": "Copy",
+        "action.downloadCsv": "Download CSV",
+        "action.copySummary": "Copy summary",
+        "action.exportCsv": "Export CSV",
+        "action.previous": "Previous",
+        "action.next": "Next",
+        "action.fitUnder": "Find nearest shorter solution",
+        "action.collapseOverview": "Collapse overview",
+        "action.expandOverview": "Show overview",
+        "guide.button": "Help",
+        "guide.title": "Help - interface and navigation",
+        "guide.lead": "The guide covers the top menu, overview, preview, row table, components, export and print. Marked numbers in the image are explained first, then every service function is listed.",
+        "guide.closeAria": "Close guide",
+        "guide.visualAria": "Guide image for the Sevede configurator",
+        "guide.imageTopTitle": "Overview and main flow",
+        "guide.imageTopNote": "The image shows the top menu, hero, preview, component cards and the start of the table.",
+        "guide.imageTopAlt": "Upper Sevede configurator interface with marked functions",
+        "guide.imageFullTitle": "Table, rows and totals",
+        "guide.imageFullNote": "The image shows the full workspace so table rows, component columns and totals can be connected to the points below.",
+        "guide.imageFullAlt": "Full Sevede configurator view with marked table and summary functions",
+        "guide.step1": "The top menu stays visible. Use it to change language, reset the table, save the configuration as a file, load a saved calculation, print and open this guide.",
+        "guide.step2": "The overview shows selected mode, number of light lines, modules and total length. The arrow by the logo collapses or expands the overview.",
+        "guide.step3": "Choose CE/PE or RE and set mounting, colour and new light lines before filling in the table.",
+        "guide.step4": "The preview draws the light lines from the table values. The markers show Start, Mid and End.",
+        "guide.step5": "The component images show which Start, Mid and End modules are required and how many of each are needed.",
+        "guide.step6": "Enter the requested light-line length in metres with one decimal. The configurator automatically suggests components that get as close as possible.",
+        "guide.step7": "The summary shows both the selected system and the total for all systems. Sources link to Aura Light product pages.",
+        "guide.step8": "Rows A, B, C and onward are separate light lines. Start with A and use + New light line to add more rows.",
+        "guide.step9": "Hover a system letter to show the minus button. When you remove a row, a confirmation appears first.",
+        "guide.step10": "Mounting is selected per light line. CE ceiling, PE pendant and RE control which installation image is shown and how the row is labelled.",
+        "guide.step11": "The White or Black colour setting changes the luminaire images in the table, component cards and preview reference.",
+        "guide.step12": "Length M is the requested measurement in metres with one decimal. Light-line length shows the actual proposed measurement; hover the value to see the exact length.",
+        "guide.step13": "System quantity multiplies the row. Component fields can be fine-tuned manually and TOTAL PCS sums each row and the full table.",
+        "guide.step14": "The component panel lets you step through systems A, B, C and onward to see quantities per system, while the summary shows the selected system and total.",
+        "guide.step15": "Reset clears the table, Save as stores the current configuration as a file, Load saved calculation reads a saved configuration, Print opens printing and Sources goes to Aura Light product pages.",
+        "guide.step16": "The table works vertically: each system row A, B, C and onward is one light line, while Start, Mid and End are component columns with totals at the right and at the bottom.",
+        "guide.step17": "Each light line can have its own mounting and colour. The mounting choice controls the thumbnail and the colour choice switches between white and black luminaires.",
+        "guide.step18": "The preview shows the system quantity next to each light line, the actual length and Start/Mid/End positions so the table can be checked visually.",
+        "hero.aria": "Sevede overview",
+        "hero.eyebrow": "Light line configurator",
+        "hero.title": "Sevede RAMP configurator",
+        "hero.lead": "Pre-filled from <strong>Mall ramp Sevede.xlsx</strong>. Yellow fields are editable quantities per light line, with totals for luminaires and accessories.",
+        "tabs.aria": "Configurator mode",
+        "control.mounting": "Mounting",
+        "control.color": "Colour",
+        "control.addLine": "Add light line",
+        "color.white": "White",
+        "color.black": "Black",
+        "mount.ce": "CE ceiling",
+        "mount.pe": "PE pendant",
+        "mount.re": "RE recessed",
+        "mode.cepe.subtitle": "Ceiling or pendant mounting based on the CE/PE block in the Excel template.",
+        "mode.re.subtitle": "Recessed mounting based on the RE block in the Excel template.",
+        "summary.title": "Summary",
+        "summary.body": "Selected system and total for all systems.",
+        "summary.lines": "Light lines",
+        "summary.modules": "Luminaire modules",
+        "summary.length": "Total length",
+        "summary.selectedSystem": "Selected system",
+        "summary.allSystems": "Total all systems",
+        "results.eyebrow": "Result",
+        "results.title": "Calculated component list",
+        "results.body": "The data is intended for quick quotation preparation. Always check against the project drawing and current product data before ordering.",
+        "results.tableAria": "Selected articles",
+        "results.image": "Image",
+        "results.article": "Aura article",
+        "results.name": "Description",
+        "results.qty": "Quantity",
+        "results.comment": "Comment",
+        "results.empty": "Enter at least one light line to show selected articles.",
+        "results.projectArticle": "Project/variant dependent",
+        "results.luminaireComment": "Selected luminaire module. Article number is set from project variant, mounting and colour.",
+        "results.accessoryComment": "Accessory calculated from the current configuration.",
+        "contact.title": "Does the project need review?",
+        "contact.body": "Send the component list together with drawing, ceiling type and requested controls to Aura Light for verification and quotation.",
+        "contact.cta": "Create quote",
+        "offer.subject": "Sevede RAMP configuration",
+        "stat.mode": "Mode",
+        "stat.lines": "Light lines",
+        "stat.modules": "Modules",
+        "stat.length": "Length",
+        "components.title": "Components",
+        "components.body": "Luminaires and accessories with images.",
+        "components.systemView": "Showing per system",
+        "components.systemCount": "System quantity",
+        "components.systemLabel": "System",
+        "preview.eyebrow": "Preview",
+        "preview.title": "Sevede light lines",
+        "preview.totalLength": "Total length",
+        "preview.empty": "Fill in yellow fields to show light lines",
+        "preview.legendLine": "Light line",
+        "preview.legendFeed": "Start/feed",
+        "preview.legendJoint": "Joint",
+        "preview.legendModule": "Luminaire module",
+        "preview.legendStart": "Start",
+        "preview.legendMid": "Mid",
+        "preview.legendEnd": "End",
+        "preview.legendJointKit": "Joint bracket kit",
+        "required.start": "Start modules",
+        "required.mid": "Mid modules",
+        "required.end": "End modules",
+        "required.accessory": "Accessories",
+        "sources.title": "Sources",
+        "sources.body": "Product images and product texts.",
+        "csv.preview": "Preview of the current component list.",
+        "csv.mode": "Mode",
+        "csv.totalLength": "Total length m",
+        "csv.lightLines": "Light lines",
+        "csv.modules": "Modules",
+        "csv.component": "Component",
+        "csv.lengthMm": "Length mm",
+        "csv.totalPcs": "Total pcs",
+        "article.configured": "Article no.: project/variant dependent",
+        "table.component": "Different trunking lengths",
+        "table.lengthMm": "Length m",
+        "table.totalPcs": "Total pcs",
+        "table.totalLabel": "Total",
+        "table.lineLength": "Length for one light line",
+        "table.systemQty": "System quantity",
+        "aria.lineName": "Light line length m",
+        "aria.systemQty": "System quantity",
+        "accessory.cepe.description": "Suitable for Sevede CE & PE.",
+        "accessory.re.description": "Accessory for mounting in plaster ceilings.",
+        "assumption.cepe": "Assumption: Joint bracket kit is counted as one joint between two luminaire modules in the same light line, meaning total module quantity minus number of light lines. According to Aura Light, PE is delivered with wire suspension up to 1000 mm per luminaire.",
+        "assumption.re": "Assumption: RE plaster ceiling bracket kit is counted as one mounting kit per luminaire module. For other ceiling types, the accessory logic should be adjusted against the final mounting documentation.",
+        "toast.addLine": "New light line added.",
+        "toast.removeLine": "Light line removed.",
+        "toast.keepOneLine": "At least one light line must remain.",
+        "toast.reset": "The configurator has been reset.",
+        "confirm.removeLine": "Do you want to remove light line {line}?",
+        "toast.print": "Print view is opening.",
+        "toast.saved": "The configuration has been saved.",
+        "toast.saveFallback": "The Save as dialog could not be used. The file is downloaded instead.",
+        "toast.saveError": "The configuration could not be saved.",
+        "toast.loaded": "The saved calculation has been loaded.",
+        "toast.loadError": "Could not read the file. Choose a saved Sevede RAMP configuration.",
+        "toast.csvCreated": "CSV created. If download is blocked, copy it from the box.",
+        "toast.csvFallback": "CSV created. Copy it from the box.",
+        "toast.csvDownload": "CSV download started.",
+        "toast.csvCopied": "CSV copied.",
+        "toast.summaryCopied": "Summary copied.",
+        "toast.summaryCopyFallback": "The summary could not be copied automatically.",
+        "toast.noShorterSolution": "No shorter solution was found for the selected length.",
+        "toast.csvCopyFallback": "CSV selected and copied where the browser allows it."
+      },
+      no: {
+        "language.label": "Språk",
+        "unit.pcs": "stk",
+        "nav.configurator": "Konfigurator",
+        "nav.components": "Komponenter",
+        "nav.sources": "Kilder",
+        "action.reset": "Tilbakestill",
+        "action.print": "Skriv ut",
+        "action.save": "Lagre som",
+        "action.load": "Last inn lagret kalkyle",
+        "action.new": "Ny",
+        "action.newLine": "Ny lyslinje",
+        "action.removeLine": "Fjern lyslinje",
+        "action.close": "Lukk",
+        "action.copy": "Kopier",
+        "action.downloadCsv": "Last ned CSV",
+        "action.copySummary": "Kopier sammenstilling",
+        "action.exportCsv": "Eksporter CSV",
+        "action.previous": "Forrige",
+        "action.next": "Neste",
+        "action.fitUnder": "Finn nærmeste kortere løsning",
+        "action.collapseOverview": "Minimer oversikt",
+        "action.expandOverview": "Vis oversikt",
+        "guide.button": "Hjelp",
+        "guide.title": "Hjelp - brukergrensesnitt og navigasjon",
+        "guide.lead": "Guiden dekker toppmeny, oversikt, forhåndsvisning, radtabell, komponenter, eksport og utskrift. Markerte tall i bildet forklares først, deretter listes alle funksjoner i tjenesten.",
+        "guide.closeAria": "Lukk guide",
+        "guide.visualAria": "Guidebilde for Sevede-konfiguratoren",
+        "guide.imageTopTitle": "Oversikt og hovedflyt",
+        "guide.imageTopNote": "Bildet viser toppmeny, hero, forhåndsvisning, komponentkort og starten av tabellen.",
+        "guide.imageTopAlt": "Øvre Sevede-konfiguratorgrensesnitt med markerte funksjoner",
+        "guide.imageFullTitle": "Tabell, rader og summeringer",
+        "guide.imageFullNote": "Bildet viser hele arbeidsflaten slik at tabellrader, komponentkolonner og summeringer kan kobles til punktene nedenfor.",
+        "guide.imageFullAlt": "Helvisning av Sevede-konfiguratoren med markerte tabell- og summeringsfunksjoner",
+        "guide.step1": "Toppmenyen blir liggende øverst. Her bytter du språk, tilbakestiller tabellen, lagrer konfigurasjonen som fil, laster inn lagret kalkyle, skriver ut og åpner guiden.",
+        "guide.step2": "Oversikten viser valgt modus, antall lyslinjer, moduler og total lengde. Pilen ved logoen minimerer eller viser oversikten.",
+        "guide.step3": "Velg CE/PE eller RE og angi montering, farge og nye lyslinjer før du fyller ut tabellen.",
+        "guide.step4": "Forhåndsvisningen tegner lyslinjene basert på verdiene i tabellen. Markørene viser Start, Mid og End.",
+        "guide.step5": "Komponentbildene viser hvilke Start-, Mid- og End-moduler som kreves og hvor mange som trengs.",
+        "guide.step6": "Skriv ønsket lyslinjelengde i meter med én desimal. Konfiguratoren foreslår automatisk komponenter som kommer så nær lengden som mulig.",
+        "guide.step7": "Summeringen viser både valgt system og totalen for alle systemer. Kildene lenker til Aura Lights produktsider.",
+        "guide.step8": "Radene A, B, C og videre er separate lyslinjer. Start med A og bruk + Ny lyslinje for å legge til flere rader.",
+        "guide.step9": "Hold musepekeren over en systembokstav for å vise minusknappen. Når du fjerner en rad, vises først en bekreftelse.",
+        "guide.step10": "Montering velges per lyslinje. CE tak, PE pendel og RE styrer hvilket installasjonsbilde som vises og hvordan raden merkes.",
+        "guide.step11": "Fargevalget Hvit eller Svart bytter armaturbildene i tabellen, komponentkortene og forhåndsvisningsgrunnlaget.",
+        "guide.step12": "Lengde M er ønsket mål i meter med én desimal. Lyslinjelengde viser faktisk foreslått mål; hold musen over verdien for eksakt lengde.",
+        "guide.step13": "Antall systemer multipliserer raden. Komponentfeltene kan finjusteres manuelt, og TOTALT STK summerer hver rad og hele tabellen.",
+        "guide.step14": "Komponentpanelet lar deg bla mellom system A, B, C og videre for å se mengder per system, mens summeringen viser valgt system og totalen.",
+        "guide.step15": "Tilbakestill nullstiller tabellen, Lagre som lagrer aktuell konfigurasjon som fil, Last inn lagret kalkyle leser inn en lagret konfigurasjon, Skriv ut åpner utskrift og Kilder går til Aura Lights produktsider.",
+        "guide.step16": "Tabellen arbeider i høyden: hver systemrad A, B, C og videre er en lyslinje, mens Start, Mid og End ligger som komponentkolonner med summering til høyre og nederst.",
+        "guide.step17": "Hver lyslinje kan ha egen montering og farge. Monteringsvalget styrer miniatyrbildet, og fargevalget bytter mellom hvite og svarte armaturer.",
+        "guide.step18": "Forhåndsvisningen viser antall systemer ved hver lyslinje, faktisk lengde og Start/Mid/End-posisjoner slik at tabellen kan kontrolleres visuelt.",
+        "hero.aria": "Sevede oversikt",
+        "hero.eyebrow": "Lyslinjekonfigurator",
+        "hero.title": "Sevede RAMP-konfigurator",
+        "hero.lead": "Forhåndsutfylt fra <strong>Mall ramp Sevede.xlsx</strong>. Gule felt er redigerbare mengder per lyslinje, med summering av armaturer og tilbehør.",
+        "tabs.aria": "Konfiguratormodus",
+        "control.mounting": "Montering",
+        "control.color": "Farge",
+        "control.addLine": "Legg til lyslinje",
+        "color.white": "Hvit",
+        "color.black": "Svart",
+        "mount.ce": "CE tak",
+        "mount.pe": "PE pendel",
+        "mount.re": "RE innfelt",
+        "mode.cepe.subtitle": "Tak- eller pendelmontering basert på CE/PE-blokken i Excel-malen.",
+        "mode.re.subtitle": "Innfelt montering basert på RE-blokken i Excel-malen.",
+        "summary.title": "Summering",
+        "summary.body": "Valgt system og total for alle systemer.",
+        "summary.lines": "Lyslinjer",
+        "summary.modules": "Armaturmoduler",
+        "summary.length": "Total lengde",
+        "summary.selectedSystem": "Valgt system",
+        "summary.allSystems": "Totalt alle systemer",
+        "results.eyebrow": "Resultat",
+        "results.title": "Beregnet komponentliste",
+        "results.body": "Underlaget er ment for rask tilbudsforberedelse. Kontroller alltid mot prosjekttegning og gjeldende produktdata før bestilling.",
+        "results.tableAria": "Valgte artikler",
+        "results.image": "Bilde",
+        "results.article": "Aura-artikkel",
+        "results.name": "Betegnelse",
+        "results.qty": "Antall",
+        "results.comment": "Kommentar",
+        "results.empty": "Fyll inn minst én lyslinje for å vise valgte artikler.",
+        "results.projectArticle": "Prosjekt-/variantavhengig",
+        "results.luminaireComment": "Valgt armaturmodul. Artikkelnummer fastsettes ut fra prosjektvariant, montering og farge.",
+        "results.accessoryComment": "Tilbehør beregnet fra gjeldende konfigurasjon.",
+        "contact.title": "Trenger prosjektet gjennomgang?",
+        "contact.body": "Send komponentlisten sammen med tegning, taktype og ønsket styring til Aura Light for verifisering og tilbud.",
+        "contact.cta": "Opprett tilbud",
+        "offer.subject": "Sevede RAMP-konfigurasjon",
+        "stat.mode": "Modus",
+        "stat.lines": "Lyslinjer",
+        "stat.modules": "Moduler",
+        "stat.length": "Lengde",
+        "components.title": "Komponenter",
+        "components.body": "Armaturer og tilbehør med bilder.",
+        "components.systemView": "Viser per system",
+        "components.systemCount": "Antall systemer",
+        "components.systemLabel": "System",
+        "preview.eyebrow": "Forhåndsvisning",
+        "preview.title": "Sevede lyslinjer",
+        "preview.totalLength": "Total lengde",
+        "preview.empty": "Fyll inn gule felt for å vise lyslinjer",
+        "preview.legendLine": "Lyslinje",
+        "preview.legendFeed": "Start/mating",
+        "preview.legendJoint": "Kobling",
+        "preview.legendModule": "Armaturmodul",
+        "preview.legendStart": "Start",
+        "preview.legendMid": "Mid",
+        "preview.legendEnd": "End",
+        "preview.legendJointKit": "Joint bracket kit",
+        "required.start": "Startmoduler",
+        "required.mid": "Midmoduler",
+        "required.end": "Endmoduler",
+        "required.accessory": "Tilbehør",
+        "sources.title": "Kilder",
+        "sources.body": "Produktbilder og produkttekster.",
+        "csv.preview": "Forhåndsvisning av gjeldende komponentliste.",
+        "csv.mode": "Modus",
+        "csv.totalLength": "Total lengde m",
+        "csv.lightLines": "Lyslinjer",
+        "csv.modules": "Moduler",
+        "csv.component": "Komponent",
+        "csv.lengthMm": "Lengde mm",
+        "csv.totalPcs": "Totalt stk",
+        "article.configured": "Art.nr: prosjekt-/variantavhengig",
+        "table.component": "Ulike skinnelengder",
+        "table.lengthMm": "Lengde m",
+        "table.totalPcs": "Totalt stk",
+        "table.totalLabel": "Totalt",
+        "table.lineLength": "Lengde for én lyslinje",
+        "table.systemQty": "Antall systemer",
+        "aria.lineName": "Lyslinjelengde m",
+        "aria.systemQty": "Antall systemer",
+        "accessory.cepe.description": "Egnet for Sevede CE & PE.",
+        "accessory.re.description": "Tilbehør for montering i faste himlinger.",
+        "assumption.cepe": "Antakelse: Joint bracket kit regnes som én kobling mellom to armaturmoduler i samme lyslinje, altså total modulmengde minus antall lyslinjer. PE leveres ifølge Aura Light med wireoppheng opptil 1000 mm per armatur.",
+        "assumption.re": "Antakelse: RE plaster ceiling bracket kit regnes som ett monteringskit per armaturmodul. Ved annen himlingsløsning bør tilbehørslogikken justeres mot endelig monteringsunderlag.",
+        "toast.addLine": "Ny lyslinje lagt til.",
+        "toast.removeLine": "Lyslinje fjernet.",
+        "toast.keepOneLine": "Minst én lyslinje må være igjen.",
+        "toast.reset": "Konfiguratoren er tilbakestilt.",
+        "confirm.removeLine": "Vil du fjerne lyslinje {line}?",
+        "toast.print": "Utskriftsvisning åpnes.",
+        "toast.saved": "Konfigurasjonen er lagret.",
+        "toast.saveFallback": "Lagre som-dialogen kunne ikke brukes. Filen lastes ned i stedet.",
+        "toast.saveError": "Konfigurasjonen kunne ikke lagres.",
+        "toast.loaded": "Lagret kalkyle er lastet inn.",
+        "toast.loadError": "Kunne ikke lese filen. Velg en lagret Sevede RAMP-konfigurasjon.",
+        "toast.csvCreated": "CSV opprettet. Hvis nedlasting stoppes, kan du kopiere fra boksen.",
+        "toast.csvFallback": "CSV opprettet. Kopier fra boksen.",
+        "toast.csvDownload": "CSV-nedlasting startet.",
+        "toast.csvCopied": "CSV kopiert.",
+        "toast.summaryCopied": "Sammenstillingen er kopiert.",
+        "toast.summaryCopyFallback": "Sammenstillingen kunne ikke kopieres automatisk.",
+        "toast.noShorterSolution": "Fant ingen kortere løsning for valgt mål.",
+        "toast.csvCopyFallback": "CSV er markert og kopiert der nettleseren tillater det."
+      },
+      fi: {
+        "language.label": "Kieli",
+        "unit.pcs": "kpl",
+        "nav.configurator": "Konfiguraattori",
+        "nav.components": "Komponentit",
+        "nav.sources": "Lähteet",
+        "action.reset": "Palauta",
+        "action.print": "Tulosta",
+        "action.save": "Tallenna nimellä",
+        "action.load": "Lataa tallennettu laskelma",
+        "action.new": "Uusi",
+        "action.newLine": "Uusi valolinja",
+        "action.removeLine": "Poista valolinja",
+        "action.close": "Sulje",
+        "action.copy": "Kopioi",
+        "action.downloadCsv": "Lataa CSV",
+        "action.copySummary": "Kopioi yhteenveto",
+        "action.exportCsv": "Vie CSV",
+        "action.previous": "Edellinen",
+        "action.next": "Seuraava",
+        "action.fitUnder": "Etsi lähin lyhyempi ratkaisu",
+        "action.collapseOverview": "Pienennä yleisnäkymä",
+        "action.expandOverview": "Näytä yleisnäkymä",
+        "guide.button": "Ohje",
+        "guide.title": "Ohje - käyttöliittymä ja navigointi",
+        "guide.lead": "Ohje kattaa ylävalikon, yleisnäkymän, esikatselun, rivitaulukon, komponentit, viennin ja tulostuksen. Kuvan merkityt numerot selitetään ensin, sen jälkeen listataan kaikki palvelun toiminnot.",
+        "guide.closeAria": "Sulje ohje",
+        "guide.visualAria": "Sevede-konfiguraattorin ohjekuva",
+        "guide.imageTopTitle": "Yleiskuva ja pääkulku",
+        "guide.imageTopNote": "Kuva näyttää ylävalikon, hero-alueen, esikatselun, komponenttikortit ja taulukon alun.",
+        "guide.imageTopAlt": "Sevede-konfiguraattorin yläosa merkityillä toiminnoilla",
+        "guide.imageFullTitle": "Taulukko, rivit ja summat",
+        "guide.imageFullNote": "Kuva näyttää koko työalueen, jotta taulukon rivit, komponenttisarakkeet ja summat voi yhdistää alla oleviin kohtiin.",
+        "guide.imageFullAlt": "Sevede-konfiguraattorin koko näkymä merkityillä taulukko- ja yhteenvetotoiminnoilla",
+        "guide.step1": "Ylävalikko pysyy näkyvissä. Siitä vaihdat kielen, nollaat taulukon, tallennat konfiguraation tiedostoksi, lataat tallennetun laskelman, tulostat ja avaat ohjeen.",
+        "guide.step2": "Yleisnäkymä näyttää valitun tilan, valolinjojen määrän, moduulit ja kokonaispituuden. Logon vieressä oleva nuoli pienentää tai näyttää yleisnäkymän.",
+        "guide.step3": "Valitse CE/PE tai RE sekä asennus, väri ja uudet valolinjat ennen taulukon täyttämistä.",
+        "guide.step4": "Esikatselu piirtää valolinjat taulukon arvojen perusteella. Merkinnät näyttävät Start-, Mid- ja End-kohdat.",
+        "guide.step5": "Komponenttikuvat näyttävät tarvittavat Start-, Mid- ja End-moduulit sekä niiden määrät.",
+        "guide.step6": "Syötä haluttu valolinjan pituus metreinä yhden desimaalin tarkkuudella. Konfiguraattori ehdottaa automaattisesti lähintä komponenttiyhdistelmää.",
+        "guide.step7": "Yhteenveto näyttää sekä valitun järjestelmän että kaikkien järjestelmien kokonaismäärän. Lähteet linkittyvät Aura Lightin tuotesivuille.",
+        "guide.step8": "Rivit A, B, C ja seuraavat ovat erillisiä valolinjoja. Aloita A-rivistä ja lisää rivejä painikkeella + Uusi valolinja.",
+        "guide.step9": "Vie hiiri järjestelmäkirjaimen päälle nähdäksesi miinuspainikkeen. Kun poistat rivin, vahvistus näytetään ensin.",
+        "guide.step10": "Asennus valitaan valolinjakohtaisesti. CE katto, PE riippu ja RE määrittävät näytettävän asennuskuvan ja rivin merkinnän.",
+        "guide.step11": "Värivalinta Valkoinen tai Musta vaihtaa valaisinkuvat taulukossa, komponenttikorteissa ja esikatselun pohjana.",
+        "guide.step12": "Pituus M on haluttu mitta metreinä yhden desimaalin tarkkuudella. Valolinjan pituus näyttää ehdotetun todellisen mitan; vie hiiri arvon päälle nähdäksesi tarkan pituuden.",
+        "guide.step13": "Järjestelmien määrä kertoo rivin. Komponenttikenttiä voi hienosäätää käsin, ja YHTEENSÄ KPL summaa jokaisen rivin ja koko taulukon.",
+        "guide.step14": "Komponenttipaneelissa voit siirtyä järjestelmien A, B, C ja seuraavien välillä nähdäksesi määrät järjestelmittäin, ja yhteenveto näyttää valitun järjestelmän sekä kokonaismäärän.",
+        "guide.step15": "Palauta nollaa taulukon, Tallenna nimellä tallentaa nykyisen konfiguraation tiedostoksi, Lataa tallennettu laskelma lukee tallennetun konfiguraation, Tulosta avaa tulostuksen ja Lähteet vie Aura Lightin tuotesivuille.",
+        "guide.step16": "Taulukko toimii pystysuunnassa: jokainen järjestelmärivi A, B, C ja seuraavat on oma valolinja, ja Start, Mid sekä End ovat komponenttisarakkeita, joiden summat näkyvät oikealla ja alhaalla.",
+        "guide.step17": "Jokaisella valolinjalla voi olla oma asennus ja väri. Asennusvalinta ohjaa pikkukuvaa ja värivalinta vaihtaa valaisimet valkoisten ja mustien välillä.",
+        "guide.step18": "Esikatselu näyttää järjestelmien määrän jokaisen valolinjan vieressä, todellisen pituuden sekä Start/Mid/End-sijainnit, jotta taulukko voidaan tarkistaa visuaalisesti.",
+        "hero.aria": "Sevede yleiskatsaus",
+        "hero.eyebrow": "Valolinjakonfiguraattori",
+        "hero.title": "Sevede RAMP -konfiguraattori",
+        "hero.lead": "Esitäytetty tiedostosta <strong>Mall ramp Sevede.xlsx</strong>. Keltaiset kentät ovat muokattavia valolinjakohtaisia määriä, ja kokonaismäärät lasketaan valaisimille ja tarvikkeille.",
+        "tabs.aria": "Konfiguraattorin tila",
+        "control.mounting": "Asennus",
+        "control.color": "Väri",
+        "control.addLine": "Lisää valolinja",
+        "color.white": "Valkoinen",
+        "color.black": "Musta",
+        "mount.ce": "CE katto",
+        "mount.pe": "PE riippu",
+        "mount.re": "RE upotettu",
+        "mode.cepe.subtitle": "Katto- tai riippuasennus Excel-mallin CE/PE-lohkon perusteella.",
+        "mode.re.subtitle": "Upotettu asennus Excel-mallin RE-lohkon perusteella.",
+        "summary.title": "Yhteenveto",
+        "summary.body": "Valittu järjestelmä ja kaikkien järjestelmien kokonaismäärä.",
+        "summary.lines": "Valolinjat",
+        "summary.modules": "Valaisinmoduulit",
+        "summary.length": "Kokonaispituus",
+        "summary.selectedSystem": "Valittu järjestelmä",
+        "summary.allSystems": "Kaikki järjestelmät yhteensä",
+        "results.eyebrow": "Tulos",
+        "results.title": "Laskettu komponenttilista",
+        "results.body": "Aineisto on tarkoitettu nopeaan tarjouksen valmisteluun. Tarkista aina projektipiirustusta ja ajantasaisia tuotetietoja vasten ennen tilausta.",
+        "results.tableAria": "Valitut artikkelit",
+        "results.image": "Kuva",
+        "results.article": "Aura-artikkeli",
+        "results.name": "Nimike",
+        "results.qty": "Määrä",
+        "results.comment": "Kommentti",
+        "results.empty": "Syötä vähintään yksi valolinja nähdäksesi valitut artikkelit.",
+        "results.projectArticle": "Projektista/variantista riippuva",
+        "results.luminaireComment": "Valittu valaisinmoduuli. Artikkelinumero määräytyy projektivariantin, asennustavan ja värin mukaan.",
+        "results.accessoryComment": "Lisävaruste laskettu nykyisestä konfiguraatiosta.",
+        "contact.title": "Tarvitseeko projekti tarkistuksen?",
+        "contact.body": "Lähetä komponenttilista sekä piirustus, kattotyyppi ja haluttu ohjaus Aura Lightille tarkistusta ja tarjousta varten.",
+        "contact.cta": "Luo tarjous",
+        "offer.subject": "Sevede RAMP -konfiguraatio",
+        "stat.mode": "Tila",
+        "stat.lines": "Valolinjat",
+        "stat.modules": "Moduulit",
+        "stat.length": "Pituus",
+        "components.title": "Komponentit",
+        "components.body": "Valaisimet ja tarvikkeet kuvineen.",
+        "components.systemView": "Näytetään per järjestelmä",
+        "components.systemCount": "Järjestelmien määrä",
+        "components.systemLabel": "Järjestelmä",
+        "preview.eyebrow": "Esikatselu",
+        "preview.title": "Sevede-valolinjat",
+        "preview.totalLength": "Kokonaispituus",
+        "preview.empty": "Täytä keltaiset kentät nähdäksesi valolinjat",
+        "preview.legendLine": "Valolinja",
+        "preview.legendFeed": "Alku/syöttö",
+        "preview.legendJoint": "Liitos",
+        "preview.legendModule": "Valaisinmoduuli",
+        "preview.legendStart": "Start",
+        "preview.legendMid": "Mid",
+        "preview.legendEnd": "End",
+        "preview.legendJointKit": "Joint bracket kit",
+        "required.start": "Start-moduulit",
+        "required.mid": "Mid-moduulit",
+        "required.end": "End-moduulit",
+        "required.accessory": "Tarvikkeet",
+        "sources.title": "Lähteet",
+        "sources.body": "Tuotekuvat ja tuotetekstit.",
+        "csv.preview": "Nykyisen komponenttilistan esikatselu.",
+        "csv.mode": "Tila",
+        "csv.totalLength": "Kokonaispituus m",
+        "csv.lightLines": "Valolinjat",
+        "csv.modules": "Moduulit",
+        "csv.component": "Komponentti",
+        "csv.lengthMm": "Pituus mm",
+        "csv.totalPcs": "Yhteensä kpl",
+        "article.configured": "Tuotenro: projekti-/varianttikohtainen",
+        "table.component": "Eri kiskopituudet",
+        "table.lengthMm": "Pituus m",
+        "table.totalPcs": "Yhteensä kpl",
+        "table.totalLabel": "Yhteensä",
+        "table.lineLength": "Yhden valolinjan pituus",
+        "table.systemQty": "Järjestelmien määrä",
+        "aria.lineName": "Valolinjan pituus m",
+        "aria.systemQty": "Järjestelmien määrä",
+        "accessory.cepe.description": "Sopii Sevede CE & PE -malleille.",
+        "accessory.re.description": "Tarvike asennukseen kiinteisiin alakattorakenteisiin.",
+        "assumption.cepe": "Oletus: Joint bracket kit lasketaan yhdeksi liitokseksi kahden valaisinmoduulin välille samassa valolinjassa, eli moduulien kokonaismäärä miinus valolinjojen määrä. Aura Lightin mukaan PE toimitetaan enintään 1000 mm vaijeriripustuksella per valaisin.",
+        "assumption.re": "Oletus: RE plaster ceiling bracket kit lasketaan yhdeksi asennussarjaksi per valaisinmoduuli. Muissa kattoratkaisuissa tarvikkeiden logiikka tulee sovittaa lopulliseen asennusaineistoon.",
+        "toast.addLine": "Uusi valolinja lisätty.",
+        "toast.removeLine": "Valolinja poistettu.",
+        "toast.keepOneLine": "Vähintään yhden valolinjan on jäätävä.",
+        "toast.reset": "Konfiguraattori on palautettu.",
+        "confirm.removeLine": "Haluatko poistaa valolinjan {line}?",
+        "toast.print": "Tulostusnäkymä avataan.",
+        "toast.saved": "Konfiguraatio on tallennettu.",
+        "toast.saveFallback": "Tallenna nimellä -valintaikkunaa ei voitu käyttää. Tiedosto ladataan sen sijaan.",
+        "toast.saveError": "Konfiguraatiota ei voitu tallentaa.",
+        "toast.loaded": "Tallennettu laskelma on ladattu.",
+        "toast.loadError": "Tiedostoa ei voitu lukea. Valitse tallennettu Sevede RAMP -konfiguraatio.",
+        "toast.csvCreated": "CSV luotu. Jos lataus estetään, kopioi sisältö ruudusta.",
+        "toast.csvFallback": "CSV luotu. Kopioi sisältö ruudusta.",
+        "toast.csvDownload": "CSV-lataus aloitettu.",
+        "toast.csvCopied": "CSV kopioitu.",
+        "toast.summaryCopied": "Yhteenveto kopioitu.",
+        "toast.summaryCopyFallback": "Yhteenvetoa ei voitu kopioida automaattisesti.",
+        "toast.noShorterSolution": "Valitulle pituudelle ei löytynyt lyhyempää ratkaisua.",
+        "toast.csvCopyFallback": "CSV valittu ja kopioitu, jos selain sallii sen."
+      },
+      de: {
+        "language.label": "Sprache",
+        "unit.pcs": "Stk",
+        "nav.configurator": "Konfigurator",
+        "nav.components": "Komponenten",
+        "nav.sources": "Quellen",
+        "action.reset": "Zurücksetzen",
+        "action.print": "Drucken",
+        "action.save": "Speichern unter",
+        "action.load": "Gespeicherte Kalkulation laden",
+        "action.new": "Neu",
+        "action.newLine": "Neue Lichtlinie",
+        "action.removeLine": "Lichtlinie entfernen",
+        "action.close": "Schließen",
+        "action.copy": "Kopieren",
+        "action.downloadCsv": "CSV herunterladen",
+        "action.copySummary": "Zusammenfassung kopieren",
+        "action.exportCsv": "CSV exportieren",
+        "action.previous": "Zurück",
+        "action.next": "Weiter",
+        "action.fitUnder": "Nächstkürzere Lösung finden",
+        "action.collapseOverview": "Übersicht minimieren",
+        "action.expandOverview": "Übersicht anzeigen",
+        "guide.button": "Hilfe",
+        "guide.title": "Hilfe - Benutzeroberfläche und Navigation",
+        "guide.lead": "Die Hilfe deckt oberes Menü, Übersicht, Vorschau, Zeilentabelle, Komponenten, Export und Druck ab. Markierte Zahlen im Bild werden zuerst erklärt, danach werden alle Funktionen des Dienstes aufgeführt.",
+        "guide.closeAria": "Hilfe schließen",
+        "guide.visualAria": "Hilfebild für den Sevede-Konfigurator",
+        "guide.imageTopTitle": "Übersicht und Hauptablauf",
+        "guide.imageTopNote": "Das Bild zeigt oberes Menü, Hero-Bereich, Vorschau, Komponentenkarten und den Anfang der Tabelle.",
+        "guide.imageTopAlt": "Oberer Sevede-Konfigurator mit markierten Funktionen",
+        "guide.imageFullTitle": "Tabelle, Zeilen und Summen",
+        "guide.imageFullNote": "Das Bild zeigt die gesamte Arbeitsfläche, damit Tabellenzeilen, Komponentenspalten und Summen den Punkten unten zugeordnet werden können.",
+        "guide.imageFullAlt": "Gesamtansicht des Sevede-Konfigurators mit markierten Tabellen- und Summenfunktionen",
+        "guide.step1": "Das obere Menü bleibt sichtbar. Hier ändern Sie die Sprache, setzen die Tabelle zurück, speichern die Konfiguration als Datei, laden gespeicherte Kalkulationen, drucken und öffnen die Hilfe.",
+        "guide.step2": "Die Übersicht zeigt Modus, Anzahl der Lichtlinien, Module und Gesamtlänge. Der Pfeil am Logo minimiert oder zeigt die Übersicht.",
+        "guide.step3": "Wählen Sie CE/PE oder RE und stellen Sie Montage, Farbe und neue Lichtlinien ein, bevor Sie die Tabelle ausfüllen.",
+        "guide.step4": "Die Vorschau zeichnet die Lichtlinien aus den Tabellenwerten. Die Markierungen zeigen Start, Mid und End.",
+        "guide.step5": "Die Komponentenbilder zeigen, welche Start-, Mid- und End-Module benötigt werden und in welcher Menge.",
+        "guide.step6": "Geben Sie die gewünschte Lichtlinienlänge in Metern mit einer Dezimalstelle ein. Der Konfigurator schlägt automatisch Komponenten vor, die der Länge möglichst nahekommen.",
+        "guide.step7": "Die Zusammenfassung zeigt sowohl das gewählte System als auch die Summe aller Systeme. Die Quellen verlinken zu Aura Light Produktseiten.",
+        "guide.step8": "Die Zeilen A, B, C und weitere sind separate Lichtlinien. Beginnen Sie mit A und fügen Sie mit + Neue Lichtlinie weitere Zeilen hinzu.",
+        "guide.step9": "Bewegen Sie den Mauszeiger über einen Systembuchstaben, um die Minus-Schaltfläche anzuzeigen. Beim Entfernen einer Zeile erscheint zuerst eine Bestätigung.",
+        "guide.step10": "Die Montage wird pro Lichtlinie gewählt. CE Decke, PE Pendel und RE steuern das angezeigte Installationsbild und die Zeilenkennzeichnung.",
+        "guide.step11": "Die Farbwahl Weiß oder Schwarz wechselt die Leuchtenbilder in Tabelle, Komponentenkarten und Vorschaugrundlage.",
+        "guide.step12": "Länge M ist das gewünschte Maß in Metern mit einer Dezimalstelle. Die Lichtlinienlänge zeigt das tatsächlich vorgeschlagene Maß; per Hover sehen Sie die exakte Länge.",
+        "guide.step13": "Anzahl Systeme multipliziert die Zeile. Komponentenfelder können manuell feinjustiert werden und GESAMT STK summiert jede Zeile und die gesamte Tabelle.",
+        "guide.step14": "Im Komponentenbereich können Sie zwischen System A, B, C und weiteren wechseln, um Mengen pro System zu sehen, während die Zusammenfassung gewähltes System und Summe zeigt.",
+        "guide.step15": "Zurücksetzen leert die Tabelle, Speichern unter speichert die aktuelle Konfiguration als Datei, Gespeicherte Kalkulation laden liest eine gespeicherte Konfiguration, Drucken öffnet den Druckdialog und Quellen führt zu den Aura Light Produktseiten.",
+        "guide.step16": "Die Tabelle arbeitet vertikal: Jede Systemzeile A, B, C und weitere ist eine Lichtlinie, während Start, Mid und End als Komponentenspalten mit Summen rechts und unten geführt werden.",
+        "guide.step17": "Jede Lichtlinie kann eigene Montage und Farbe haben. Die Montageauswahl steuert das Vorschaubild, die Farbwahl wechselt zwischen weißen und schwarzen Leuchten.",
+        "guide.step18": "Die Vorschau zeigt die Anzahl der Systeme neben jeder Lichtlinie, die tatsächliche Länge und die Start/Mid/End-Positionen, damit die Tabelle visuell geprüft werden kann.",
+        "hero.aria": "Sevede Übersicht",
+        "hero.eyebrow": "Lichtlinienkonfigurator",
+        "hero.title": "Sevede RAMP Konfigurator",
+        "hero.lead": "Vorausgefüllt aus <strong>Mall ramp Sevede.xlsx</strong>. Gelbe Felder sind editierbare Mengen pro Lichtlinie, mit Summen für Leuchten und Zubehör.",
+        "tabs.aria": "Konfiguratormodus",
+        "control.mounting": "Montage",
+        "control.color": "Farbe",
+        "control.addLine": "Lichtlinie hinzufügen",
+        "color.white": "Weiß",
+        "color.black": "Schwarz",
+        "mount.ce": "CE Decke",
+        "mount.pe": "PE Pendel",
+        "mount.re": "RE Einbau",
+        "mode.cepe.subtitle": "Decken- oder Pendelmontage basierend auf dem CE/PE-Block der Excel-Vorlage.",
+        "mode.re.subtitle": "Einbaumontage basierend auf dem RE-Block der Excel-Vorlage.",
+        "summary.title": "Zusammenfassung",
+        "summary.body": "Gewähltes System und Summe aller Systeme.",
+        "summary.lines": "Lichtlinien",
+        "summary.modules": "Leuchtenmodule",
+        "summary.length": "Gesamtlänge",
+        "summary.selectedSystem": "Gewähltes System",
+        "summary.allSystems": "Summe aller Systeme",
+        "results.eyebrow": "Ergebnis",
+        "results.title": "Berechnete Komponentenliste",
+        "results.body": "Die Unterlage ist für eine schnelle Angebotsvorbereitung vorgesehen. Vor der Bestellung immer mit Projektzeichnung und aktuellen Produktdaten prüfen.",
+        "results.tableAria": "Gewählte Artikel",
+        "results.image": "Bild",
+        "results.article": "Aura-Artikel",
+        "results.name": "Bezeichnung",
+        "results.qty": "Anzahl",
+        "results.comment": "Kommentar",
+        "results.empty": "Mindestens eine Lichtlinie eingeben, um gewählte Artikel anzuzeigen.",
+        "results.projectArticle": "Projekt-/variantenabhängig",
+        "results.luminaireComment": "Gewähltes Leuchtenmodul. Die Artikelnummer wird anhand von Projektvariante, Montage und Farbe festgelegt.",
+        "results.accessoryComment": "Zubehör aus der aktuellen Konfiguration berechnet.",
+        "contact.title": "Soll das Projekt geprüft werden?",
+        "contact.body": "Senden Sie die Komponentenliste zusammen mit Zeichnung, Deckentyp und gewünschter Steuerung zur Prüfung und Angebotserstellung an Aura Light.",
+        "contact.cta": "Angebot erstellen",
+        "offer.subject": "Sevede RAMP Konfiguration",
+        "stat.mode": "Modus",
+        "stat.lines": "Lichtlinien",
+        "stat.modules": "Module",
+        "stat.length": "Länge",
+        "components.title": "Komponenten",
+        "components.body": "Leuchten und Zubehör mit Bildern.",
+        "components.systemView": "Anzeige pro System",
+        "components.systemCount": "Anzahl Systeme",
+        "components.systemLabel": "System",
+        "preview.eyebrow": "Vorschau",
+        "preview.title": "Sevede Lichtlinien",
+        "preview.totalLength": "Gesamtlänge",
+        "preview.empty": "Gelbe Felder ausfüllen, um Lichtlinien anzuzeigen",
+        "preview.legendLine": "Lichtlinie",
+        "preview.legendFeed": "Start/Einspeisung",
+        "preview.legendJoint": "Verbindung",
+        "preview.legendModule": "Leuchtenmodul",
+        "preview.legendStart": "Start",
+        "preview.legendMid": "Mid",
+        "preview.legendEnd": "End",
+        "preview.legendJointKit": "Joint bracket kit",
+        "required.start": "Startmodule",
+        "required.mid": "Midmodule",
+        "required.end": "Endmodule",
+        "required.accessory": "Zubehör",
+        "sources.title": "Quellen",
+        "sources.body": "Produktbilder und Produkttexte.",
+        "csv.preview": "Vorschau der aktuellen Komponentenliste.",
+        "csv.mode": "Modus",
+        "csv.totalLength": "Gesamtlänge m",
+        "csv.lightLines": "Lichtlinien",
+        "csv.modules": "Module",
+        "csv.component": "Komponente",
+        "csv.lengthMm": "Länge mm",
+        "csv.totalPcs": "Gesamt Stk",
+        "article.configured": "Art.-Nr.: projekt-/variantenabhängig",
+        "table.component": "Verschiedene Schienenlängen",
+        "table.lengthMm": "Länge m",
+        "table.totalPcs": "Gesamt Stk",
+        "table.totalLabel": "Gesamt",
+        "table.lineLength": "Länge einer Lichtlinie",
+        "table.systemQty": "Anzahl Systeme",
+        "aria.lineName": "Länge der Lichtlinie m",
+        "aria.systemQty": "Anzahl Systeme",
+        "accessory.cepe.description": "Geeignet für Sevede CE & PE.",
+        "accessory.re.description": "Zubehör für die Montage in festen Gipsdecken.",
+        "assumption.cepe": "Annahme: Joint bracket kit wird als eine Verbindung zwischen zwei Leuchtenmodulen derselben Lichtlinie gezählt, also Gesamtmodulmenge minus Anzahl Lichtlinien. PE wird laut Aura Light mit Drahtabhängung bis 1000 mm pro Leuchte geliefert.",
+        "assumption.re": "Annahme: RE plaster ceiling bracket kit wird als ein Montagesatz pro Leuchtenmodul gezählt. Bei anderen Deckensystemen sollte die Zubehörlogik anhand der finalen Montageunterlagen angepasst werden.",
+        "toast.addLine": "Neue Lichtlinie hinzugefügt.",
+        "toast.removeLine": "Lichtlinie entfernt.",
+        "toast.keepOneLine": "Mindestens eine Lichtlinie muss verbleiben.",
+        "toast.reset": "Der Konfigurator wurde zurückgesetzt.",
+        "confirm.removeLine": "Möchten Sie Lichtlinie {line} entfernen?",
+        "toast.print": "Druckansicht wird geöffnet.",
+        "toast.saved": "Die Konfiguration wurde gespeichert.",
+        "toast.saveFallback": "Der Speichern unter-Dialog konnte nicht verwendet werden. Die Datei wird stattdessen heruntergeladen.",
+        "toast.saveError": "Die Konfiguration konnte nicht gespeichert werden.",
+        "toast.loaded": "Die gespeicherte Kalkulation wurde geladen.",
+        "toast.loadError": "Die Datei konnte nicht gelesen werden. Wählen Sie eine gespeicherte Sevede RAMP-Konfiguration.",
+        "toast.csvCreated": "CSV erstellt. Falls der Download blockiert wird, aus dem Feld kopieren.",
+        "toast.csvFallback": "CSV erstellt. Aus dem Feld kopieren.",
+        "toast.csvDownload": "CSV-Download gestartet.",
+        "toast.csvCopied": "CSV kopiert.",
+        "toast.summaryCopied": "Zusammenfassung kopiert.",
+        "toast.summaryCopyFallback": "Die Zusammenfassung konnte nicht automatisch kopiert werden.",
+        "toast.noShorterSolution": "Für die gewählte Länge wurde keine kürzere Lösung gefunden.",
+        "toast.csvCopyFallback": "CSV markiert und kopiert, sofern der Browser dies erlaubt."
+      }
+    };
+
+    const localeByLang = {
+      sv: "sv-SE",
+      en: "en-GB",
+      no: "nb-NO",
+      fi: "fi-FI",
+      de: "de-DE"
+    };
+
+    function readSavedLanguage() {
+      if (supportedLanguages.includes(requestedLanguage)) return requestedLanguage;
+      try {
+        return localStorage.getItem("sevede-language") || "sv";
+      } catch (error) {
+        return "sv";
+      }
+    }
+
+    function readHeroCollapsed() {
+      try {
+        return localStorage.getItem("sevede-hero-collapsed") === "true";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function saveLanguage(lang) {
+      try {
+        localStorage.setItem("sevede-language", lang);
+      } catch (error) {
+        // Some embedded file:// browsers block localStorage. The configurator should still run.
+      }
+    }
+
+    function saveHeroCollapsed(collapsed) {
+      try {
+        localStorage.setItem("sevede-hero-collapsed", String(collapsed));
+      } catch (error) {
+        // Keep the UI usable even when localStorage is unavailable.
+      }
+    }
+
+    const baseData = {
+      cepe: {
+        title: "Sevede CE/PE",
+        subtitle: "Tak- eller pendelmontage baserat på CE/PE-blocket i Excel-mallen.",
+        image: { ce: "assets/sevede-ce.png", pe: "assets/sevede-pe.png" },
+        products: [
+          { id: "cepe-start-1200", name: "Sevede Start 1200", length: 1141.1, kind: "start" },
+          { id: "cepe-start-1700", name: "Sevede Start 1700", length: 1700.6, kind: "start" },
+          { id: "cepe-mid-1200", name: "Sevede Mid 1200", length: 1119.1, kind: "mid" },
+          { id: "cepe-mid-1700", name: "Sevede Mid 1700", length: 1678.6, kind: "mid" },
+          { id: "cepe-end-1200", name: "Sevede End 1200", length: 1141.1, kind: "end" },
+          { id: "cepe-end-1700", name: "Sevede End 1700", length: 1700.6, kind: "end" }
+        ],
+        presets: [
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] }
+        ],
+        accessory: {
+          name: "Joint bracket kit",
+          article: "Art.nr 9312229",
+          image: "assets/joint-bracket-kit-transparent.png",
+          description: "Lämplig för Sevede CE & PE.",
+          calculation: "onePerJoint"
+        },
+        assumption: "Antagande: Joint bracket kit räknas som en koppling mellan två armaturmoduler i samma ljuslinje, alltså total modulmängd minus antal ljuslinjer. PE levereras enligt Aura Light med wire suspension upp till 1000 mm per armatur."
+      },
+      re: {
+        title: "Sevede RE",
+        subtitle: "Infällt montage baserat på RE-blocket i Excel-mallen.",
+        image: { re: "assets/sevede-re.png" },
+        products: [
+          { id: "re-start-1200", name: "Sevede Start 1200", length: 1157.1, kind: "start" },
+          { id: "re-start-1700", name: "Sevede Start 1700", length: 1716.6, kind: "start" },
+          { id: "re-mid-1200", name: "Sevede Mid 1200", length: 1119.1, kind: "mid" },
+          { id: "re-mid-1700", name: "Sevede Mid 1700", length: 1678.6, kind: "mid" },
+          { id: "re-end-1200", name: "Sevede End 1200", length: 1157.1, kind: "end" },
+          { id: "re-end-1700", name: "Sevede End 1700", length: 1716.6, kind: "end" }
+        ],
+        presets: [
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] },
+          { name: "0,0", systems: 0, amounts: [0, 0, 0, 0, 0, 0] }
+        ],
+        accessory: {
+          name: "Bracket kit Sevede RE plaster ceiling",
+          article: "Art.nr 9330600",
+          image: "assets/re-bracket-kit.jpeg",
+          description: "Tillbehör för montage i fasta undertak.",
+          calculation: "onePerModule"
+        },
+        assumption: "Antagande: RE plaster ceiling bracket kit räknas som ett montagekit per armaturmodul. Vid annan undertakslösning bör tillbehörslogiken justeras mot slutligt montageunderlag."
+      }
+    };
+
+    function zeroedDataFromTemplate() {
+      const data = JSON.parse(JSON.stringify(baseData));
+      Object.entries(data).forEach(([modeKey, modeData]) => {
+        const firstPreset = modeData.presets[0] || {
+          name: "0,0",
+          systems: 0,
+          amounts: modeData.products.map(() => 0)
+        };
+        modeData.presets = [firstPreset];
+        modeData.presets.forEach(preset => {
+          preset.name = "0,0";
+          preset.systems = 0;
+          preset.amounts = modeData.products.map(() => 0);
+          preset.mounting = modeKey === "cepe" ? "ce" : "re";
+          preset.color = "white";
+        });
+      });
+      return data;
+    }
+
+    const state = {
+      mode: "cepe",
+      mounting: "ce",
+      color: "white",
+      heroCollapsed: readHeroCollapsed(),
+      lang: readSavedLanguage(),
+      componentPresetIndex: 0,
+      data: zeroedDataFromTemplate()
+    };
+
+    const heroOverview = document.getElementById("heroOverview");
+    const heroToggleBtn = document.getElementById("heroToggleBtn");
+    const table = document.getElementById("configTable");
+    const previewSvg = document.getElementById("previewSvg");
+    const previewTotalLength = document.getElementById("previewTotalLength");
+    const requiredAssetsEl = document.getElementById("requiredAssets");
+    const componentStepperEl = document.getElementById("componentStepper");
+    const componentsEl = document.getElementById("components");
+    const modeSummaryEl = document.getElementById("modeSummary");
+    const resultBomTable = document.getElementById("resultBomTable");
+    const offerLink = document.getElementById("offerLink");
+    const globalStatsEl = document.getElementById("globalStats");
+    const titleEl = document.getElementById("configTitle");
+    const assumptionEl = document.getElementById("assumption");
+    const mountingSelect = document.getElementById("mountingSelect");
+    const colorSelect = document.getElementById("colorSelect");
+    const toastEl = document.getElementById("toast");
+    const csvModal = document.getElementById("csvModal");
+    const csvText = document.getElementById("csvText");
+    const guideModal = document.getElementById("guideModal");
+    const guideBtn = document.getElementById("guideBtn");
+    const closeGuideBtn = document.getElementById("closeGuideBtn");
+    const guideFrames = document.querySelectorAll("[data-guide-frame]");
+    const languageSelect = document.getElementById("languageSelect");
+    let toastTimer;
+    let latestCsv = "";
+    let presetLengthTimer;
+    let guideFrameRefreshTimer;
+    let guideFrameVersion = 0;
+
+    function t(key) {
+      return translations[state.lang]?.[key] || translations.sv[key] || key;
+    }
+
+    function currentLocale() {
+      return localeByLang[state.lang] || "sv-SE";
+    }
+
+    function unitPcs() {
+      return t("unit.pcs");
+    }
+
+    function unitPcsLabel() {
+      const unit = unitPcs();
+      return unit.charAt(0).toUpperCase() + unit.slice(1);
+    }
+
+    function formatQty(value) {
+      return `${value} ${unitPcs()}`;
+    }
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    function formatMm(value) {
+      return Math.round(value).toLocaleString(currentLocale()) + " mm";
+    }
+
+    function formatM(value) {
+      return (value / 1000).toLocaleString(currentLocale(), { maximumFractionDigits: 2 }) + " m";
+    }
+
+    function formatM1(value) {
+      return (value / 1000).toLocaleString(currentLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    }
+
+    function formatLengthPill(value) {
+      return formatM1(value).replace(/\s*m$/i, "");
+    }
+
+    function formatExactLength(value) {
+      const meters = (value / 1000).toLocaleString(currentLocale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+      const millimeters = value.toLocaleString(currentLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      return `${meters} m · ${millimeters} mm`;
+    }
+
+    function escapeAttr(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function formatProductM(value) {
+      return (value / 1000).toLocaleString(currentLocale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    }
+
+    function activeData() {
+      return state.data[state.mode];
+    }
+
+    function activeMounting() {
+      return state.mode === "cepe" ? state.mounting : "re";
+    }
+
+    function normalizeMounting(value) {
+      return typeof value === "string" && ["ce", "pe", "re"].includes(value) ? value : activeMounting();
+    }
+
+    function normalizeColor(value) {
+      return value === "black" ? "black" : "white";
+    }
+
+    function presetMounting(preset) {
+      if (state.mode === "re") return "re";
+      return normalizeMounting(preset?.mounting);
+    }
+
+    function presetColor(preset) {
+      return normalizeColor(preset?.color || state.color);
+    }
+
+    function blackProductImage(mounting = activeMounting()) {
+      const value = normalizeMounting(mounting);
+      if (value === "re") return "assets/sevede-re-black-single-thumb.png";
+      return value === "pe" ? "assets/sevede-pe-thumb-transparent.png" : "assets/sevede-ce-thumb-transparent.png";
+    }
+
+    function activeImage() {
+      const data = activeData();
+      if (state.color === "black") return blackProductImage();
+      if (state.mode === "cepe") return data.image[state.mounting];
+      return data.image.re;
+    }
+
+    function productImage(mounting = activeMounting(), color = state.color) {
+      const value = normalizeMounting(mounting);
+      if (normalizeColor(color) === "black") {
+        return blackProductImage(value);
+      }
+      if (value === "pe") return "assets/sevede-pe-thumb-transparent.png";
+      if (value === "re") return "assets/sevede-re-thumb-transparent.png";
+      return "assets/sevede-ce-thumb-transparent.png";
+    }
+
+    function mountingOptionsForTable() {
+      return state.mode === "cepe" ? ["ce", "pe", "re"] : ["re"];
+    }
+
+    function kindLabel(kind) {
+      const labels = {
+        start: t("preview.legendStart"),
+        mid: t("preview.legendMid"),
+        end: t("preview.legendEnd")
+      };
+      return labels[kind] || kind;
+    }
+
+    function systemLetter(index) {
+      let value = index + 1;
+      let label = "";
+      while (value > 0) {
+        value -= 1;
+        label = String.fromCharCode(65 + (value % 26)) + label;
+        value = Math.floor(value / 26);
+      }
+      return label;
+    }
+
+    function componentRequirements(data, totals) {
+      const accessoryQty = data.accessory.calculation === "onePerJoint" ? totals.joints : totals.modules;
+      return [
+        ...totals.productTotals.map(product => ({
+          type: "product",
+          kind: product.kind,
+          title: product.name,
+          meta: [
+            `${product.length.toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} mm`,
+            t("article.configured")
+          ],
+          qty: product.qty,
+          image: productImage(product)
+        })),
+        {
+          type: "accessory",
+          kind: "accessory",
+          title: data.accessory.name,
+          meta: [data.accessory.article],
+          qty: accessoryQty,
+          image: data.accessory.image
+        }
+      ];
+    }
+
+    function clampComponentPresetIndex(data = activeData()) {
+      state.componentPresetIndex = Math.min(Math.max(0, state.componentPresetIndex), Math.max(0, data.presets.length - 1));
+    }
+
+    function componentRequirementsForPreset(data, presetIndex) {
+      const preset = data.presets[presetIndex] || data.presets[0];
+      const mounting = presetMounting(preset);
+      const color = presetColor(preset);
+      const modules = presetModules(preset);
+      const accessoryQty = data.accessory.calculation === "onePerJoint" ? Math.max(0, modules - 1) : modules;
+      return [
+        ...data.products.map((product, index) => ({
+          type: "product",
+          kind: product.kind,
+          mounting,
+          color,
+          title: product.name,
+          meta: [
+            `${product.length.toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} mm`,
+            t("article.configured")
+          ],
+          qty: Number(preset.amounts[index] || 0),
+          image: productImage(mounting, color)
+        })),
+        {
+          type: "accessory",
+          kind: "accessory",
+          title: data.accessory.name,
+          meta: [data.accessory.article],
+          qty: accessoryQty,
+          image: data.accessory.image
+        }
+      ];
+    }
+
+    function presetLength(data, preset) {
+      return data.products.reduce((sum, product, index) => sum + product.length * Number(preset.amounts[index] || 0), 0);
+    }
+
+    function presetModules(preset) {
+      return preset.amounts.reduce((sum, value) => sum + Number(value || 0), 0);
+    }
+
+    function parseRequestedLength(value) {
+      const raw = String(value || "").trim().toLowerCase();
+      if (!raw) return null;
+      const compact = raw.replace(/\s+/g, "");
+      if (compact.endsWith(",") || compact.endsWith(".")) return null;
+      const match = compact.match(/(\d+(?:[.,]\d+)?)/);
+      if (!match) return null;
+      const number = Number(match[1].replace(",", "."));
+      if (!Number.isFinite(number) || number <= 0) return null;
+      if (compact.includes("mm")) return number;
+      return number * 1000;
+    }
+
+    function solveLineForLength(data, targetMm, options = {}) {
+      const indexedProducts = data.products.map((product, index) => ({ ...product, index }));
+      const starts = indexedProducts.filter(product => product.kind === "start");
+      const mids = indexedProducts.filter(product => product.kind === "mid");
+      const ends = indexedProducts.filter(product => product.kind === "end");
+      if (!starts.length || !mids.length || !ends.length) return null;
+
+      const shortestMid = Math.min(...mids.map(product => product.length));
+      const shortestBase = Math.min(...starts.map(product => product.length)) + Math.min(...ends.map(product => product.length));
+      const maxMidCount = Math.max(0, Math.ceil((targetMm - shortestBase) / shortestMid)) + 8;
+      let best = null;
+
+      const tryCandidate = (start, end, midCounts) => {
+        const amounts = data.products.map(() => 0);
+        amounts[start.index] = 1;
+        amounts[end.index] = 1;
+        let length = start.length + end.length;
+        mids.forEach((mid, index) => {
+          const count = Math.max(0, Number(midCounts[index] || 0));
+          amounts[mid.index] = count;
+          length += mid.length * count;
+        });
+        if (options.mustBeShorter && length >= targetMm) return;
+        const modules = amounts.reduce((sum, amount) => sum + amount, 0);
+        const diff = Math.abs(length - targetMm);
+        const over = length > targetMm ? 1 : 0;
+        const score = [diff, modules, over, length];
+        const better = !best || score.some((value, index) => {
+          const previousValuesEqual = score.slice(0, index).every((previous, previousIndex) => previous === best.score[previousIndex]);
+          return previousValuesEqual && value < best.score[index];
+        });
+        if (better) {
+          best = { amounts, length, diff, score };
+        }
+      };
+
+      starts.forEach(start => {
+        ends.forEach(end => {
+          if (mids.length === 1) {
+            for (let count = 0; count <= maxMidCount; count += 1) {
+              tryCandidate(start, end, [count]);
+            }
+            return;
+          }
+
+          const [firstMid, secondMid] = mids;
+          for (let firstCount = 0; firstCount <= maxMidCount; firstCount += 1) {
+            const remaining = targetMm - start.length - end.length - firstMid.length * firstCount;
+            const nearestSecondCount = Math.max(0, Math.round(remaining / secondMid.length));
+            for (let secondCount = Math.max(0, nearestSecondCount - 3); secondCount <= nearestSecondCount + 3; secondCount += 1) {
+              tryCandidate(start, end, [firstCount, secondCount]);
+            }
+          }
+        });
+      });
+
+      return best;
+    }
+
+    function applyRequestedLengthToPreset(presetIndex, rawValue, options = {}) {
+      const targetMm = parseRequestedLength(rawValue);
+      if (!targetMm) return false;
+      const data = activeData();
+      const preset = data.presets[presetIndex];
+      const solution = solveLineForLength(data, targetMm, options);
+      if (!preset || !solution) return false;
+      preset.name = formatM1(targetMm);
+      preset.amounts = solution.amounts;
+      preset.systems = Math.max(1, Number(preset.systems || 0));
+      state.componentPresetIndex = presetIndex;
+      return true;
+    }
+
+    function totalsForMode(data) {
+      const productTotals = data.products.map((product, index) => ({
+        ...product,
+        qty: data.presets.reduce((sum, preset) => sum + Number(preset.systems || 0) * Number(preset.amounts[index] || 0), 0)
+      }));
+      const systems = data.presets.reduce((sum, preset) => sum + Number(preset.systems || 0), 0);
+      const modules = productTotals.reduce((sum, product) => sum + product.qty, 0);
+      const totalLength = data.presets.reduce((sum, preset) => sum + Number(preset.systems || 0) * presetLength(data, preset), 0);
+      const joints = data.presets.reduce((sum, preset) => {
+        const lineModules = presetModules(preset);
+        return sum + Number(preset.systems || 0) * Math.max(0, lineModules - 1);
+      }, 0);
+      return { productTotals, systems, modules, totalLength, joints };
+    }
+
+    function activeLines(data) {
+      return data.presets
+        .map((preset, index) => ({
+          ...preset,
+          index,
+          modules: presetModules(preset),
+          length: presetLength(data, preset),
+          systems: Number(preset.systems || 0)
+        }))
+        .filter(line => line.systems > 0 && line.modules > 0);
+    }
+
+    function csvFilename() {
+      const mode = state.mode === "cepe" ? state.mounting : "re";
+      return `sevede-${mode}-components.csv`;
+    }
+
+    function filenameSafe(value) {
+      return String(value || "sevede-ramp")
+        .trim()
+        .replace(/[\\/:*?"<>|]+/g, "-")
+        .replace(/\s+/g, " ")
+        .slice(0, 80) || "sevede-ramp";
+    }
+
+    function configurationFilename() {
+      const mode = state.mode === "cepe" ? state.mounting : "re";
+      const date = new Date().toISOString().slice(0, 10);
+      return `${filenameSafe(`sevede-${mode}-${date}`)}.json`;
+    }
+
+    function configurationPayload() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      return {
+        meta: {
+          format: "Aura Light Sevede RAMP configuration",
+          version: 1,
+          savedAt: new Date().toISOString()
+        },
+        state: {
+          mode: state.mode,
+          mounting: state.mounting,
+          color: state.color,
+          lang: state.lang,
+          heroCollapsed: state.heroCollapsed,
+          componentPresetIndex: state.componentPresetIndex,
+          data: JSON.parse(JSON.stringify(state.data))
+        },
+        summary: {
+          totalLengthMm: totals.totalLength,
+          systems: totals.systems,
+          modules: totals.modules,
+          joints: totals.joints
+        }
+      };
+    }
+
+    function downloadBlob(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function buildCsv() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      const modeName = state.mode === "cepe" ? state.mounting.toUpperCase() : "RE";
+      const rows = [
+        [t("csv.mode"), modeName],
+        [t("csv.totalLength"), (totals.totalLength / 1000).toLocaleString(currentLocale(), { maximumFractionDigits: 2 })],
+        [t("csv.lightLines"), totals.systems],
+        [t("csv.modules"), totals.modules],
+        [],
+        [t("csv.component"), t("csv.lengthMm"), t("csv.totalPcs")]
+      ];
+      totals.productTotals.forEach(product => rows.push([product.name, product.length.toLocaleString(currentLocale(), { maximumFractionDigits: 1 }), product.qty]));
+      rows.push([data.accessory.name, "", data.accessory.calculation === "onePerJoint" ? totals.joints : totals.modules]);
+      return rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n");
+    }
+
+    function articleNumber(value) {
+      return String(value || "").replace(/^Art\.nr\s*/i, "").trim();
+    }
+
+    function resultRows() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      return componentRequirements(data, totals)
+        .filter(item => item.type === "product" && Number(item.qty || 0) > 0)
+        .map(item => {
+          return {
+            article: t("results.projectArticle"),
+            name: item.title,
+            qty: Number(item.qty || 0),
+            comment: t("results.luminaireComment"),
+            image: item.image,
+            kind: item.kind
+          };
+        });
+    }
+
+    function buildResultCsv() {
+      const rows = [
+        [t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
+        ...resultRows().map(row => [row.article, row.name, row.qty, row.comment])
+      ];
+      return rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n");
+    }
+
+    function buildResultSummary() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      const modeName = state.mode === "cepe" ? state.mounting.toUpperCase() : "RE";
+      const rows = resultRows();
+      const lines = [
+        `${t("hero.title")}`,
+        `${t("csv.mode")}: ${modeName}`,
+        `${t("summary.lines")}: ${totals.systems}`,
+        `${t("summary.modules")}: ${formatQty(totals.modules)}`,
+        `${t("summary.length")}: ${formatM(totals.totalLength)}`,
+        "",
+        `${t("results.title")}:`,
+        ...rows.map(row => `${row.article}; ${row.name}; ${row.qty} ${unitPcs()}; ${row.comment}`)
+      ];
+      if (!rows.length) lines.push(t("results.empty"));
+      return lines.join("\n");
+    }
+
+    function updateOfferLink() {
+      const subject = encodeURIComponent(t("offer.subject"));
+      const body = encodeURIComponent(buildResultSummary());
+      offerLink.href = `mailto:Info@auralight.com?subject=${subject}&body=${body}`;
+    }
+
+    function downloadCsv(csv) {
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+      downloadBlob(blob, csvFilename());
+    }
+
+    async function saveConfigurationAs() {
+      const fileName = configurationFilename();
+      const json = JSON.stringify(configurationPayload(), null, 2);
+      const blob = new Blob([json], { type: "application/json;charset=utf-8" });
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: fileName,
+            types: [{
+              description: "Aura Light Sevede RAMP-konfiguration",
+              accept: { "application/json": [".json"] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(t("toast.saved"));
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") return;
+          console.warn("Spara som-dialogen kunde inte användas, faller tillbaka till nedladdning.", error);
+          showToast(t("toast.saveFallback"));
+        }
+      }
+      try {
+        downloadBlob(blob, fileName);
+        showToast(t("toast.saved"));
+      } catch (error) {
+        console.error(error);
+        showToast(t("toast.saveError"));
+      }
+    }
+
+    function normalizeConfigurationData(savedData) {
+      if (!savedData || typeof savedData !== "object" || !savedData.cepe || !savedData.re) {
+        throw new Error("Invalid Sevede configuration");
+      }
+      const fallback = zeroedDataFromTemplate();
+      ["cepe", "re"].forEach(modeKey => {
+        const source = savedData[modeKey] || {};
+        const target = fallback[modeKey];
+        target.presets = Array.isArray(source.presets) && source.presets.length
+          ? source.presets.map((preset, index) => {
+              const amounts = Array.isArray(preset.amounts) ? preset.amounts : [];
+              return {
+                name: String(preset.name ?? "0,0"),
+                systems: Math.max(0, Number(preset.systems || 0)),
+                amounts: target.products.map((_, productIndex) => Math.max(0, Number(amounts[productIndex] || 0))),
+                mounting: modeKey === "cepe" ? normalizeMounting(preset.mounting || source.mounting || "ce") : "re",
+                color: normalizeColor(preset.color || source.color || "white")
+              };
+            })
+          : target.presets;
+        target.presets.forEach((preset, index) => {
+          preset.mounting = modeKey === "cepe" ? normalizeMounting(preset.mounting) : "re";
+          preset.color = normalizeColor(preset.color);
+          if (!preset.name) preset.name = systemLetter(index);
+        });
+      });
+      return fallback;
+    }
+
+    function applyConfigurationPayload(payload) {
+      const savedState = payload?.state || payload;
+      const loadedData = normalizeConfigurationData(savedState?.data);
+      state.mode = savedState.mode === "re" ? "re" : "cepe";
+      state.mounting = ["ce", "pe"].includes(savedState.mounting) ? savedState.mounting : "ce";
+      state.color = normalizeColor(savedState.color);
+      state.heroCollapsed = Boolean(savedState.heroCollapsed);
+      state.lang = translations[savedState.lang] ? savedState.lang : state.lang;
+      state.data = loadedData;
+      state.componentPresetIndex = Math.max(0, Number(savedState.componentPresetIndex || 0));
+      languageSelect.value = state.lang;
+      saveLanguage(state.lang);
+      saveHeroCollapsed(state.heroCollapsed);
+      clampComponentPresetIndex();
+      render();
+      showToast(t("toast.loaded"));
+    }
+
+    function loadSavedConfiguration() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".json,application/json";
+      input.addEventListener("change", () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          try {
+            applyConfigurationPayload(JSON.parse(String(reader.result || "")));
+          } catch (error) {
+            console.error(error);
+            showToast(t("toast.loadError"));
+          }
+        });
+        reader.addEventListener("error", () => showToast(t("toast.loadError")));
+        reader.readAsText(file);
+      }, { once: true });
+      input.click();
+    }
+
+    function openCsvModal(csv) {
+      latestCsv = csv;
+      csvText.value = csv;
+      csvModal.classList.remove("hidden");
+      csvText.focus();
+      csvText.select();
+    }
+
+    function guideFrameSrc(kind) {
+      const url = new URL(window.location.href);
+      url.search = "";
+      url.hash = "";
+      url.searchParams.set("guidePreview", kind);
+      url.searchParams.set("lang", state.lang);
+      url.searchParams.set("v", String(guideFrameVersion));
+      return url.toString();
+    }
+
+    function updateGuideFrames(options = {}) {
+      if (guidePreviewMode || !guideFrames.length) return;
+      if (options.force) guideFrameVersion += 1;
+      guideFrames.forEach(frame => {
+        const nextSrc = guideFrameSrc(frame.dataset.guideFrame);
+        if (options.force || frame.getAttribute("src") !== nextSrc) {
+          frame.setAttribute("src", nextSrc);
+        }
+      });
+    }
+
+    function scheduleGuideFrameUpdate() {
+      if (guidePreviewMode || guideModal.classList.contains("hidden")) return;
+      window.clearTimeout(guideFrameRefreshTimer);
+      guideFrameRefreshTimer = window.setTimeout(() => updateGuideFrames({ force: true }), 250);
+    }
+
+    function openGuideModal() {
+      updateGuideFrames({ force: true });
+      guideModal.classList.remove("hidden");
+      closeGuideBtn.focus();
+    }
+
+    function closeGuideModal() {
+      guideModal.classList.add("hidden");
+      guideBtn.focus();
+    }
+
+    function applyTranslations() {
+      document.documentElement.lang = state.lang;
+      document.title = `${t("hero.title")} | ${languageSelect.value.toUpperCase()}`;
+      document.querySelectorAll("[data-lang-btn]").forEach(button => {
+        button.classList.toggle("active", button.dataset.langBtn === state.lang);
+      });
+      document.querySelectorAll("[data-i18n]").forEach(element => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-i18n-html]").forEach(element => {
+        element.innerHTML = t(element.dataset.i18nHtml);
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach(element => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAria));
+      });
+      document.querySelectorAll("[data-i18n-alt]").forEach(element => {
+        element.setAttribute("alt", t(element.dataset.i18nAlt));
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach(element => {
+        element.setAttribute("title", t(element.dataset.i18nTitle));
+      });
+      document.querySelectorAll(".guide-marker").forEach(marker => {
+        const key = `guide.step${marker.textContent.trim()}`;
+        const tooltip = t(key);
+        marker.dataset.guideTooltip = tooltip;
+        marker.setAttribute("aria-label", `${marker.textContent.trim()}. ${tooltip}`);
+        marker.setAttribute("title", tooltip);
+        marker.tabIndex = 0;
+      });
+      document.getElementById("csvTitle").textContent = "CSV";
+    }
+
+    function renderHeroState() {
+      heroOverview.classList.toggle("is-collapsed", state.heroCollapsed);
+      heroToggleBtn.setAttribute("aria-expanded", String(!state.heroCollapsed));
+      heroToggleBtn.querySelector("use")?.setAttribute("href", state.heroCollapsed ? "#icon-chevron-down" : "#icon-chevron-up");
+      heroToggleBtn.title = state.heroCollapsed ? t("action.expandOverview") : t("action.collapseOverview");
+      heroToggleBtn.setAttribute("aria-label", heroToggleBtn.title);
+    }
+
+    function renderTable() {
+      const data = activeData();
+      data.presets.forEach(preset => {
+        preset.mounting = presetMounting(preset);
+      });
+      table.classList.add("is-transposed");
+      const mountingOptions = mountingOptionsForTable();
+      const productHeadCols = data.products.map(product => `
+        <th scope="col">
+          <div class="table-product-head">
+            <span class="table-symbol ${product.kind}" aria-hidden="true"></span>
+            <span class="table-product-name">${product.name}</span>
+            <small>${formatProductM(product.length)}</small>
+          </div>
+        </th>
+      `).join("");
+
+      const presetRows = data.presets.map((preset, presetIndex) => {
+        const letter = systemLetter(presetIndex);
+        const selectedMounting = presetMounting(preset);
+        const selectedColor = presetColor(preset);
+        const options = mountingOptions.map(option => `
+          <option value="${option}" ${selectedMounting === option ? "selected" : ""}>${t(`mount.${option}`)}</option>
+        `).join("");
+        const colorOptions = ["white", "black"].map(option => `
+          <option value="${option}" ${selectedColor === option ? "selected" : ""}>${t(`color.${option}`)}</option>
+        `).join("");
+        const image = productImage(selectedMounting, selectedColor);
+        const length = presetLength(data, preset);
+        const exactLength = escapeAttr(formatExactLength(length));
+        const modulesForSystem = presetModules(preset) * Number(preset.systems || 0);
+        const removeAria = escapeAttr(`${t("action.removeLine")} ${letter}`);
+        const amountCells = data.products.map((product, productIndex) => `
+          <td class="input-cell input-${product.kind}">
+            <input type="number" min="0" step="1" value="${preset.amounts[productIndex]}" data-amount="${presetIndex}:${productIndex}" aria-label="${escapeAttr(`${product.name} ${preset.name}`)}">
+          </td>
+        `).join("");
+        return `
+          <tr class="preset-row ${presetIndex === state.componentPresetIndex ? "selected-row" : ""}">
+            <th scope="row">
+              <div class="system-row-head">
+                <span class="system-row-letter">${letter}</span>
+                <button class="system-remove-btn" type="button" data-remove-preset="${presetIndex}" aria-label="${removeAria}" title="${removeAria}">&minus;</button>
+              </div>
+            </th>
+            <td>
+              <select class="table-mount-select" data-preset-mounting="${presetIndex}" aria-label="${t("control.mounting")} ${letter}" ${state.mode === "re" ? "disabled" : ""}>
+                ${options}
+              </select>
+            </td>
+            <td>
+              <select class="table-color-select" data-preset-color="${presetIndex}" aria-label="${t("control.color")} ${letter}">
+                ${colorOptions}
+              </select>
+            </td>
+            <td>
+              <img class="table-line-thumb ${selectedColor === "black" ? "is-black-product" : "is-white-product"}" src="${image}" alt="${t(`mount.${selectedMounting}`)} ${t(`color.${selectedColor}`)}">
+            </td>
+            <td>
+              <div class="length-input-group">
+                <input class="table-length-input" aria-label="${t("aria.lineName")} ${presetIndex + 1}" value="${escapeAttr(preset.name)}" data-preset-name="${presetIndex}" inputmode="decimal" placeholder="0,0">
+                <button class="fit-under-btn" type="button" data-fit-under="${presetIndex}" aria-label="${escapeAttr(t("action.fitUnder"))}" title="${escapeAttr(t("action.fitUnder"))}">&lt;</button>
+              </div>
+            </td>
+            <td><span class="length-pill" tabindex="0" title="${exactLength}" data-tooltip="${exactLength}">${formatLengthPill(length)}</span></td>
+            <td class="input-cell">
+              <div class="system-cell">
+                <input type="number" min="0" step="1" value="${preset.systems}" data-systems="${presetIndex}" aria-label="${t("aria.systemQty")} ${letter} ${escapeAttr(preset.name)}">
+              </div>
+            </td>
+            ${amountCells}
+            <td><strong>${modulesForSystem}</strong></td>
+          </tr>
+        `;
+      }).join("");
+
+      const tableColumnCount = data.products.length + 8;
+      const addLineRow = `
+        <tr class="add-line-row">
+          <td colspan="${tableColumnCount}">
+            <button class="add-line-btn" type="button" data-add-preset-row>
+              <span class="add-line-icon" aria-hidden="true">+</span>
+              <span>${t("action.newLine")}</span>
+            </button>
+          </td>
+        </tr>
+      `;
+
+      const productTotals = data.products.map((product, productIndex) => {
+        const total = data.presets.reduce((sum, preset) => {
+          return sum + Number(preset.systems || 0) * Number(preset.amounts[productIndex] || 0);
+        }, 0);
+        return `<td><strong>${total}</strong></td>`;
+      }).join("");
+
+      const columnTotals = data.presets.map((preset) => presetModules(preset) * Number(preset.systems || 0));
+      const grandTotal = columnTotals.reduce((sum, total) => sum + total, 0);
+      const systemGrandTotal = data.presets.reduce((sum, preset) => sum + Number(preset.systems || 0), 0);
+      const lengthGrandTotal = data.presets.reduce((sum, preset) => sum + presetLength(data, preset), 0);
+      const lengthGrandExact = escapeAttr(formatExactLength(lengthGrandTotal));
+
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>${t("components.systemLabel")}</th>
+            <th>${t("control.mounting")}</th>
+            <th>${t("control.color")}</th>
+            <th aria-label="${t("control.mounting")}"></th>
+            <th>${t("table.lengthMm")}</th>
+            <th>${t("table.lineLength")}</th>
+            <th>${t("table.systemQty")}</th>
+            ${productHeadCols}
+            <th>${t("table.totalPcs")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${presetRows}
+          ${addLineRow}
+          <tr class="table-total-row">
+            <td><strong class="table-total-label">${t("table.totalLabel")}</strong></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><strong title="${lengthGrandExact}" data-tooltip="${lengthGrandExact}">${formatLengthPill(lengthGrandTotal)}</strong></td>
+            <td><strong>${systemGrandTotal}</strong></td>
+            ${productTotals}
+            <td><strong>${grandTotal}</strong></td>
+          </tr>
+        </tbody>
+      `;
+    }
+
+    function renderSummary() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      const selectedPreset = data.presets[state.componentPresetIndex] || data.presets[0];
+      const selectedSystems = Number(selectedPreset?.systems || 0);
+      const selectedModules = selectedPreset ? presetModules(selectedPreset) * selectedSystems : 0;
+      const selectedLength = selectedPreset ? presetLength(data, selectedPreset) * selectedSystems : 0;
+      const selectedLetter = systemLetter(state.componentPresetIndex);
+      const selectedTitle = `${t("summary.selectedSystem")} · ${selectedPreset?.name || "0,0"}`;
+      modeSummaryEl.innerHTML = `
+        <div class="summary-block is-selected">
+          <div class="summary-block-title"><span>${selectedTitle}</span><span class="summary-badge">${selectedLetter}</span></div>
+          <div class="metric-row"><span>${t("summary.lines")}</span><strong>${selectedSystems}</strong></div>
+          <div class="metric-row"><span>${t("summary.modules")}</span><strong>${formatQty(selectedModules)}</strong></div>
+          <div class="metric-row"><span>${t("summary.length")}</span><strong>${formatM(selectedLength)}</strong></div>
+        </div>
+        <div class="summary-block is-total">
+          <div class="summary-block-title"><span>${t("summary.allSystems")}</span><span class="summary-badge">${t("table.totalLabel")}</span></div>
+          <div class="metric-row"><span>${t("summary.lines")}</span><strong>${totals.systems}</strong></div>
+          <div class="metric-row"><span>${t("summary.modules")}</span><strong>${formatQty(totals.modules)}</strong></div>
+          <div class="metric-row"><span>${t("summary.length")}</span><strong>${formatM(totals.totalLength)}</strong></div>
+        </div>
+      `;
+
+      if (globalStatsEl) {
+        globalStatsEl.innerHTML = [
+          [t("stat.mode"), state.mode === "cepe" ? (state.mounting === "ce" ? "CE" : "PE") : "RE"],
+          [t("stat.lines"), totals.systems],
+          [t("stat.modules"), totals.modules],
+          [t("stat.length"), formatM(totals.totalLength)]
+        ].map(([label, value]) => `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`).join("");
+      }
+    }
+
+    function renderResults() {
+      const rows = resultRows();
+      if (!rows.length) {
+        resultBomTable.innerHTML = `
+          <tr>
+            <td class="result-empty" colspan="5">${escapeHtml(t("results.empty"))}</td>
+          </tr>
+        `;
+      } else {
+        resultBomTable.innerHTML = rows.map(row => `
+          <tr>
+            <td class="result-thumb-cell">
+              <span class="result-thumb-wrap">
+                <img class="result-thumb" src="${escapeAttr(row.image)}" alt="${escapeAttr(row.name)}">
+                <span class="result-kind-dot ${escapeAttr(row.kind)}" aria-label="${escapeAttr(kindLabel(row.kind))}" title="${escapeAttr(kindLabel(row.kind))}"></span>
+              </span>
+            </td>
+            <td>${escapeHtml(row.article)}</td>
+            <td>${escapeHtml(row.name)}</td>
+            <td>${row.qty}</td>
+            <td>${escapeHtml(row.comment)}</td>
+          </tr>
+        `).join("");
+      }
+      updateOfferLink();
+    }
+
+    function renderPreview() {
+      const data = activeData();
+      const totals = totalsForMode(data);
+      const lines = activeLines(data);
+      const maxLength = Math.max(...lines.map(line => line.length), 1);
+      const rowGap = 52;
+      const previewHeight = lines.length ? Math.max(136, 58 + ((lines.length - 1) * rowGap) + 28) : 136;
+      previewSvg.setAttribute("viewBox", `0 0 720 ${previewHeight}`);
+      previewSvg.style.height = `${previewHeight}px`;
+      previewSvg.parentElement.style.minHeight = `${previewHeight}px`;
+      previewTotalLength.textContent = formatM(totals.totalLength);
+
+      if (!lines.length) {
+        previewSvg.innerHTML = `<text class="preview-empty" x="360" y="${Math.round(previewHeight / 2)}" text-anchor="middle">${t("preview.empty")}</text>`;
+      } else {
+        const rows = lines.map((line, rowIndex) => {
+          const y = 58 + rowIndex * rowGap;
+          const x1 = 86;
+          const x2 = x1 + Math.max(130, Math.round((line.length / maxLength) * 520));
+          const moduleSequence = data.products.flatMap((product, productIndex) => (
+            Array.from({ length: Number(line.amounts[productIndex] || 0) }, () => product.kind)
+          ));
+          const visibleModules = moduleSequence.length <= 24
+            ? moduleSequence
+            : moduleSequence.filter((_, index) => index === 0 || index === moduleSequence.length - 1 || index % Math.ceil(moduleSequence.length / 22) === 0).slice(0, 24);
+          const moduleDots = visibleModules.map((kind, index) => {
+            const x = x1 + 22 + ((x2 - x1 - 44) * (index / Math.max(1, visibleModules.length - 1)));
+            return `<circle class="preview-marker ${kind}" cx="${x.toFixed(1)}" cy="${y}" r="5.5"></circle>`;
+          }).join("");
+          const label = `${line.name}${line.systems > 1 ? ` x ${line.systems}` : ""} - ${formatM(line.length)}`;
+          return `
+            <g class="preview-system-count">
+              <circle class="preview-system-badge" cx="${x1 - 24}" cy="${y}" r="11"></circle>
+              <text class="preview-system-number" x="${x1 - 24}" y="${y + 0.5}">${line.systems}</text>
+            </g>
+            <text class="preview-label" x="${x1}" y="${y - 22}">${label}</text>
+            <line class="preview-track" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"></line>
+            <line class="preview-light" x1="${x1 + 18}" y1="${y}" x2="${x2 - 18}" y2="${y}"></line>
+            ${moduleDots}
+          `;
+        }).join("");
+        previewSvg.innerHTML = rows;
+      }
+
+      const required = componentRequirements(data, totals).filter(item => item.type === "product");
+      requiredAssetsEl.innerHTML = required.map(item => `
+        <article class="required-card ${item.qty === 0 ? "is-zero" : ""}">
+          <div class="required-image">
+            <img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${item.image}" alt="">
+            <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
+          </div>
+          <div class="required-copy">
+            <strong>${item.title}</strong>
+            ${item.meta.map(line => `<span>${line}</span><br>`).join("")}
+            <span>${formatQty(item.qty)}</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderComponents() {
+      const data = activeData();
+      clampComponentPresetIndex(data);
+      const selectedPreset = data.presets[state.componentPresetIndex];
+      const selectedMounting = presetMounting(selectedPreset);
+      const selectedColor = presetColor(selectedPreset);
+      const mountingLabel = state.mode === "cepe" ? t(`mount.${selectedMounting}`) : t("mount.re");
+      const colorLabel = t(`color.${selectedColor}`);
+      const requirements = componentRequirementsForPreset(data, state.componentPresetIndex).filter(item => item.type === "product");
+      const systemTabs = data.presets.map((preset, index) => `
+        <button class="system-tab ${index === state.componentPresetIndex ? "is-active" : ""}" type="button" data-component-preset="${index}" aria-label="${t("components.systemLabel")} ${systemLetter(index)} ${preset.name}">
+          ${systemLetter(index)}
+        </button>
+      `).join("");
+      componentStepperEl.innerHTML = `
+        <button class="step-btn" type="button" data-component-step="-1" aria-label="${t("action.previous")}" ${state.componentPresetIndex === 0 ? "disabled" : ""}>‹</button>
+        <div class="step-current">
+          <strong>${t("components.systemLabel")} ${systemLetter(state.componentPresetIndex)} · ${selectedPreset.name}</strong>
+          <span>${t("components.systemView")} · ${t("components.systemCount")}: ${selectedPreset.systems} · ${formatM(presetLength(data, selectedPreset))}</span>
+        </div>
+        <button class="step-btn" type="button" data-component-step="1" aria-label="${t("action.next")}" ${state.componentPresetIndex === data.presets.length - 1 ? "disabled" : ""}>›</button>
+        <div class="system-tabs" aria-label="${t("components.systemLabel")}">${systemTabs}</div>
+      `;
+      componentsEl.innerHTML = requirements.map(item => {
+        const description = item.type === "accessory"
+          ? `${item.meta[0]} · ${t(`accessory.${state.mode}.description`)}`
+          : `${item.meta.join(" · ")} · ${mountingLabel} · ${colorLabel}`;
+        return `
+          <article class="component ${item.qty === 0 ? "is-zero" : ""}">
+            <span class="component-thumb-wrap">
+              <img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${item.image}" alt="${item.title}">
+              <span class="component-kind-dot ${escapeAttr(item.kind)}" aria-label="${escapeAttr(kindLabel(item.kind))}" title="${escapeAttr(kindLabel(item.kind))}"></span>
+            </span>
+            <div>
+              <h3>${item.title}</h3>
+              <p>${description}</p>
+            </div>
+            <div class="qty">${item.qty}</div>
+          </article>
+        `;
+      }).join("");
+      assumptionEl.textContent = "";
+      assumptionEl.classList.add("hidden");
+    }
+
+    function renderHeader() {
+      const data = activeData();
+      if (titleEl) titleEl.textContent = data.title;
+    }
+
+    function render() {
+      applyTranslations();
+      renderHeroState();
+      renderHeader();
+      renderPreview();
+      renderTable();
+      renderSummary();
+      renderResults();
+      renderComponents();
+      scheduleGuideFrameUpdate();
+    }
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        state.mode = button.dataset.mode;
+        state.componentPresetIndex = 0;
+        document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+        render();
+      });
+    });
+
+    if (mountingSelect) {
+      mountingSelect.addEventListener("change", event => {
+        state.mounting = event.target.value;
+        activeData().presets.forEach(preset => {
+          preset.mounting = state.mounting;
+        });
+        render();
+      });
+    }
+
+    if (colorSelect) {
+      colorSelect.addEventListener("change", event => {
+        state.color = normalizeColor(event.target.value);
+        activeData().presets.forEach(preset => {
+          preset.color = state.color;
+        });
+        render();
+      });
+    }
+
+    languageSelect.value = state.lang;
+    languageSelect.addEventListener("change", event => {
+      state.lang = event.target.value;
+      saveLanguage(state.lang);
+      if (!csvModal.classList.contains("hidden")) openCsvModal(buildCsv());
+      render();
+    });
+
+    document.querySelectorAll("[data-lang-btn]").forEach(button => {
+      button.addEventListener("click", () => {
+        languageSelect.value = button.dataset.langBtn;
+        languageSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
+
+    heroToggleBtn.addEventListener("click", () => {
+      state.heroCollapsed = !state.heroCollapsed;
+      saveHeroCollapsed(state.heroCollapsed);
+      renderHeroState();
+    });
+
+    componentStepperEl.addEventListener("click", event => {
+      const button = event.target.closest("[data-component-step]");
+      const data = activeData();
+      const presetButton = event.target.closest("[data-component-preset]");
+      if (presetButton) {
+        state.componentPresetIndex = Number(presetButton.dataset.componentPreset);
+      } else if (button && !button.disabled) {
+        state.componentPresetIndex += Number(button.dataset.componentStep);
+      } else {
+        return;
+      }
+      clampComponentPresetIndex(data);
+      render();
+    });
+
+    table.addEventListener("input", event => {
+      const target = event.target;
+      const data = activeData();
+      if (target.dataset.presetName !== undefined) {
+        const presetIndex = Number(target.dataset.presetName);
+        state.componentPresetIndex = presetIndex;
+        data.presets[presetIndex].name = target.value;
+        clearTimeout(presetLengthTimer);
+        presetLengthTimer = setTimeout(() => {
+          if (applyRequestedLengthToPreset(presetIndex, target.value)) render();
+        }, 450);
+        return;
+      }
+      if (target.dataset.systems !== undefined) {
+        const presetIndex = Number(target.dataset.systems);
+        state.componentPresetIndex = presetIndex;
+        data.presets[presetIndex].systems = Math.max(0, Number(target.value || 0));
+      }
+      if (target.dataset.amount !== undefined) {
+        const [presetIndex, productIndex] = target.dataset.amount.split(":").map(Number);
+        state.componentPresetIndex = presetIndex;
+        data.presets[presetIndex].amounts[productIndex] = Math.max(0, Number(target.value || 0));
+      }
+      render();
+    });
+
+    function handlePresetMountingChange(target) {
+      if (target.dataset.presetMounting === undefined) return false;
+      const presetIndex = Number(target.dataset.presetMounting);
+      const data = activeData();
+      const mounting = normalizeMounting(target.value);
+      state.componentPresetIndex = presetIndex;
+      data.presets[presetIndex].mounting = mounting;
+      if (state.mode === "cepe" && mounting !== "re") {
+        state.mounting = mounting;
+        if (mountingSelect) mountingSelect.value = state.mounting;
+      }
+      render();
+      return true;
+    }
+
+    function handlePresetColorChange(target) {
+      if (target.dataset.presetColor === undefined) return false;
+      const presetIndex = Number(target.dataset.presetColor);
+      const data = activeData();
+      const color = normalizeColor(target.value);
+      state.componentPresetIndex = presetIndex;
+      data.presets[presetIndex].color = color;
+      state.color = color;
+      if (colorSelect) colorSelect.value = color;
+      render();
+      return true;
+    }
+
+    function addPreset() {
+      const data = activeData();
+      data.presets.push({
+        name: "0,0",
+        systems: 0,
+        amounts: data.products.map(() => 0),
+        mounting: activeMounting(),
+        color: state.color
+      });
+      state.componentPresetIndex = data.presets.length - 1;
+      render();
+      showToast(t("toast.addLine"));
+    }
+
+    function removePreset(presetIndex) {
+      const data = activeData();
+      if (!Number.isInteger(presetIndex) || presetIndex < 0 || presetIndex >= data.presets.length) return;
+      if (data.presets.length <= 1) {
+        showToast(t("toast.keepOneLine"));
+        return;
+      }
+      const letter = systemLetter(presetIndex);
+      const message = t("confirm.removeLine").replace("{line}", letter);
+      if (!window.confirm(message)) return;
+      data.presets.splice(presetIndex, 1);
+      if (state.componentPresetIndex === presetIndex) {
+        state.componentPresetIndex = Math.min(presetIndex, data.presets.length - 1);
+      } else if (state.componentPresetIndex > presetIndex) {
+        state.componentPresetIndex -= 1;
+      }
+      render();
+      showToast(t("toast.removeLine"));
+    }
+
+    table.addEventListener("click", event => {
+      const fitUnderButton = event.target.closest("[data-fit-under]");
+      if (fitUnderButton) {
+        const presetIndex = Number(fitUnderButton.dataset.fitUnder);
+        const lengthInput = table.querySelector(`[data-preset-name="${presetIndex}"]`);
+        if (applyRequestedLengthToPreset(presetIndex, lengthInput?.value, { mustBeShorter: true })) {
+          render();
+        } else {
+          showToast(t("toast.noShorterSolution"));
+        }
+        return;
+      }
+      const removeButton = event.target.closest("[data-remove-preset]");
+      if (removeButton) {
+        removePreset(Number(removeButton.dataset.removePreset));
+        return;
+      }
+      const button = event.target.closest("[data-add-preset-row]");
+      if (!button) return;
+      addPreset();
+    });
+
+    table.addEventListener("input", event => {
+      handlePresetMountingChange(event.target);
+      handlePresetColorChange(event.target);
+    });
+
+    table.addEventListener("change", event => {
+      const target = event.target;
+      if (handlePresetMountingChange(target)) return;
+      if (handlePresetColorChange(target)) return;
+      if (target.dataset.presetName === undefined) return;
+      const presetIndex = Number(target.dataset.presetName);
+      clearTimeout(presetLengthTimer);
+      applyRequestedLengthToPreset(presetIndex, target.value);
+      render();
+    });
+
+    table.addEventListener("keydown", event => {
+      const target = event.target;
+      if (event.key !== "Enter" || target.dataset.presetName === undefined) return;
+      const presetIndex = Number(target.dataset.presetName);
+      clearTimeout(presetLengthTimer);
+      if (applyRequestedLengthToPreset(presetIndex, target.value)) {
+        target.blur();
+        render();
+      }
+    });
+
+    document.getElementById("addPresetBtn")?.addEventListener("click", addPreset);
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state.data = zeroedDataFromTemplate();
+      state.componentPresetIndex = 0;
+      render();
+      showToast(t("toast.reset"));
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => {
+      showToast(t("toast.print"));
+      setTimeout(() => window.print(), 80);
+    });
+
+    document.getElementById("csvBtn").addEventListener("click", saveConfigurationAs);
+
+    document.getElementById("loadConfigBtn").addEventListener("click", loadSavedConfiguration);
+
+    guideBtn.addEventListener("click", openGuideModal);
+
+    document.getElementById("exportResultCsvBtn").addEventListener("click", () => {
+      downloadCsv(buildResultCsv());
+      showToast(t("toast.csvDownload"));
+    });
+
+    document.getElementById("copyResultBtn").addEventListener("click", async () => {
+      const summary = buildResultSummary();
+      try {
+        await navigator.clipboard.writeText(summary);
+        showToast(t("toast.summaryCopied"));
+      } catch (error) {
+        showToast(t("toast.summaryCopyFallback"));
+      }
+    });
+
+    document.getElementById("downloadCsvBtn").addEventListener("click", () => {
+      downloadCsv(latestCsv || buildCsv());
+      showToast(t("toast.csvDownload"));
+    });
+
+    document.getElementById("copyCsvBtn").addEventListener("click", async () => {
+      const csv = latestCsv || buildCsv();
+      csvText.value = csv;
+      csvText.focus();
+      csvText.select();
+      try {
+        await navigator.clipboard.writeText(csv);
+        showToast(t("toast.csvCopied"));
+      } catch (error) {
+        document.execCommand("copy");
+        showToast(t("toast.csvCopyFallback"));
+      }
+    });
+
+    document.getElementById("closeCsvBtn").addEventListener("click", () => {
+      csvModal.classList.add("hidden");
+    });
+
+    closeGuideBtn.addEventListener("click", closeGuideModal);
+
+    csvModal.addEventListener("click", event => {
+      if (event.target === csvModal) csvModal.classList.add("hidden");
+    });
+
+    guideModal.addEventListener("click", event => {
+      if (event.target === guideModal) closeGuideModal();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+      csvModal.classList.add("hidden");
+      if (!guideModal.classList.contains("hidden")) closeGuideModal();
+    });
+
+    render();
+  </script>
+</body>
+</html>
