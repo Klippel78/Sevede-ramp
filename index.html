@@ -2781,7 +2781,7 @@
         <p data-i18n="results.body">Underlaget är avsett för snabb offertberedning. Kontrollera alltid mot projektets ritning och aktuell produktdata före order.</p>
         <div class="result-actions">
           <button class="btn primary" id="copyResultBtn" type="button" data-i18n="action.copySummary">Kopiera sammanställning</button>
-          <button class="btn" id="exportResultCsvBtn" type="button" data-i18n="action.exportCsv">Exportera CSV</button>
+          <button class="btn" id="exportResultExcelBtn" type="button" data-i18n="action.exportExcel">Exportera Excel</button>
         </div>
       </div>
       <div class="result-table-wrap">
@@ -2921,6 +2921,7 @@
         "action.downloadCsv": "Ladda ned CSV",
         "action.copySummary": "Kopiera sammanställning",
         "action.exportCsv": "Exportera CSV",
+        "action.exportExcel": "Exportera Excel",
         "action.previous": "Föregående",
         "action.next": "Nästa",
         "action.fitUnder": "Hitta närmaste kortare lösning",
@@ -3056,6 +3057,7 @@
         "toast.csvCreated": "CSV skapad. Om nedladdning stoppas kan du kopiera från rutan.",
         "toast.csvFallback": "CSV skapad. Kopiera från rutan.",
         "toast.csvDownload": "CSV-nedladdning startad.",
+        "toast.excelDownload": "Excel-filen laddas ned.",
         "toast.csvCopied": "CSV kopierad.",
         "toast.summaryCopied": "Sammanställningen är kopierad.",
         "toast.summaryCopyFallback": "Sammanställningen kunde inte kopieras automatiskt.",
@@ -3080,6 +3082,7 @@
         "action.downloadCsv": "Download CSV",
         "action.copySummary": "Copy summary",
         "action.exportCsv": "Export CSV",
+        "action.exportExcel": "Export Excel",
         "action.previous": "Previous",
         "action.next": "Next",
         "action.fitUnder": "Find nearest shorter solution",
@@ -3215,6 +3218,7 @@
         "toast.csvCreated": "CSV created. If download is blocked, copy it from the box.",
         "toast.csvFallback": "CSV created. Copy it from the box.",
         "toast.csvDownload": "CSV download started.",
+        "toast.excelDownload": "Excel file download started.",
         "toast.csvCopied": "CSV copied.",
         "toast.summaryCopied": "Summary copied.",
         "toast.summaryCopyFallback": "The summary could not be copied automatically.",
@@ -3239,6 +3243,7 @@
         "action.downloadCsv": "Last ned CSV",
         "action.copySummary": "Kopier sammenstilling",
         "action.exportCsv": "Eksporter CSV",
+        "action.exportExcel": "Eksporter Excel",
         "action.previous": "Forrige",
         "action.next": "Neste",
         "action.fitUnder": "Finn nærmeste kortere løsning",
@@ -3374,6 +3379,7 @@
         "toast.csvCreated": "CSV opprettet. Hvis nedlasting stoppes, kan du kopiere fra boksen.",
         "toast.csvFallback": "CSV opprettet. Kopier fra boksen.",
         "toast.csvDownload": "CSV-nedlasting startet.",
+        "toast.excelDownload": "Excel-filen lastes ned.",
         "toast.csvCopied": "CSV kopiert.",
         "toast.summaryCopied": "Sammenstillingen er kopiert.",
         "toast.summaryCopyFallback": "Sammenstillingen kunne ikke kopieres automatisk.",
@@ -3398,6 +3404,7 @@
         "action.downloadCsv": "Lataa CSV",
         "action.copySummary": "Kopioi yhteenveto",
         "action.exportCsv": "Vie CSV",
+        "action.exportExcel": "Vie Excel",
         "action.previous": "Edellinen",
         "action.next": "Seuraava",
         "action.fitUnder": "Etsi lähin lyhyempi ratkaisu",
@@ -3533,6 +3540,7 @@
         "toast.csvCreated": "CSV luotu. Jos lataus estetään, kopioi sisältö ruudusta.",
         "toast.csvFallback": "CSV luotu. Kopioi sisältö ruudusta.",
         "toast.csvDownload": "CSV-lataus aloitettu.",
+        "toast.excelDownload": "Excel-tiedoston lataus aloitettu.",
         "toast.csvCopied": "CSV kopioitu.",
         "toast.summaryCopied": "Yhteenveto kopioitu.",
         "toast.summaryCopyFallback": "Yhteenvetoa ei voitu kopioida automaattisesti.",
@@ -3557,6 +3565,7 @@
         "action.downloadCsv": "CSV herunterladen",
         "action.copySummary": "Zusammenfassung kopieren",
         "action.exportCsv": "CSV exportieren",
+        "action.exportExcel": "Excel exportieren",
         "action.previous": "Zurück",
         "action.next": "Weiter",
         "action.fitUnder": "Nächstkürzere Lösung finden",
@@ -3692,6 +3701,7 @@
         "toast.csvCreated": "CSV erstellt. Falls der Download blockiert wird, aus dem Feld kopieren.",
         "toast.csvFallback": "CSV erstellt. Aus dem Feld kopieren.",
         "toast.csvDownload": "CSV-Download gestartet.",
+        "toast.excelDownload": "Excel-Datei wird heruntergeladen.",
         "toast.csvCopied": "CSV kopiert.",
         "toast.summaryCopied": "Zusammenfassung kopiert.",
         "toast.summaryCopyFallback": "Die Zusammenfassung konnte nicht automatisch kopiert werden.",
@@ -4244,6 +4254,199 @@
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function excelFilename() {
+      const mode = state.mode === "cepe" ? state.mounting : "re";
+      return `sevede-${mode}-components.xlsx`;
+    }
+
+    function xmlEscape(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+    }
+
+    function excelColumnName(index) {
+      let name = "";
+      let number = index + 1;
+      while (number > 0) {
+        const remainder = (number - 1) % 26;
+        name = String.fromCharCode(65 + remainder) + name;
+        number = Math.floor((number - 1) / 26);
+      }
+      return name;
+    }
+
+    function worksheetXml(rows) {
+      const cols = [18, 28, 12, 58];
+      const colXml = cols.map((width, index) => `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`).join("");
+      const rowXml = rows.map((row, rowIndex) => {
+        const cells = row.map((value, colIndex) => {
+          const ref = `${excelColumnName(colIndex)}${rowIndex + 1}`;
+          const style = rowIndex === 0 ? ' s="1"' : "";
+          if (typeof value === "number" && Number.isFinite(value)) {
+            return `<c r="${ref}"${style}><v>${value}</v></c>`;
+          }
+          return `<c r="${ref}" t="inlineStr"${style}><is><t>${xmlEscape(value)}</t></is></c>`;
+        }).join("");
+        return `<row r="${rowIndex + 1}">${cells}</row>`;
+      }).join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <cols>${colXml}</cols>
+  <sheetData>${rowXml}</sheetData>
+</worksheet>`;
+    }
+
+    function bytesFromString(value) {
+      return new TextEncoder().encode(value);
+    }
+
+    const crcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let n = 0; n < 256; n += 1) {
+        let c = n;
+        for (let k = 0; k < 8; k += 1) {
+          c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+        }
+        table[n] = c >>> 0;
+      }
+      return table;
+    })();
+
+    function crc32(bytes) {
+      let crc = 0xffffffff;
+      bytes.forEach(byte => {
+        crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+      });
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function dosTimestamp(date = new Date()) {
+      const year = Math.max(1980, date.getFullYear());
+      return {
+        time: (date.getHours() << 11) | (date.getMinutes() << 5) | Math.floor(date.getSeconds() / 2),
+        date: ((year - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate()
+      };
+    }
+
+    function zipHeader(size, signature) {
+      const bytes = new Uint8Array(size);
+      new DataView(bytes.buffer).setUint32(0, signature, true);
+      return bytes;
+    }
+
+    function createZip(entries) {
+      const chunks = [];
+      const centralChunks = [];
+      const stamp = dosTimestamp();
+      let offset = 0;
+
+      entries.forEach(entry => {
+        const name = bytesFromString(entry.name);
+        const content = typeof entry.content === "string" ? bytesFromString(entry.content) : entry.content;
+        const crc = crc32(content);
+        const local = zipHeader(30 + name.length, 0x04034b50);
+        const localView = new DataView(local.buffer);
+        localView.setUint16(4, 20, true);
+        localView.setUint16(10, stamp.time, true);
+        localView.setUint16(12, stamp.date, true);
+        localView.setUint32(14, crc, true);
+        localView.setUint32(18, content.length, true);
+        localView.setUint32(22, content.length, true);
+        localView.setUint16(26, name.length, true);
+        local.set(name, 30);
+        chunks.push(local, content);
+
+        const central = zipHeader(46 + name.length, 0x02014b50);
+        const centralView = new DataView(central.buffer);
+        centralView.setUint16(4, 20, true);
+        centralView.setUint16(6, 20, true);
+        centralView.setUint16(12, stamp.time, true);
+        centralView.setUint16(14, stamp.date, true);
+        centralView.setUint32(16, crc, true);
+        centralView.setUint32(20, content.length, true);
+        centralView.setUint32(24, content.length, true);
+        centralView.setUint16(28, name.length, true);
+        centralView.setUint32(42, offset, true);
+        central.set(name, 46);
+        centralChunks.push(central);
+        offset += local.length + content.length;
+      });
+
+      const centralSize = centralChunks.reduce((sum, chunk) => sum + chunk.length, 0);
+      const end = zipHeader(22, 0x06054b50);
+      const endView = new DataView(end.buffer);
+      endView.setUint16(8, entries.length, true);
+      endView.setUint16(10, entries.length, true);
+      endView.setUint32(12, centralSize, true);
+      endView.setUint32(16, offset, true);
+      return new Blob([...chunks, ...centralChunks, end], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    }
+
+    function buildResultWorkbookBlob() {
+      const rows = [
+        [t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
+        ...resultRows().map(row => [row.article, row.name, row.qty, row.comment])
+      ];
+      return createZip([
+        {
+          name: "[Content_Types].xml",
+          content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>`
+        },
+        {
+          name: "_rels/.rels",
+          content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`
+        },
+        {
+          name: "xl/workbook.xml",
+          content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets><sheet name="Komponentlista" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`
+        },
+        {
+          name: "xl/_rels/workbook.xml.rels",
+          content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`
+        },
+        {
+          name: "xl/styles.xml",
+          content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2"><font><sz val="11"/><name val="Aptos"/></font><font><b/><sz val="11"/><name val="Aptos"/></font></fonts>
+  <fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>
+  <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+  <cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" applyFont="1"/></cellXfs>
+</styleSheet>`
+        },
+        {
+          name: "xl/worksheets/sheet1.xml",
+          content: worksheetXml(rows)
+        }
+      ]);
+    }
+
+    function downloadResultExcel() {
+      downloadBlob(buildResultWorkbookBlob(), excelFilename());
     }
 
     function buildCsv() {
@@ -5049,9 +5252,9 @@
 
     guideBtn.addEventListener("click", openGuideModal);
 
-    document.getElementById("exportResultCsvBtn").addEventListener("click", () => {
-      downloadCsv(buildResultCsv());
-      showToast(t("toast.csvDownload"));
+    document.getElementById("exportResultExcelBtn").addEventListener("click", () => {
+      downloadResultExcel();
+      showToast(t("toast.excelDownload"));
     });
 
     document.getElementById("copyResultBtn").addEventListener("click", async () => {
