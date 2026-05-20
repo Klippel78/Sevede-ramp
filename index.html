@@ -829,6 +829,25 @@
       padding: 2px;
     }
 
+    .image-missing {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      background: #f8faf8;
+      border: 1px dashed var(--line);
+      border-radius: 6px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .table-line-thumb-missing {
+      width: 56px;
+      height: 42px;
+      margin: 0 auto;
+      font-size: 22px;
+    }
+
     #configTable th:first-child,
     #configTable td:first-child {
       width: 142px;
@@ -1447,6 +1466,12 @@
       border-color: transparent;
     }
 
+    .required-image-missing {
+      width: 100%;
+      height: 96px;
+      font-size: 32px;
+    }
+
     .required-symbol {
       position: absolute;
       right: 10px;
@@ -1702,6 +1727,12 @@
       border-radius: 6px;
     }
 
+    .result-thumb-missing {
+      width: 64px;
+      height: 48px;
+      font-size: 24px;
+    }
+
     .result-kind-dot {
       position: absolute;
       right: -6px;
@@ -1876,6 +1907,12 @@
       position: relative;
       width: 82px;
       height: 64px;
+    }
+
+    .component-thumb-missing {
+      width: 82px;
+      height: 64px;
+      font-size: 28px;
     }
 
     .component-thumb-wrap .component-kind-dot {
@@ -3031,6 +3068,7 @@
         "csv.lengthMm": "Längd mm",
         "csv.totalPcs": "Totalt st",
         "article.configured": "Art.nr: projekt-/variantberoende",
+        "image.missing": "Bild saknas",
         "table.component": "Olika skenlängder",
         "table.lengthMm": "Längd m",
         "table.totalPcs": "Totalt st",
@@ -3192,6 +3230,7 @@
         "csv.lengthMm": "Length mm",
         "csv.totalPcs": "Total pcs",
         "article.configured": "Article no.: project/variant dependent",
+        "image.missing": "Image missing",
         "table.component": "Different trunking lengths",
         "table.lengthMm": "Length m",
         "table.totalPcs": "Total pcs",
@@ -3353,6 +3392,7 @@
         "csv.lengthMm": "Lengde mm",
         "csv.totalPcs": "Totalt stk",
         "article.configured": "Art.nr: prosjekt-/variantavhengig",
+        "image.missing": "Bilde mangler",
         "table.component": "Ulike skinnelengder",
         "table.lengthMm": "Lengde m",
         "table.totalPcs": "Totalt stk",
@@ -3514,6 +3554,7 @@
         "csv.lengthMm": "Pituus mm",
         "csv.totalPcs": "Yhteensä kpl",
         "article.configured": "Tuotenro: projekti-/varianttikohtainen",
+        "image.missing": "Kuva puuttuu",
         "table.component": "Eri kiskopituudet",
         "table.lengthMm": "Pituus m",
         "table.totalPcs": "Yhteensä kpl",
@@ -3675,6 +3716,7 @@
         "csv.lengthMm": "Länge mm",
         "csv.totalPcs": "Gesamt Stk",
         "article.configured": "Art.-Nr.: projekt-/variantenabhängig",
+        "image.missing": "Bild fehlt",
         "table.component": "Verschiedene Schienenlängen",
         "table.lengthMm": "Länge m",
         "table.totalPcs": "Gesamt Stk",
@@ -3976,6 +4018,28 @@
       return value === "pe" ? "assets/sevede-pe-thumb-transparent.png" : "assets/sevede-ce-thumb-transparent.png";
     }
 
+    const productImageLookup = {
+      "white:start:1200": "Bilder/1200 Sevede rampad vit start.png",
+      "white:mid:1200": "Bilder/1200 Sevede rampad vit mitt.png",
+      "white:end:1200": "Bilder/1200 Sevede rampad vit pendlad end.png",
+      "black:start:1200": "Bilder/1200 Sevede rampad pendlad svart start.png",
+      "black:mid:1200": "Bilder/1200 Sevede rampad svart mitt.png",
+      "black:end:1200": "Bilder/1200 Sevede rampad pendlad svart end.png"
+    };
+
+    function productSizeKey(product) {
+      return Number(product?.length || 0) < 1300 ? "1200" : "1700";
+    }
+
+    function productImageFor(product, color = state.color) {
+      if (!product?.kind) return "";
+      return productImageLookup[`${normalizeColor(color)}:${product.kind}:${productSizeKey(product)}`] || "";
+    }
+
+    function missingImageMarkup(className, label = "?") {
+      return `<span class="image-missing ${className}" aria-label="${escapeAttr(t("image.missing"))}" title="${escapeAttr(t("image.missing"))}">${escapeHtml(label)}</span>`;
+    }
+
     function activeImage() {
       const data = activeData();
       if (state.color === "black") return blackProductImage();
@@ -3983,9 +4047,14 @@
       return data.image.re;
     }
 
-    function productImage(mounting = activeMounting(), color = state.color) {
-      const value = normalizeMounting(mounting);
-      if (normalizeColor(color) === "black") {
+    function productImage(productOrMounting = activeMounting(), mountingOrColor = activeMounting(), color = state.color) {
+      if (typeof productOrMounting === "object") {
+        const productColor = ["white", "black"].includes(mountingOrColor) ? mountingOrColor : color;
+        return productImageFor(productOrMounting, productColor);
+      }
+      const value = normalizeMounting(productOrMounting);
+      const selectedColor = mountingOrColor;
+      if (normalizeColor(selectedColor) === "black") {
         return blackProductImage(value);
       }
       if (value === "pe") return "assets/sevede-pe-thumb-transparent.png";
@@ -4064,7 +4133,7 @@
             t("article.configured")
           ],
           qty: Number(preset.amounts[index] || 0),
-          image: productImage(mounting, color)
+          image: productImage(product, color)
         })),
         {
           type: "accessory",
@@ -4894,7 +4963,7 @@
           <tr>
             <td class="result-thumb-cell">
               <span class="result-thumb-wrap">
-                <img class="result-thumb" src="${escapeAttr(row.image)}" alt="${escapeAttr(row.name)}">
+                ${row.image ? `<img class="result-thumb" src="${escapeAttr(row.image)}" alt="${escapeAttr(row.name)}">` : missingImageMarkup("result-thumb-missing")}
                 <span class="result-kind-dot ${escapeAttr(row.kind)}" aria-label="${escapeAttr(kindLabel(row.kind))}" title="${escapeAttr(kindLabel(row.kind))}"></span>
               </span>
             </td>
@@ -4956,7 +5025,7 @@
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card ${item.qty === 0 ? "is-zero" : ""}">
           <div class="required-image">
-            <img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${item.image}" alt="">
+            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
@@ -4998,7 +5067,7 @@
         return `
           <article class="component ${item.qty === 0 ? "is-zero" : ""}">
             <span class="component-thumb-wrap">
-              <img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${item.image}" alt="${item.title}">
+              ${item.image ? `<img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("component-thumb-missing")}
               <span class="component-kind-dot ${escapeAttr(item.kind)}" aria-label="${escapeAttr(kindLabel(item.kind))}" title="${escapeAttr(kindLabel(item.kind))}"></span>
             </span>
             <div>
