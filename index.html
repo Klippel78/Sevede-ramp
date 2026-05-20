@@ -1403,20 +1403,28 @@
     .required-assets {
       display: grid;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
       margin-top: 12px;
+      overflow: visible;
     }
 
     .required-card {
-      min-height: 166px;
+      position: relative;
+      min-height: 204px;
       min-width: 0;
       display: grid;
-      grid-template-rows: 96px auto;
-      gap: 7px;
+      grid-template-rows: 134px auto;
+      gap: 9px;
       padding: 10px;
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 6px;
+      transition: z-index .16s ease;
+    }
+
+    .required-card:hover,
+    .required-card:focus-within {
+      z-index: 20;
     }
 
     .required-image {
@@ -1424,6 +1432,7 @@
       min-width: 0;
       background: #eef3f1;
       border-radius: 5px;
+      overflow: visible;
     }
 
     .required-card.is-zero {
@@ -1436,12 +1445,22 @@
 
     .required-card img {
       width: 100%;
-      height: 96px;
+      height: 134px;
       object-fit: contain;
       background: #f8faf8;
       border: 1px solid var(--line);
       border-radius: 5px;
       padding: 4px;
+      transform-origin: center;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      will-change: transform;
+    }
+
+    .required-card:hover img,
+    .required-card:focus-within img {
+      transform: scale(1.85);
+      background: #fff;
+      box-shadow: 0 18px 38px rgba(0, 45, 58, .24);
     }
 
     .required-card img.is-black-product,
@@ -1468,8 +1487,16 @@
 
     .required-image-missing {
       width: 100%;
-      height: 96px;
+      height: 134px;
       font-size: 32px;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .required-card:hover .required-image-missing,
+    .required-card:focus-within .required-image-missing {
+      transform: scale(1.35);
+      background: #fff;
+      box-shadow: 0 18px 38px rgba(0, 45, 58, .18);
     }
 
     .required-symbol {
