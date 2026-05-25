@@ -5111,11 +5111,12 @@
         previewSvg.innerHTML = rows;
       }
 
-      const required = componentRequirements(data, totals).filter(item => item.type === "product");
+      const required = componentRequirements(data, totals)
+        .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       requiredAssetsEl.innerHTML = required.map(item => `
-        <article class="required-card ${item.qty === 0 ? "is-zero" : ""}">
+        <article class="required-card">
           <div class="required-image">
-            ${item.qty > 0 ? (item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")) : ""}
+            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
