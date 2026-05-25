@@ -4110,6 +4110,14 @@
       return productImageLookup[`${size}:${product.kind}:${productColor}:${productMounting}`] || "";
     }
 
+    function lineThumbnailImage(mounting = activeMounting(), color = state.color) {
+      const value = normalizeMounting(mounting);
+      if (["ce", "pe"].includes(value)) {
+        return productImageFor({ kind: "start", length: 1200 }, color, value);
+      }
+      return productImage(value, color);
+    }
+
     function missingImageMarkup(className, label = "?") {
       return `<span class="image-missing ${className}" aria-label="${escapeAttr(t("image.missing"))}" title="${escapeAttr(t("image.missing"))}">${escapeHtml(label)}</span>`;
     }
@@ -4885,7 +4893,7 @@
         const colorOptions = ["white", "black"].map(option => `
           <option value="${option}" ${selectedColor === option ? "selected" : ""}>${t(`color.${option}`)}</option>
         `).join("");
-        const image = productImage(selectedMounting, selectedColor);
+        const image = lineThumbnailImage(selectedMounting, selectedColor);
         const length = presetLength(data, preset);
         const exactLength = escapeAttr(formatExactLength(length));
         const modulesForSystem = presetModules(preset) * Number(preset.systems || 0);
@@ -4914,7 +4922,7 @@
               </select>
             </td>
             <td>
-              <img class="table-line-thumb ${selectedColor === "black" ? "is-black-product" : "is-white-product"}" src="${image}" alt="${t(`mount.${selectedMounting}`)} ${t(`color.${selectedColor}`)}">
+              ${image ? `<img class="table-line-thumb ${selectedColor === "black" ? "is-black-product" : "is-white-product"}" src="${escapeAttr(image)}" alt="${escapeAttr(`${t(`mount.${selectedMounting}`)} ${t(`color.${selectedColor}`)}`)}">` : missingImageMarkup("table-line-thumb-missing")}
             </td>
             <td>
               <div class="length-input-group">
