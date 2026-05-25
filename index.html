@@ -4181,7 +4181,7 @@
             t("article.configured")
           ],
           qty: product.qty,
-          image: productImage(product)
+          image: product.qty > 0 ? productImage(product) : ""
         })),
         {
           type: "accessory",
@@ -4216,7 +4216,7 @@
             t("article.configured")
           ],
           qty: Number(preset.amounts[index] || 0),
-          image: productImage(product, mounting, color)
+          image: Number(preset.amounts[index] || 0) > 0 ? productImage(product, mounting, color) : ""
         })),
         {
           type: "accessory",
@@ -4235,6 +4235,13 @@
 
     function presetModules(preset) {
       return preset.amounts.reduce((sum, value) => sum + Number(value || 0), 0);
+    }
+
+    function presetHasSelection(preset) {
+      if (!preset) return false;
+      return Number(preset.systems || 0) > 0
+        || presetModules(preset) > 0
+        || Boolean(parseRequestedLength(preset.name));
     }
 
     function parseRequestedLength(value) {
@@ -4893,7 +4900,7 @@
         const colorOptions = ["white", "black"].map(option => `
           <option value="${option}" ${selectedColor === option ? "selected" : ""}>${t(`color.${option}`)}</option>
         `).join("");
-        const image = lineThumbnailImage(selectedMounting, selectedColor);
+        const image = presetHasSelection(preset) ? lineThumbnailImage(selectedMounting, selectedColor) : "";
         const length = presetLength(data, preset);
         const exactLength = escapeAttr(formatExactLength(length));
         const modulesForSystem = presetModules(preset) * Number(preset.systems || 0);
@@ -4922,7 +4929,7 @@
               </select>
             </td>
             <td>
-              ${image ? `<img class="table-line-thumb ${selectedColor === "black" ? "is-black-product" : "is-white-product"}" src="${escapeAttr(image)}" alt="${escapeAttr(`${t(`mount.${selectedMounting}`)} ${t(`color.${selectedColor}`)}`)}">` : missingImageMarkup("table-line-thumb-missing")}
+              ${image ? `<img class="table-line-thumb ${selectedColor === "black" ? "is-black-product" : "is-white-product"}" src="${escapeAttr(image)}" alt="${escapeAttr(`${t(`mount.${selectedMounting}`)} ${t(`color.${selectedColor}`)}`)}">` : ""}
             </td>
             <td>
               <div class="length-input-group">
@@ -5108,7 +5115,7 @@
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card ${item.qty === 0 ? "is-zero" : ""}">
           <div class="required-image">
-            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")}
+            ${item.qty > 0 ? (item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")) : ""}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
@@ -5150,7 +5157,7 @@
         return `
           <article class="component ${item.qty === 0 ? "is-zero" : ""}">
             <span class="component-thumb-wrap">
-              ${item.image ? `<img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("component-thumb-missing")}
+              ${item.qty > 0 ? (item.image ? `<img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("component-thumb-missing")) : ""}
               <span class="component-kind-dot ${escapeAttr(item.kind)}" aria-label="${escapeAttr(kindLabel(item.kind))}" title="${escapeAttr(kindLabel(item.kind))}"></span>
             </span>
             <div>
