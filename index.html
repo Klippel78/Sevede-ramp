@@ -1435,9 +1435,8 @@
       overflow: hidden;
     }
 
-    .required-card:hover .required-image,
-    .required-card:focus-within .required-image {
-      overflow: visible;
+    .required-image.has-lens {
+      cursor: zoom-in;
     }
 
     .required-card.is-zero {
@@ -1458,15 +1457,41 @@
       padding: 4px;
       transform-origin: center;
       transform: scale(2.4);
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-      will-change: transform;
+      transition: background .18s ease;
     }
 
-    .required-card:hover img,
-    .required-card:focus-within img {
-      transform: scale(3.35);
+    .required-card:hover img {
       background: #fff;
-      box-shadow: 0 18px 38px rgba(0, 45, 58, .24);
+    }
+
+    .required-lens {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 108px;
+      height: 108px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      box-shadow: 0 14px 30px rgba(0, 45, 58, .28), inset 0 0 0 1px rgba(0, 45, 58, .12);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(.92);
+      transition: opacity .12s ease, transform .12s ease;
+      z-index: 4;
+    }
+
+    .required-lens::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 34%);
+    }
+
+    .required-image.is-lensing .required-lens {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
     }
 
     .required-card img.is-black-product,
@@ -1495,14 +1520,7 @@
       width: 100%;
       height: 134px;
       font-size: 32px;
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
-    }
-
-    .required-card:hover .required-image-missing,
-    .required-card:focus-within .required-image-missing {
-      transform: scale(1.35);
-      background: #fff;
-      box-shadow: 0 18px 38px rgba(0, 45, 58, .18);
+      transition: background .18s ease;
     }
 
     .required-symbol {
@@ -5143,8 +5161,8 @@
         .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card">
-          <div class="required-image">
-            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")}
+          <div class="required-image ${item.image ? "has-lens" : ""}">
+            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
@@ -5154,6 +5172,34 @@
           </div>
         </article>
       `).join("");
+    }
+
+    function updateRequiredLens(event) {
+      const imageBox = event.target.closest(".required-image");
+      if (!imageBox || !requiredAssetsEl.contains(imageBox)) return;
+      const img = imageBox.querySelector("img");
+      const lens = imageBox.querySelector(".required-lens");
+      if (!img || !lens) return;
+
+      const rect = imageBox.getBoundingClientRect();
+      const lensSize = lens.offsetWidth || 108;
+      const zoom = 2.8;
+      const x = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
+      const y = Math.min(Math.max(event.clientY - rect.top, 0), rect.height);
+
+      lens.style.left = `${x}px`;
+      lens.style.top = `${y}px`;
+      lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+      lens.style.backgroundSize = `${rect.width * zoom}px ${rect.height * zoom}px`;
+      lens.style.backgroundPosition = `${-(x * zoom - lensSize / 2)}px ${-(y * zoom - lensSize / 2)}px`;
+      imageBox.classList.add("is-lensing");
+    }
+
+    function clearRequiredLens(event) {
+      const imageBox = event.target.closest(".required-image");
+      if (!imageBox) return;
+      if (event.relatedTarget && imageBox.contains(event.relatedTarget)) return;
+      imageBox.classList.remove("is-lensing");
     }
 
     function renderComponents() {
@@ -5439,6 +5485,9 @@
     document.getElementById("loadConfigBtn").addEventListener("click", loadSavedConfiguration);
 
     guideBtn.addEventListener("click", openGuideModal);
+
+    requiredAssetsEl.addEventListener("pointermove", updateRequiredLens);
+    requiredAssetsEl.addEventListener("pointerout", clearRequiredLens);
 
     document.getElementById("exportResultExcelBtn").addEventListener("click", () => {
       downloadResultExcel();
