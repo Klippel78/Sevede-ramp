@@ -4072,21 +4072,30 @@
     }
 
     const productImageLookup = {
-      "white:start:1200": "Bilder/1200 Sevede rampad vit start.png",
-      "white:mid:1200": "Bilder/1200 Sevede rampad vit mitt.png",
-      "white:end:1200": "Bilder/1200 Sevede rampad vit pendlad end.png",
-      "black:start:1200": "Bilder/1200 Sevede rampad pendlad svart start.png",
-      "black:mid:1200": "Bilder/1200 Sevede rampad svart mitt.png",
-      "black:end:1200": "Bilder/1200 Sevede rampad pendlad svart end.png"
+      "1200:start:white:ce": "Bilder/FIX/1200SV.png",
+      "1200:start:white:pe": "Bilder/FIX/1200SVP.png",
+      "1200:start:black:ce": "Bilder/FIX/1200SS.png",
+      "1200:start:black:pe": "Bilder/FIX/1200SSP.png",
+      "1200:mid:white": "Bilder/FIX/1200MVpng.png",
+      "1200:mid:black": "Bilder/FIX/1200MS.png",
+      "1200:end:white:ce": "Bilder/FIX/1200EV.png",
+      "1200:end:white:pe": "Bilder/FIX/1200EVP.png",
+      "1200:end:black:ce": "Bilder/FIX/1200ES.png",
+      "1200:end:black:pe": "Bilder/FIX/1200ESP.png"
     };
 
     function productSizeKey(product) {
       return Number(product?.length || 0) < 1300 ? "1200" : "1700";
     }
 
-    function productImageFor(product, color = state.color) {
+    function productImageFor(product, color = state.color, mounting = activeMounting()) {
       if (!product?.kind) return "";
-      return productImageLookup[`${normalizeColor(color)}:${product.kind}:${productSizeKey(product)}`] || "";
+      const size = productSizeKey(product);
+      const productColor = normalizeColor(color);
+      if (product.kind === "mid") return productImageLookup[`${size}:mid:${productColor}`] || "";
+      const productMounting = normalizeMounting(mounting);
+      if (!["ce", "pe"].includes(productMounting)) return "";
+      return productImageLookup[`${size}:${product.kind}:${productColor}:${productMounting}`] || "";
     }
 
     function missingImageMarkup(className, label = "?") {
@@ -4102,8 +4111,9 @@
 
     function productImage(productOrMounting = activeMounting(), mountingOrColor = activeMounting(), color = state.color) {
       if (typeof productOrMounting === "object") {
+        const productMounting = ["ce", "pe", "re"].includes(mountingOrColor) ? mountingOrColor : activeMounting();
         const productColor = ["white", "black"].includes(mountingOrColor) ? mountingOrColor : color;
-        return productImageFor(productOrMounting, productColor);
+        return productImageFor(productOrMounting, productColor, productMounting);
       }
       const value = normalizeMounting(productOrMounting);
       const selectedColor = mountingOrColor;
@@ -4186,7 +4196,7 @@
             t("article.configured")
           ],
           qty: Number(preset.amounts[index] || 0),
-          image: productImage(product, color)
+          image: productImage(product, mounting, color)
         })),
         {
           type: "accessory",
