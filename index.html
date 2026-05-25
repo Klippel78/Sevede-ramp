@@ -4677,6 +4677,37 @@
       offerLink.href = `mailto:Info@auralight.com?subject=${subject}&body=${body}`;
     }
 
+    async function copyPlainText(text) {
+      const value = String(text || "");
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(value);
+          return true;
+        } catch (error) {
+          // Fall through to the textarea path for file:// and restricted browsers.
+        }
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = value;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      textarea.style.top = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+      let copied = false;
+      try {
+        copied = document.execCommand("copy");
+      } catch (error) {
+        copied = false;
+      }
+      textarea.remove();
+      return copied;
+    }
+
     function downloadCsv(csv) {
       const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
       downloadBlob(blob, csvFilename());
@@ -5416,10 +5447,9 @@
 
     document.getElementById("copyResultBtn").addEventListener("click", async () => {
       const summary = buildResultSummary();
-      try {
-        await navigator.clipboard.writeText(summary);
+      if (await copyPlainText(summary)) {
         showToast(t("toast.summaryCopied"));
-      } catch (error) {
+      } else {
         showToast(t("toast.summaryCopyFallback"));
       }
     });
