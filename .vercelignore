@@ -1,0 +1,8 @@
+*.psd
+*.PSD
+*.step
+*.STEP
+Bilder/*.psd
+Bilder/*.PSD
+Bilder/*.step
+Bilder/*.STEP
