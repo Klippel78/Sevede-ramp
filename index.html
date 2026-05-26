@@ -5181,6 +5181,16 @@
       const img = imageBox.querySelector("img");
       const lens = imageBox.querySelector(".required-lens");
       if (!img || !lens) return;
+      if (!img.complete || !img.naturalWidth || !img.naturalHeight) {
+        if (img.dataset.lensQueued !== "true") {
+          img.dataset.lensQueued = "true";
+          img.addEventListener("load", () => {
+            img.dataset.lensQueued = "false";
+            updateRequiredLens(event);
+          }, { once: true });
+        }
+        return;
+      }
 
       const rect = imageBox.getBoundingClientRect();
       const lensSize = lens.offsetWidth || 108;
