@@ -1673,6 +1673,14 @@
       padding: 16px;
     }
 
+    .component-empty {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: 14px 2px;
+    }
+
     .results,
     .info-band {
       width: min(100% - 32px, 1420px);
@@ -3118,6 +3126,7 @@
         "stat.length": "Längd",
         "components.title": "Komponenter",
         "components.body": "Armaturer och tillbehör med bilder.",
+        "components.empty": "Fyll i minst en ljuslinje för att visa komponenter i valt system.",
         "components.systemView": "Visar per system",
         "components.systemCount": "Antal system",
         "components.systemLabel": "System",
@@ -3280,6 +3289,7 @@
         "stat.length": "Length",
         "components.title": "Components",
         "components.body": "Luminaires and accessories with images.",
+        "components.empty": "Enter at least one light line to show components in the selected system.",
         "components.systemView": "Showing per system",
         "components.systemCount": "System quantity",
         "components.systemLabel": "System",
@@ -3442,6 +3452,7 @@
         "stat.length": "Lengde",
         "components.title": "Komponenter",
         "components.body": "Armaturer og tilbehør med bilder.",
+        "components.empty": "Fyll inn minst én lyslinje for å vise komponenter i valgt system.",
         "components.systemView": "Viser per system",
         "components.systemCount": "Antall systemer",
         "components.systemLabel": "System",
@@ -3604,6 +3615,7 @@
         "stat.length": "Pituus",
         "components.title": "Komponentit",
         "components.body": "Valaisimet ja tarvikkeet kuvineen.",
+        "components.empty": "Syötä vähintään yksi valolinja nähdäksesi valitun järjestelmän komponentit.",
         "components.systemView": "Näytetään per järjestelmä",
         "components.systemCount": "Järjestelmien määrä",
         "components.systemLabel": "Järjestelmä",
@@ -3766,6 +3778,7 @@
         "stat.length": "Länge",
         "components.title": "Komponenten",
         "components.body": "Leuchten und Zubehör mit Bildern.",
+        "components.empty": "Mindestens eine Lichtlinie eingeben, um Komponenten im gewählten System anzuzeigen.",
         "components.systemView": "Anzeige pro System",
         "components.systemCount": "Anzahl Systeme",
         "components.systemLabel": "System",
@@ -5231,7 +5244,8 @@
       const selectedColor = presetColor(selectedPreset);
       const mountingLabel = state.mode === "cepe" ? t(`mount.${selectedMounting}`) : t("mount.re");
       const colorLabel = t(`color.${selectedColor}`);
-      const requirements = componentRequirementsForPreset(data, state.componentPresetIndex).filter(item => item.type === "product");
+      const requirements = componentRequirementsForPreset(data, state.componentPresetIndex)
+        .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       const systemTabs = data.presets.map((preset, index) => `
         <button class="system-tab ${index === state.componentPresetIndex ? "is-active" : ""}" type="button" data-component-preset="${index}" aria-label="${t("components.systemLabel")} ${systemLetter(index)} ${preset.name}">
           ${systemLetter(index)}
@@ -5246,7 +5260,7 @@
         <button class="step-btn" type="button" data-component-step="1" aria-label="${t("action.next")}" ${state.componentPresetIndex === data.presets.length - 1 ? "disabled" : ""}>›</button>
         <div class="system-tabs" aria-label="${t("components.systemLabel")}">${systemTabs}</div>
       `;
-      componentsEl.innerHTML = requirements.map(item => {
+      componentsEl.innerHTML = requirements.length ? requirements.map(item => {
         const description = item.type === "accessory"
           ? `${item.meta[0]} · ${t(`accessory.${state.mode}.description`)}`
           : `${item.meta.join(" · ")} · ${mountingLabel} · ${colorLabel}`;
@@ -5263,7 +5277,7 @@
             <div class="qty">${item.qty}</div>
           </article>
         `;
-      }).join("");
+      }).join("") : `<p class="component-empty">${t("components.empty")}</p>`;
       assumptionEl.textContent = "";
       assumptionEl.classList.add("hidden");
     }
