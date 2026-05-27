@@ -5193,7 +5193,7 @@
 
       const rect = imageBox.getBoundingClientRect();
       const lensSize = lens.offsetWidth || 108;
-      const zoom = 2.8;
+      const zoom = 2;
       const x = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
       const y = Math.min(Math.max(event.clientY - rect.top, 0), rect.height);
       const imageRatio = (img.naturalWidth || rect.width) / (img.naturalHeight || rect.height);
