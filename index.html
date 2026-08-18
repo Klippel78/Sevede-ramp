@@ -1513,6 +1513,7 @@
     .required-image {
       position: relative;
       min-width: 0;
+      height: 134px;
       background: #eef3f1;
       border-radius: 5px;
       overflow: hidden;
@@ -1531,20 +1532,23 @@
     }
 
     .required-card img {
-      width: 100%;
-      height: 134px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 101%;
+      height: auto;
+      aspect-ratio: 1;
       object-fit: contain;
       background: #f8faf8;
       border: 1px solid var(--line);
       border-radius: 5px;
-      padding: 16px 18px;
-      transform: scale(3.53);
-      transform-origin: center;
+      padding: 0;
+      transform: translate(-50%, -50%);
       transition: background .18s ease;
     }
 
     .required-card img.is-product-1200 {
-      transform: scale(5.1);
+      width: 146%;
     }
 
     .required-card:hover img {
