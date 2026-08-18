@@ -1039,12 +1039,18 @@
       height: 24px;
       min-width: 24px;
       min-height: 24px;
+      border: 3px solid transparent;
       border-radius: 50%;
       background: var(--aura-deep);
       color: #fff;
       font-size: 12px;
       font-weight: 500;
       line-height: 1;
+    }
+
+    .preset-row.selected-row .system-row-letter {
+      border-color: #fff;
+      box-shadow: 0 0 0 1px var(--aura-deep);
     }
 
     .system-remove-btn {
@@ -1390,8 +1396,13 @@
 
     .preview-system-badge {
       fill: var(--aura-deep);
+      stroke: transparent;
+      stroke-width: 3;
+      filter: drop-shadow(0 2px 5px rgba(0, 45, 58, .18));
+    }
+
+    .preview-system-count.is-active .preview-system-badge {
       stroke: #fff;
-      stroke-width: 2;
       filter: drop-shadow(0 2px 5px rgba(0, 45, 58, .18));
     }
 
@@ -3264,6 +3275,7 @@
         "toast.keepOneLine": "Minst en ljuslinje måste finnas kvar.",
         "toast.reset": "Konfiguratorn är återställd.",
         "confirm.removeLine": "Vill du ta bort ljuslinje {line}?",
+        "confirm.reletterSystems": "Vill du ombokstavera de återstående systemen i obruten alfabetisk ordning? Välj OK för att låta nästa system ta den borttagna bokstaven. Välj Avbryt för att behålla systemens nuvarande bokstäver.",
         "toast.print": "Utskriftsvyn öppnas.",
         "toast.saved": "Konfigurationen är sparad.",
         "toast.saveFallback": "Spara som-dialogen kunde inte användas. Filen laddas ned i stället.",
@@ -3431,6 +3443,7 @@
         "toast.keepOneLine": "At least one light line must remain.",
         "toast.reset": "The configurator has been reset.",
         "confirm.removeLine": "Do you want to remove light line {line}?",
+        "confirm.reletterSystems": "Do you want to reletter the remaining systems into continuous alphabetical order? Choose OK to let the next system take the removed letter. Choose Cancel to keep the systems' current letters.",
         "toast.print": "Print view is opening.",
         "toast.saved": "The configuration has been saved.",
         "toast.saveFallback": "The Save as dialog could not be used. The file is downloaded instead.",
@@ -3598,6 +3611,7 @@
         "toast.keepOneLine": "Minst én lyslinje må være igjen.",
         "toast.reset": "Konfiguratoren er tilbakestilt.",
         "confirm.removeLine": "Vil du fjerne lyslinje {line}?",
+        "confirm.reletterSystems": "Vil du gi de gjenværende systemene ny bokstav i sammenhengende alfabetisk rekkefølge? Velg OK for å la neste system overta den fjernede bokstaven. Velg Avbryt for å beholde dagens bokstaver.",
         "toast.print": "Utskriftsvisning åpnes.",
         "toast.saved": "Konfigurasjonen er lagret.",
         "toast.saveFallback": "Lagre som-dialogen kunne ikke brukes. Filen lastes ned i stedet.",
@@ -3765,6 +3779,7 @@
         "toast.keepOneLine": "Vähintään yhden valolinjan on jäätävä.",
         "toast.reset": "Konfiguraattori on palautettu.",
         "confirm.removeLine": "Haluatko poistaa valolinjan {line}?",
+        "confirm.reletterSystems": "Haluatko aakkostaa jäljellä olevat järjestelmät uudelleen yhtenäiseen järjestykseen? Valitse OK, jotta seuraava järjestelmä saa poistetun kirjaimen. Valitse Peruuta säilyttääksesi nykyiset kirjaimet.",
         "toast.print": "Tulostusnäkymä avataan.",
         "toast.saved": "Konfiguraatio on tallennettu.",
         "toast.saveFallback": "Tallenna nimellä -valintaikkunaa ei voitu käyttää. Tiedosto ladataan sen sijaan.",
@@ -3932,6 +3947,7 @@
         "toast.keepOneLine": "Mindestens eine Lichtlinie muss verbleiben.",
         "toast.reset": "Der Konfigurator wurde zurückgesetzt.",
         "confirm.removeLine": "Möchten Sie Lichtlinie {line} entfernen?",
+        "confirm.reletterSystems": "Möchten Sie die verbleibenden Systeme lückenlos neu alphabetisch beschriften? Wählen Sie OK, damit das nächste System den entfernten Buchstaben übernimmt. Wählen Sie Abbrechen, um die bestehenden Buchstaben beizubehalten.",
         "toast.print": "Druckansicht wird geöffnet.",
         "toast.saved": "Die Konfiguration wurde gespeichert.",
         "toast.saveFallback": "Der Speichern unter-Dialog konnte nicht verwendet werden. Die Datei wird stattdessen heruntergeladen.",
@@ -4064,8 +4080,9 @@
           amounts: modeData.products.map(() => 0)
         };
         modeData.presets = [firstPreset];
-        modeData.presets.forEach(preset => {
+        modeData.presets.forEach((preset, index) => {
           preset.name = "0,000";
+          preset.letter = systemLetter(index);
           preset.systems = 0;
           preset.amounts = modeData.products.map(() => 0);
           preset.mounting = modeKey === "cepe" ? "ce" : "re";
@@ -4313,6 +4330,17 @@
         value = Math.floor(value / 26);
       }
       return label;
+    }
+
+    function presetLetter(preset, index) {
+      return String(preset?.letter || systemLetter(index)).toUpperCase();
+    }
+
+    function nextAvailableSystemLetter(data) {
+      const used = new Set(data.presets.map((preset, index) => presetLetter(preset, index)));
+      let index = 0;
+      while (used.has(systemLetter(index))) index += 1;
+      return systemLetter(index);
     }
 
     function componentRequirements(data, totals) {
@@ -4944,6 +4972,7 @@
               const amounts = Array.isArray(preset.amounts) ? preset.amounts : [];
               return {
                 name: String(preset.name ?? "0,000"),
+                letter: String(preset.letter || systemLetter(index)).toUpperCase(),
                 systems: Math.max(0, Number(preset.systems || 0)),
                 amounts: target.products.map((_, productIndex) => Math.max(0, Number(amounts[productIndex] || 0))),
                 mounting: modeKey === "cepe" ? normalizeMounting(preset.mounting || source.mounting || "ce") : "re",
@@ -4954,6 +4983,7 @@
         target.presets.forEach((preset, index) => {
           preset.mounting = modeKey === "cepe" ? normalizeMounting(preset.mounting) : "re";
           preset.color = normalizeColor(preset.color);
+          preset.letter = presetLetter(preset, index);
           if (!preset.name) preset.name = systemLetter(index);
         });
       });
@@ -5101,7 +5131,7 @@
       `).join("");
 
       const presetRows = data.presets.map((preset, presetIndex) => {
-        const letter = systemLetter(presetIndex);
+        const letter = presetLetter(preset, presetIndex);
         const selectedMounting = presetMounting(preset);
         const selectedColor = presetColor(preset);
         const options = mountingOptions.map(option => `
@@ -5224,7 +5254,7 @@
       const selectedSystems = Number(selectedPreset?.systems || 0);
       const selectedModules = selectedPreset ? presetModules(selectedPreset) * selectedSystems : 0;
       const selectedLength = selectedPreset ? presetLength(data, selectedPreset) * selectedSystems : 0;
-      const selectedLetter = systemLetter(state.componentPresetIndex);
+      const selectedLetter = presetLetter(selectedPreset, state.componentPresetIndex);
       const selectedTitle = `${t("summary.selectedSystem")} · ${selectedPreset?.name || "0,000"}`;
       modeSummaryEl.innerHTML = `
         <div class="summary-block is-selected">
@@ -5310,9 +5340,9 @@
           }).join("");
           const label = `${line.name}${line.systems > 1 ? ` x ${line.systems}` : ""} - ${formatM(line.length)}`;
           return `
-            <g class="preview-system-count">
+            <g class="preview-system-count ${line.index === state.componentPresetIndex ? "is-active" : ""}">
               <circle class="preview-system-badge" cx="${x1 - 24}" cy="${y}" r="11"></circle>
-              <text class="preview-system-number" x="${x1 - 24}" y="${y + 1.5}">${systemLetter(line.index)}</text>
+              <text class="preview-system-number" x="${x1 - 24}" y="${y + 1.5}">${presetLetter(line, line.index)}</text>
             </g>
             <text class="preview-label" x="${x1}" y="${y - 22}">${label}</text>
             <line class="preview-track" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"></line>
@@ -5400,14 +5430,14 @@
       const requirements = componentRequirementsForPreset(data, state.componentPresetIndex)
         .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       const systemTabs = data.presets.map((preset, index) => `
-        <button class="system-tab ${index === state.componentPresetIndex ? "is-active" : ""}" type="button" data-component-preset="${index}" aria-label="${t("components.systemLabel")} ${systemLetter(index)} ${preset.name}">
-          ${systemLetter(index)}
+        <button class="system-tab ${index === state.componentPresetIndex ? "is-active" : ""}" type="button" data-component-preset="${index}" aria-label="${t("components.systemLabel")} ${presetLetter(preset, index)} ${preset.name}">
+          ${presetLetter(preset, index)}
         </button>
       `).join("");
       componentStepperEl.innerHTML = `
         <button class="step-btn" type="button" data-component-step="-1" aria-label="${t("action.previous")}" ${state.componentPresetIndex === 0 ? "disabled" : ""}>‹</button>
         <div class="step-current">
-          <strong>${t("components.systemLabel")} ${systemLetter(state.componentPresetIndex)} · ${selectedPreset.name}</strong>
+          <strong>${t("components.systemLabel")} ${presetLetter(selectedPreset, state.componentPresetIndex)} · ${selectedPreset.name}</strong>
           <span>${t("components.systemView")} · ${t("components.systemCount")}: ${selectedPreset.systems} · ${formatM(presetLength(data, selectedPreset))}</span>
         </div>
         <button class="step-btn" type="button" data-component-step="1" aria-label="${t("action.next")}" ${state.componentPresetIndex === data.presets.length - 1 ? "disabled" : ""}>›</button>
@@ -5568,6 +5598,7 @@
       const data = activeData();
       data.presets.push({
         name: "0,000",
+        letter: nextAvailableSystemLetter(data),
         systems: 0,
         amounts: data.products.map(() => 0),
         mounting: activeMounting(),
@@ -5585,10 +5616,16 @@
         showToast(t("toast.keepOneLine"));
         return;
       }
-      const letter = systemLetter(presetIndex);
+      const letter = presetLetter(data.presets[presetIndex], presetIndex);
       const message = t("confirm.removeLine").replace("{line}", letter);
       if (!window.confirm(message)) return;
+      const reletterSystems = window.confirm(t("confirm.reletterSystems"));
       data.presets.splice(presetIndex, 1);
+      if (reletterSystems) {
+        data.presets.forEach((preset, index) => {
+          preset.letter = systemLetter(index);
+        });
+      }
       if (state.componentPresetIndex === presetIndex) {
         state.componentPresetIndex = Math.min(presetIndex, data.presets.length - 1);
       } else if (state.componentPresetIndex > presetIndex) {
