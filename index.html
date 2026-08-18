@@ -99,7 +99,7 @@
       z-index: 20;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 24px;
       min-height: 76px;
       margin-bottom: 0;
@@ -1035,8 +1035,16 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      width: 24px;
+      height: 24px;
       min-width: 24px;
       min-height: 24px;
+      border-radius: 50%;
+      background: var(--aura-deep);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1;
     }
 
     .system-remove-btn {
@@ -1052,7 +1060,7 @@
       border-radius: 50%;
       background: #fff;
       color: #c93535;
-      font-size: 15px;
+      font-size: 0;
       font-weight: 900;
       line-height: 1;
       cursor: pointer;
@@ -1060,6 +1068,18 @@
       pointer-events: none;
       transform: translateY(-50%) scale(.92);
       transition: opacity .14s ease, transform .14s ease, background .14s ease, color .14s ease;
+    }
+
+    .system-remove-btn::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 8px;
+      height: 2px;
+      border-radius: 999px;
+      background: currentColor;
+      transform: translate(-50%, -50%);
     }
 
     .preset-row:hover .system-remove-btn,
@@ -1239,15 +1259,32 @@
     }
 
     #configTable.is-transposed .add-line-icon {
-      display: inline-grid;
-      place-items: center;
+      position: relative;
+      display: inline-block;
+      flex: 0 0 auto;
       width: 18px;
       height: 18px;
       border-radius: 50%;
       background: var(--aura-green);
       color: #fff;
-      font-size: 15px;
-      line-height: 1;
+      font-size: 0;
+    }
+
+    #configTable.is-transposed .add-line-icon::before,
+    #configTable.is-transposed .add-line-icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 10px;
+      height: 2px;
+      border-radius: 999px;
+      background: #fff;
+      transform: translate(-50%, -50%);
+    }
+
+    #configTable.is-transposed .add-line-icon::after {
+      transform: translate(-50%, -50%) rotate(90deg);
     }
 
     @media (max-width: 2200px) {
@@ -1363,7 +1400,8 @@
       font-size: 10px;
       font-weight: 500;
       text-anchor: middle;
-      dominant-baseline: central;
+      dominant-baseline: middle;
+      font-variant-numeric: tabular-nums;
     }
 
     .preview-label {
@@ -1489,8 +1527,13 @@
       border: 1px solid var(--line);
       border-radius: 5px;
       padding: 16px 18px;
+      transform: scale(3.53);
       transform-origin: center;
       transition: background .18s ease;
+    }
+
+    .required-card img.is-product-1200 {
+      transform: scale(5.1);
     }
 
     .required-card:hover img {
@@ -1900,21 +1943,27 @@
     }
 
     .system-tab {
-      min-width: 34px;
-      min-height: 28px;
-      padding: 0 9px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #fff;
-      color: var(--aura-deep);
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      min-height: 30px;
+      padding: 0;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      background: var(--aura-deep);
+      color: #fff;
       font-size: 12px;
       font-weight: 500;
+      line-height: 1;
     }
 
     .system-tab.is-active {
-      background: var(--aura);
-      border-color: var(--aura);
+      background: var(--aura-deep);
+      border-color: #fff;
       color: #fff;
+      box-shadow: 0 0 0 1px var(--aura-deep);
     }
 
     .step-btn {
@@ -4135,8 +4184,8 @@
         .replace(/>/g, "&gt;");
     }
 
-    function formatProductM(value) {
-      return (value / 1000).toLocaleString(currentLocale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    function formatProductMm(value) {
+      return `${Number(value).toLocaleString(currentLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })} mm`;
     }
 
     function activeData() {
@@ -4314,6 +4363,7 @@
             mounting,
             color,
             title: product.name,
+            length: product.length,
             meta: [
               `${product.length.toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} mm`,
               t("article.configured")
@@ -5045,7 +5095,7 @@
           <div class="table-product-head">
             <span class="table-symbol ${product.kind}" aria-hidden="true"></span>
             <span class="table-product-name">${product.name}</span>
-            <small>${formatProductM(product.length)}</small>
+            <small>${formatProductMm(product.length)}</small>
           </div>
         </th>
       `).join("");
@@ -5233,8 +5283,9 @@
       const totals = totalsForMode(data);
       const lines = activeLines(data);
       const maxLength = Math.max(...lines.map(line => line.length), 1);
-      const rowGap = 52;
-      const previewHeight = lines.length ? Math.max(136, 58 + ((lines.length - 1) * rowGap) + 28) : 136;
+      const firstRowY = 58;
+      const rowGap = 64;
+      const previewHeight = lines.length ? Math.max(136, firstRowY + ((lines.length - 1) * rowGap) + 36) : 136;
       previewSvg.setAttribute("viewBox", `0 0 720 ${previewHeight}`);
       previewSvg.style.height = `${previewHeight}px`;
       previewSvg.parentElement.style.minHeight = `${previewHeight}px`;
@@ -5244,7 +5295,7 @@
         previewSvg.innerHTML = `<text class="preview-empty" x="360" y="${Math.round(previewHeight / 2)}" text-anchor="middle">${t("preview.empty")}</text>`;
       } else {
         const rows = lines.map((line, rowIndex) => {
-          const y = 58 + rowIndex * rowGap;
+          const y = firstRowY + rowIndex * rowGap;
           const x1 = 86;
           const x2 = x1 + Math.max(130, Math.round((line.length / maxLength) * 520));
           const moduleSequence = data.products.flatMap((product, productIndex) => (
@@ -5261,7 +5312,7 @@
           return `
             <g class="preview-system-count">
               <circle class="preview-system-badge" cx="${x1 - 24}" cy="${y}" r="11"></circle>
-              <text class="preview-system-number" x="${x1 - 24}" y="${y + 0.5}">${line.systems}</text>
+              <text class="preview-system-number" x="${x1 - 24}" y="${y + 1.5}">${systemLetter(line.index)}</text>
             </g>
             <text class="preview-label" x="${x1}" y="${y - 22}">${label}</text>
             <line class="preview-track" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"></line>
@@ -5277,7 +5328,7 @@
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card">
           <div class="required-image ${item.image ? "has-lens" : ""}">
-            ${item.image ? `<img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
+            ${item.image ? `<img class="${item.type === "product" ? `${item.color === "black" ? "is-black-product" : "is-white-product"} ${Number(item.length || 0) < 1500 ? "is-product-1200" : "is-product-1700"}` : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
