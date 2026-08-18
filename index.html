@@ -339,6 +339,22 @@
     .hero .intro {
       position: relative;
       z-index: 1;
+      transform: translateY(-34px);
+    }
+
+    .hero-title-main,
+    .hero-title-sub {
+      display: block;
+    }
+
+    .hero-title-main {
+      line-height: 1.05;
+    }
+
+    .hero-title-sub {
+      margin-top: .14em;
+      font-size: .66em;
+      line-height: 1.05;
     }
 
     .hero-toggle {
@@ -384,6 +400,7 @@
 
     .hero.is-collapsed .intro {
       min-height: 0;
+      transform: none;
     }
 
     .hero.is-collapsed .eyebrow {
@@ -394,6 +411,18 @@
       font-size: clamp(26px, 2.5vw, 34px);
       margin: 0;
       max-width: none;
+    }
+
+    .hero.is-collapsed .hero-title-main,
+    .hero.is-collapsed .hero-title-sub {
+      display: inline;
+      margin: 0;
+      font-size: inherit;
+      line-height: inherit;
+    }
+
+    .hero.is-collapsed .hero-title-main::after {
+      content: " ";
     }
 
     .hero.is-collapsed .intro {
@@ -2728,6 +2757,14 @@
         font-size: 36px;
       }
 
+      .hero .intro {
+        transform: translateY(-12px);
+      }
+
+      .hero-title-sub {
+        font-size: .7em;
+      }
+
       .intro {
         min-height: 0;
       }
@@ -2852,7 +2889,10 @@
     <section class="hero" id="heroOverview" aria-label="Sevede översikt" data-i18n-aria="hero.aria">
       <div class="intro">
         <div>
-          <h1 data-i18n="hero.title">Sevede SYSTEM konfigurator</h1>
+          <h1 aria-label="Sevede SYSTEM konfigurator" data-i18n-aria="hero.title">
+            <span class="hero-title-main" data-i18n="hero.titleMain">Sevede SYSTEM</span>
+            <span class="hero-title-sub" data-i18n="hero.titleSub">konfigurator</span>
+          </h1>
         </div>
       </div>
     </section>
@@ -3113,6 +3153,8 @@
         "hero.aria": "Sevede översikt",
         "hero.eyebrow": "Ljuslinjekonfigurator",
         "hero.title": "Sevede SYSTEM konfigurator",
+        "hero.titleMain": "Sevede SYSTEM",
+        "hero.titleSub": "konfigurator",
         "hero.lead": "Förifylld från <strong>Mall ramp Sevede.xlsx</strong>. Gula fält är ändringsbara mängder per ljuslinje, med totalsummering av armaturer och tillbehör.",
         "tabs.aria": "Konfiguratorläge",
         "control.mounting": "Montage",
@@ -3278,6 +3320,8 @@
         "hero.aria": "Sevede overview",
         "hero.eyebrow": "Light line configurator",
         "hero.title": "Sevede SYSTEM configurator",
+        "hero.titleMain": "Sevede SYSTEM",
+        "hero.titleSub": "configurator",
         "hero.lead": "Pre-filled from <strong>Mall ramp Sevede.xlsx</strong>. Yellow fields are editable quantities per light line, with totals for luminaires and accessories.",
         "tabs.aria": "Configurator mode",
         "control.mounting": "Mounting",
@@ -3443,6 +3487,8 @@
         "hero.aria": "Sevede oversikt",
         "hero.eyebrow": "Lyslinjekonfigurator",
         "hero.title": "Sevede SYSTEM-konfigurator",
+        "hero.titleMain": "Sevede SYSTEM",
+        "hero.titleSub": "konfigurator",
         "hero.lead": "Forhåndsutfylt fra <strong>Mall ramp Sevede.xlsx</strong>. Gule felt er redigerbare mengder per lyslinje, med summering av armaturer og tilbehør.",
         "tabs.aria": "Konfiguratormodus",
         "control.mounting": "Montering",
@@ -3608,6 +3654,8 @@
         "hero.aria": "Sevede yleiskatsaus",
         "hero.eyebrow": "Valolinjakonfiguraattori",
         "hero.title": "Sevede SYSTEM -konfiguraattori",
+        "hero.titleMain": "Sevede SYSTEM",
+        "hero.titleSub": "konfiguraattori",
         "hero.lead": "Esitäytetty tiedostosta <strong>Mall ramp Sevede.xlsx</strong>. Keltaiset kentät ovat muokattavia valolinjakohtaisia määriä, ja kokonaismäärät lasketaan valaisimille ja tarvikkeille.",
         "tabs.aria": "Konfiguraattorin tila",
         "control.mounting": "Asennus",
@@ -3773,6 +3821,8 @@
         "hero.aria": "Sevede Übersicht",
         "hero.eyebrow": "Lichtlinienkonfigurator",
         "hero.title": "Sevede SYSTEM Konfigurator",
+        "hero.titleMain": "Sevede SYSTEM",
+        "hero.titleSub": "Konfigurator",
         "hero.lead": "Vorausgefüllt aus <strong>Mall ramp Sevede.xlsx</strong>. Gelbe Felder sind editierbare Mengen pro Lichtlinie, mit Summen für Leuchten und Zubehör.",
         "tabs.aria": "Konfiguratormodus",
         "control.mounting": "Montage",
