@@ -1799,7 +1799,7 @@
 
     .result-table {
       width: 100%;
-      min-width: 840px;
+      min-width: 920px;
       border-collapse: collapse;
     }
 
@@ -1823,10 +1823,92 @@
       font-size: 14px;
     }
 
-    .result-table td:nth-child(4) {
+    .result-table td:nth-child(5) {
       font-size: 18px;
       font-weight: 500;
       color: var(--ink);
+    }
+
+    .result-system-group td {
+      padding: 11px 16px;
+      border-top: 2px solid var(--aura-deep);
+      border-bottom-color: #c7d5cf;
+      background: #eaf1ee;
+      color: var(--aura-deep);
+    }
+
+    .result-system-group:first-child td {
+      border-top: 0;
+    }
+
+    .result-system-group-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-system-group-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .result-system-group-copy strong {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .result-system-group-copy span {
+      color: #51666e;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .result-system-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      border-radius: 50%;
+      background: var(--aura-deep);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .result-system-cell {
+      width: 68px;
+      vertical-align: middle !important;
+    }
+
+    .result-item-row td {
+      background: #fff;
+    }
+
+    .result-item-row .result-thumb-cell {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .result-item-row .result-thumb-cell::before {
+      content: "";
+      position: absolute;
+      left: 13px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #c7d5cf;
+    }
+
+    .result-item-row .result-thumb-cell::after {
+      content: "";
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      width: 10px;
+      height: 1px;
+      background: #c7d5cf;
     }
 
     .result-thumb-cell {
@@ -2987,6 +3069,7 @@
         <table class="result-table" aria-label="Valda artiklar" data-i18n-aria="results.tableAria">
           <thead>
             <tr>
+              <th data-i18n="components.systemLabel">System</th>
               <th data-i18n="results.image">Bild</th>
               <th data-i18n="results.article">Aura-artikel</th>
               <th data-i18n="results.name">Benämning</th>
@@ -4630,7 +4713,7 @@
     }
 
     function worksheetXml(rows) {
-      const cols = [18, 28, 12, 58];
+      const cols = [12, 18, 28, 12, 58];
       const colXml = cols.map((width, index) => `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`).join("");
       const rowXml = rows.map((row, rowIndex) => {
         const cells = row.map((value, colIndex) => {
@@ -4738,8 +4821,8 @@
 
     function buildResultWorkbookBlob() {
       const rows = [
-        [t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
-        ...resultRows().map(row => [row.article, row.name, row.qty, row.comment])
+        [t("components.systemLabel"), t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
+        ...resultRows().map(row => [row.system, row.article, row.name, row.qty, row.comment])
       ];
       return createZip([
         {
@@ -4820,24 +4903,45 @@
 
     function resultRows() {
       const data = activeData();
-      return criteriaAwareProductRequirements(data)
-        .filter(item => item.type === "product" && Number(item.qty || 0) > 0)
-        .map(item => {
-          return {
-            article: t("results.projectArticle"),
-            name: item.title,
-            qty: Number(item.qty || 0),
-            comment: t("results.luminaireComment"),
-            image: item.image,
-            kind: item.kind
-          };
-        });
+      const kindOrder = { start: 0, mid: 1, end: 2 };
+      return data.presets.flatMap((preset, presetIndex) => {
+        const systems = Math.max(0, Number(preset.systems || 0));
+        if (!systems) return [];
+        const system = presetLetter(preset, presetIndex);
+        const mounting = presetMounting(preset);
+        const color = presetColor(preset);
+        const rows = data.products
+          .map((product, productIndex) => ({
+            product,
+            qty: Math.max(0, Number(preset.amounts[productIndex] || 0)) * systems
+          }))
+          .filter(item => item.qty > 0)
+          .sort((a, b) => {
+            const kindDifference = (kindOrder[a.product.kind] ?? 99) - (kindOrder[b.product.kind] ?? 99);
+            return kindDifference || Number(a.product.length || 0) - Number(b.product.length || 0);
+          });
+        return rows.map((item, rowIndex) => ({
+          system,
+          systemCount: systems,
+          systemName: preset.name,
+          systemLength: presetLength(data, preset),
+          mounting,
+          color,
+          groupStart: rowIndex === 0,
+          article: t("results.projectArticle"),
+          name: item.product.name,
+          qty: item.qty,
+          comment: t("results.luminaireComment"),
+          image: productImage(item.product, mounting, color),
+          kind: item.product.kind
+        }));
+      });
     }
 
     function buildResultCsv() {
       const rows = [
-        [t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
-        ...resultRows().map(row => [row.article, row.name, row.qty, row.comment])
+        [t("components.systemLabel"), t("results.article"), t("results.name"), t("results.qty"), t("results.comment")],
+        ...resultRows().map(row => [row.system, row.article, row.name, row.qty, row.comment])
       ];
       return rows.map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(";")).join("\n");
     }
@@ -4855,7 +4959,7 @@
         `${t("summary.length")}: ${formatM(totals.totalLength)}`,
         "",
         `${t("results.title")}:`,
-        ...rows.map(row => `${row.article}; ${row.name}; ${row.qty} ${unitPcs()}; ${row.comment}`)
+        ...rows.map(row => `${t("components.systemLabel")} ${row.system}; ${row.article}; ${row.name}; ${row.qty} ${unitPcs()}; ${row.comment}`)
       ];
       if (!rows.length) lines.push(t("results.empty"));
       return lines.join("\n");
@@ -5264,12 +5368,26 @@
       if (!rows.length) {
         resultBomTable.innerHTML = `
           <tr>
-            <td class="result-empty" colspan="5">${escapeHtml(t("results.empty"))}</td>
+            <td class="result-empty" colspan="6">${escapeHtml(t("results.empty"))}</td>
           </tr>
         `;
       } else {
         resultBomTable.innerHTML = rows.map(row => `
-          <tr>
+          ${row.groupStart ? `
+            <tr class="result-system-group">
+              <td colspan="6">
+                <div class="result-system-group-content">
+                  <span class="result-system-badge" aria-hidden="true">${escapeHtml(row.system)}</span>
+                  <span class="result-system-group-copy">
+                    <strong>${escapeHtml(`${t("components.systemLabel")} ${row.system}`)}</strong>
+                    <span>${escapeHtml(`${row.systemName} · ${formatM(row.systemLength)} · ${t(`mount.${row.mounting}`)} · ${t(`color.${row.color}`)} · ${t("components.systemCount")}: ${row.systemCount}`)}</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          ` : ""}
+          <tr class="result-item-row result-item-${escapeAttr(row.kind)}">
+            <td class="result-system-cell"><span class="result-system-badge" aria-label="${escapeAttr(`${t("components.systemLabel")} ${row.system}`)}">${escapeHtml(row.system)}</span></td>
             <td class="result-thumb-cell">
               <span class="result-thumb-wrap">
                 ${row.image ? `<img class="result-thumb" src="${escapeAttr(row.image)}" alt="${escapeAttr(row.name)}">` : missingImageMarkup("result-thumb-missing")}
