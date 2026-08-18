@@ -316,12 +316,29 @@
       margin-bottom: 18px;
       padding: clamp(22px, 3.4vw, 40px) clamp(20px, 6vw, 88px) clamp(22px, 3vw, 34px);
       color: #fff;
-      background:
-        linear-gradient(90deg, rgba(0, 0, 0, .64), rgba(0, 0, 0, .18)),
-        url("assets/sevede-configurator-hero-black.png");
+      background: url("assets/sevede-configurator-hero-black.png");
       background-size: cover;
       background-position: center 34%;
+      overflow: hidden;
+      isolation: isolate;
       transition: min-height .2s ease, padding .2s ease;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-backdrop-filter: blur(3.5px);
+      backdrop-filter: blur(3.5px);
+      -webkit-mask-image: linear-gradient(90deg, transparent 52%, rgba(0, 0, 0, .22) 67%, #000 88%);
+      mask-image: linear-gradient(90deg, transparent 52%, rgba(0, 0, 0, .22) 67%, #000 88%);
+    }
+
+    .hero .intro {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-toggle {
@@ -2846,7 +2863,7 @@
         <div class="preview-block">
           <div class="preview-top">
             <div>
-              <p class="eyebrow" data-i18n="preview.eyebrow">Förhandsvisning</p>
+              <p class="eyebrow" data-i18n="preview.eyebrow">Översikt</p>
               <h2 data-i18n="preview.title">Sevede ljuslinjer</h2>
             </div>
             <div class="preview-metric">
@@ -3143,7 +3160,7 @@
         "components.systemView": "Visar per system",
         "components.systemCount": "Antal system",
         "components.systemLabel": "System",
-        "preview.eyebrow": "Förhandsvisning",
+        "preview.eyebrow": "Översikt",
         "preview.title": "Sevede ljuslinjer",
         "preview.totalLength": "Total längd",
         "preview.empty": "Fyll i gula fält för att visa ljuslinjer",
@@ -3308,7 +3325,7 @@
         "components.systemView": "Showing per system",
         "components.systemCount": "System quantity",
         "components.systemLabel": "System",
-        "preview.eyebrow": "Preview",
+        "preview.eyebrow": "Overview",
         "preview.title": "Sevede light lines",
         "preview.totalLength": "Total length",
         "preview.empty": "Fill in yellow fields to show light lines",
@@ -3473,7 +3490,7 @@
         "components.systemView": "Viser per system",
         "components.systemCount": "Antall systemer",
         "components.systemLabel": "System",
-        "preview.eyebrow": "Forhåndsvisning",
+        "preview.eyebrow": "Oversikt",
         "preview.title": "Sevede lyslinjer",
         "preview.totalLength": "Total lengde",
         "preview.empty": "Fyll inn gule felt for å vise lyslinjer",
@@ -3638,7 +3655,7 @@
         "components.systemView": "Näytetään per järjestelmä",
         "components.systemCount": "Järjestelmien määrä",
         "components.systemLabel": "Järjestelmä",
-        "preview.eyebrow": "Esikatselu",
+        "preview.eyebrow": "Yleiskatsaus",
         "preview.title": "Sevede-valolinjat",
         "preview.totalLength": "Kokonaispituus",
         "preview.empty": "Täytä keltaiset kentät nähdäksesi valolinjat",
@@ -3803,7 +3820,7 @@
         "components.systemView": "Anzeige pro System",
         "components.systemCount": "Anzahl Systeme",
         "components.systemLabel": "System",
-        "preview.eyebrow": "Vorschau",
+        "preview.eyebrow": "Übersicht",
         "preview.title": "Sevede Lichtlinien",
         "preview.totalLength": "Gesamtlänge",
         "preview.empty": "Gelbe Felder ausfüllen, um Lichtlinien anzuzeigen",
