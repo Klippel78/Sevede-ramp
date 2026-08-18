@@ -1039,6 +1039,7 @@
       height: 24px;
       min-width: 24px;
       min-height: 24px;
+      padding: 0;
       border: 3px solid transparent;
       border-radius: 50%;
       background: var(--aura-deep);
@@ -1046,6 +1047,7 @@
       font-size: 12px;
       font-weight: 500;
       line-height: 1;
+      cursor: pointer;
     }
 
     .preset-row.selected-row .system-row-letter {
@@ -1401,6 +1403,15 @@
       filter: drop-shadow(0 2px 5px rgba(0, 45, 58, .18));
     }
 
+    .preview-system-count {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .preview-system-count:focus-visible .preview-system-badge {
+      stroke: #fff;
+    }
+
     .preview-system-count.is-active .preview-system-badge {
       stroke: #fff;
       filter: drop-shadow(0 2px 5px rgba(0, 45, 58, .18));
@@ -1519,10 +1530,6 @@
       overflow: hidden;
     }
 
-    .required-image.has-lens {
-      cursor: zoom-in;
-    }
-
     .required-card.is-zero {
       background: #fbfcfc;
     }
@@ -1535,7 +1542,7 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 101%;
+      width: 100%;
       height: auto;
       aspect-ratio: 1;
       object-fit: contain;
@@ -1547,42 +1554,8 @@
       transition: background .18s ease;
     }
 
-    .required-card img.is-product-1200 {
-      width: 146%;
-    }
-
     .required-card:hover img {
       background: #fff;
-    }
-
-    .required-lens {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 108px;
-      height: 108px;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      background-repeat: no-repeat;
-      box-shadow: 0 14px 30px rgba(0, 45, 58, .28), inset 0 0 0 1px rgba(0, 45, 58, .12);
-      opacity: 0;
-      pointer-events: none;
-      transform: translate(-50%, -50%) scale(.92);
-      transition: opacity .12s ease, transform .12s ease;
-      z-index: 4;
-    }
-
-    .required-lens::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(circle at 34% 28%, rgba(255, 255, 255, .42), rgba(255, 255, 255, 0) 34%);
-    }
-
-    .required-image.is-lensing .required-lens {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
     }
 
     .required-card img.is-black-product,
@@ -3110,7 +3083,7 @@
           <li><span>10</span><p data-i18n="guide.step10">Montage väljs per ljuslinje. CE tak, PE pendel och RE styr vilken installationsbild som visas och hur raden märks.</p></li>
           <li><span>11</span><p data-i18n="guide.step11">Färgvalet Vit eller Svart byter armaturbilderna i tabellen, komponentkort och förhandsvisningsunderlag.</p></li>
           <li><span>12</span><p data-i18n="guide.step12">Längd M är önskat mått i meter med tre decimaler. Ljuslinjelängd visar faktiskt föreslaget mått; håll musen över värdet för exakt längd.</p></li>
-          <li><span>13</span><p data-i18n="guide.step13">Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och TOTALT ST summerar varje rad och hela tabellen.</p></li>
+          <li><span>13</span><p data-i18n="guide.step13">Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och ANTAL DELAR summerar varje rad och hela tabellen.</p></li>
           <li><span>14</span><p data-i18n="guide.step14">Komponentpanelen låter dig stega mellan system A, B, C och vidare för att se mängder per system, medan sammanfattningen visar valt system och totalen.</p></li>
           <li><span>15</span><p data-i18n="guide.step15">Återställ nollställer tabellen, CSV skapar en export, Skriv ut öppnar utskrift och Källor går till Aura Lights produktsidor.</p></li>
           <li><span>16</span><p data-i18n="guide.step16">Tabellen arbetar i höjdled: varje systemrad A, B, C och vidare är en ljuslinje, medan Start, Mid och End ligger som komponentkolumner med summering längst till höger och längst ned.</p></li>
@@ -3177,7 +3150,7 @@
         "guide.step10": "Montage väljs per ljuslinje. CE tak, PE pendel och RE styr vilken installationsbild som visas och hur raden märks.",
         "guide.step11": "Färgvalet Vit eller Svart byter armaturbilderna i tabellen, komponentkort och förhandsvisningsunderlag.",
         "guide.step12": "Längd M är önskat mått i meter med tre decimaler. Ljuslinjelängd visar faktiskt föreslaget mått; håll musen över värdet för exakt längd.",
-        "guide.step13": "Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och TOTALT ST summerar varje rad och hela tabellen.",
+        "guide.step13": "Antal system multiplicerar raden. Komponentfälten kan finjusteras manuellt och ANTAL DELAR summerar varje rad och hela tabellen.",
         "guide.step14": "Komponentpanelen låter dig stega mellan system A, B, C och vidare för att se mängder per system, medan sammanfattningen visar valt system och totalen.",
         "guide.step15": "Återställ nollställer tabellen, Spara som sparar aktuell konfiguration som fil, Ladda sparad kalkyl läser in en sparad konfiguration, Skriv ut öppnar utskrift och Källor går till Aura Lights produktsidor.",
         "guide.step16": "Tabellen arbetar i höjdled: varje systemrad A, B, C och vidare är en ljuslinje, medan Start, Mid och End ligger som komponentkolumner med summering längst till höger och längst ned.",
@@ -3264,7 +3237,7 @@
         "image.missing": "Bild saknas",
         "table.component": "Olika skenlängder",
         "table.lengthMm": "Längd m",
-        "table.totalPcs": "Totalt st",
+        "table.totalPcs": "Antal delar",
         "table.totalLabel": "Totalt",
         "table.lineLength": "Ljuslinjelängd",
         "table.systemQty": "Antal system",
@@ -4372,9 +4345,10 @@
       ];
     }
 
-    function criteriaAwareProductRequirements(data = activeData()) {
+    function criteriaAwareProductRequirements(data = activeData(), presetIndex = null) {
       const grouped = new Map();
-      data.presets.forEach(preset => {
+      const presets = Number.isInteger(presetIndex) ? data.presets.slice(presetIndex, presetIndex + 1) : data.presets;
+      presets.forEach(preset => {
         const mounting = presetMounting(preset);
         const color = presetColor(preset);
         const systems = Math.max(0, Number(preset.systems || 0));
@@ -5158,7 +5132,7 @@
           <tr class="preset-row ${presetIndex === state.componentPresetIndex ? "selected-row" : ""}">
             <th scope="row">
               <div class="system-row-head">
-                <span class="system-row-letter">${letter}</span>
+                <button class="system-row-letter" type="button" data-select-preset="${presetIndex}" aria-label="${t("components.systemLabel")} ${letter}">${letter}</button>
                 <button class="system-remove-btn" type="button" data-remove-preset="${presetIndex}" aria-label="${removeAria}" title="${removeAria}">&minus;</button>
               </div>
             </th>
@@ -5344,7 +5318,7 @@
           }).join("");
           const label = `${line.name}${line.systems > 1 ? ` x ${line.systems}` : ""} - ${formatM(line.length)}`;
           return `
-            <g class="preview-system-count ${line.index === state.componentPresetIndex ? "is-active" : ""}">
+            <g class="preview-system-count ${line.index === state.componentPresetIndex ? "is-active" : ""}" role="button" tabindex="0" data-preview-preset="${line.index}" aria-pressed="${line.index === state.componentPresetIndex ? "true" : "false"}" aria-label="${t("components.systemLabel")} ${presetLetter(line, line.index)}">
               <circle class="preview-system-badge" cx="${x1 - 24}" cy="${y}" r="11"></circle>
               <text class="preview-system-number" x="${x1 - 24}" y="${y + 1.5}">${presetLetter(line, line.index)}</text>
             </g>
@@ -5357,12 +5331,12 @@
         previewSvg.innerHTML = rows;
       }
 
-      const required = criteriaAwareProductRequirements(data)
+      const required = criteriaAwareProductRequirements(data, state.componentPresetIndex)
         .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card">
-          <div class="required-image ${item.image ? "has-lens" : ""}">
-            ${item.image ? `<img class="${item.type === "product" ? `${item.color === "black" ? "is-black-product" : "is-white-product"} ${Number(item.length || 0) < 1500 ? "is-product-1200" : "is-product-1700"}` : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
+          <div class="required-image">
+            ${item.image ? `<img class="${item.type === "product" ? `${item.color === "black" ? "is-black-product" : "is-white-product"} ${Number(item.length || 0) < 1500 ? "is-product-1200" : "is-product-1700"}` : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}">` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
@@ -5372,55 +5346,6 @@
           </div>
         </article>
       `).join("");
-    }
-
-    function updateRequiredLens(event) {
-      const imageBox = event.target.closest(".required-image");
-      if (!imageBox || !requiredAssetsEl.contains(imageBox)) return;
-      const img = imageBox.querySelector("img");
-      const lens = imageBox.querySelector(".required-lens");
-      if (!img || !lens) return;
-      if (!img.complete || !img.naturalWidth || !img.naturalHeight) {
-        if (img.dataset.lensQueued !== "true") {
-          img.dataset.lensQueued = "true";
-          img.addEventListener("load", () => {
-            img.dataset.lensQueued = "false";
-            updateRequiredLens(event);
-          }, { once: true });
-        }
-        return;
-      }
-
-      const rect = imageBox.getBoundingClientRect();
-      const lensSize = lens.offsetWidth || 108;
-      const zoom = 2;
-      const x = Math.min(Math.max(event.clientX - rect.left, 0), rect.width);
-      const y = Math.min(Math.max(event.clientY - rect.top, 0), rect.height);
-      const imageRatio = (img.naturalWidth || rect.width) / (img.naturalHeight || rect.height);
-      const boxRatio = rect.width / rect.height;
-      const baseWidth = imageRatio > boxRatio ? rect.width : rect.height * imageRatio;
-      const baseHeight = imageRatio > boxRatio ? rect.width / imageRatio : rect.height;
-      const transform = getComputedStyle(img).transform;
-      const matrix = transform === "none" ? { a: 1 } : new DOMMatrixReadOnly(transform);
-      const imageScale = Number.isFinite(matrix.a) && matrix.a > 0 ? matrix.a : 1;
-      const displayWidth = baseWidth * imageScale;
-      const displayHeight = baseHeight * imageScale;
-      const displayX = (rect.width - displayWidth) / 2;
-      const displayY = (rect.height - displayHeight) / 2;
-
-      lens.style.left = `${x}px`;
-      lens.style.top = `${y}px`;
-      lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
-      lens.style.backgroundSize = `${displayWidth * zoom}px ${displayHeight * zoom}px`;
-      lens.style.backgroundPosition = `${-((x - displayX) * zoom - lensSize / 2)}px ${-((y - displayY) * zoom - lensSize / 2)}px`;
-      imageBox.classList.add("is-lensing");
-    }
-
-    function clearRequiredLens(event) {
-      const imageBox = event.target.closest(".required-image");
-      if (!imageBox) return;
-      if (event.relatedTarget && imageBox.contains(event.relatedTarget)) return;
-      imageBox.classList.remove("is-lensing");
     }
 
     function renderComponents() {
@@ -5640,6 +5565,13 @@
     }
 
     table.addEventListener("click", event => {
+      const selectButton = event.target.closest("[data-select-preset]");
+      if (selectButton) {
+        state.componentPresetIndex = Number(selectButton.dataset.selectPreset);
+        clampComponentPresetIndex(activeData());
+        render();
+        return;
+      }
       const fitUnderButton = event.target.closest("[data-fit-under]");
       if (fitUnderButton) {
         const presetIndex = Number(fitUnderButton.dataset.fitUnder);
@@ -5701,6 +5633,25 @@
 
     document.getElementById("addPresetBtn")?.addEventListener("click", addPreset);
 
+    function selectPreviewPreset(target) {
+      const presetTarget = target.closest?.("[data-preview-preset]");
+      if (!presetTarget) return false;
+      state.componentPresetIndex = Number(presetTarget.dataset.previewPreset);
+      clampComponentPresetIndex(activeData());
+      render();
+      return true;
+    }
+
+    previewSvg.addEventListener("click", event => {
+      selectPreviewPreset(event.target);
+    });
+
+    previewSvg.addEventListener("keydown", event => {
+      if (!['Enter', ' '].includes(event.key)) return;
+      if (!selectPreviewPreset(event.target)) return;
+      event.preventDefault();
+    });
+
     document.getElementById("resetBtn").addEventListener("click", () => {
       state.data = zeroedDataFromTemplate();
       state.componentPresetIndex = 0;
@@ -5718,9 +5669,6 @@
     document.getElementById("loadConfigBtn").addEventListener("click", loadSavedConfiguration);
 
     guideBtn.addEventListener("click", openGuideModal);
-
-    requiredAssetsEl.addEventListener("pointermove", updateRequiredLens);
-    requiredAssetsEl.addEventListener("pointerout", clearRequiredLens);
 
     document.getElementById("exportResultExcelBtn").addEventListener("click", () => {
       downloadResultExcel();
