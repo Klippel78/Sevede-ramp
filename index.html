@@ -3947,7 +3947,6 @@
       cepe: {
         title: "Sevede CE/PE",
         subtitle: "Tak- eller pendelmontage baserat på CE/PE-blocket i Excel-mallen.",
-        image: { ce: "assets/sevede-ce.png", pe: "assets/sevede-pe.png" },
         products: [
           { id: "cepe-start-1200", name: "Sevede Start 1200", length: 1141.1, kind: "start" },
           { id: "cepe-start-1700", name: "Sevede Start 1700", length: 1700.6, kind: "start" },
@@ -3978,7 +3977,6 @@
       re: {
         title: "Sevede RE",
         subtitle: "Infällt montage baserat på RE-blocket i Excel-mallen.",
-        image: { re: "assets/sevede-re.png" },
         products: [
           { id: "re-start-1200", name: "Sevede Start 1200", length: 1157.1, kind: "start" },
           { id: "re-start-1700", name: "Sevede Start 1700", length: 1716.6, kind: "start" },
@@ -4166,12 +4164,6 @@
       return normalizeColor(preset?.color || state.color);
     }
 
-    function blackProductImage(mounting = activeMounting()) {
-      const value = normalizeMounting(mounting);
-      if (value === "re") return "assets/sevede-re-black-single-thumb.png";
-      return value === "pe" ? "assets/sevede-pe-thumb-transparent.png" : "assets/sevede-ce-thumb-transparent.png";
-    }
-
     const productImageLookup = {
       "1200:start:white:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Vit_Utan-Pendelkit-Rampad.png",
       "1200:start:white:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Vit-Rampad.png",
@@ -4211,6 +4203,20 @@
       "1700:end:black:re": "assets/sevede-products/SMST_Sevede_RE_1700_End_Svart-Rampad.png"
     };
 
+    const productImageSources = [...new Set(Object.values(productImageLookup))];
+    const productImageMemoryCache = new Map();
+
+    function preloadProductImages() {
+      productImageSources.forEach(source => {
+        if (productImageMemoryCache.has(source)) return;
+        const image = new Image();
+        image.decoding = "async";
+        image.fetchPriority = "low";
+        image.src = source;
+        productImageMemoryCache.set(source, image);
+      });
+    }
+
     function productSizeKey(product) {
       return Number(product?.length || 0) < 1300 ? "1200" : "1700";
     }
@@ -4232,27 +4238,8 @@
       return `<span class="image-missing ${className}" aria-label="${escapeAttr(t("image.missing"))}" title="${escapeAttr(t("image.missing"))}">${escapeHtml(label)}</span>`;
     }
 
-    function activeImage() {
-      const data = activeData();
-      if (state.color === "black") return blackProductImage();
-      if (state.mode === "cepe") return data.image[state.mounting];
-      return data.image.re;
-    }
-
-    function productImage(productOrMounting = activeMounting(), mountingOrColor = activeMounting(), color = state.color) {
-      if (typeof productOrMounting === "object") {
-        const productMounting = ["ce", "pe", "re"].includes(mountingOrColor) ? mountingOrColor : activeMounting();
-        const productColor = ["white", "black"].includes(mountingOrColor) ? mountingOrColor : color;
-        return productImageFor(productOrMounting, productColor, productMounting);
-      }
-      const value = normalizeMounting(productOrMounting);
-      const selectedColor = mountingOrColor;
-      if (normalizeColor(selectedColor) === "black") {
-        return blackProductImage(value);
-      }
-      if (value === "pe") return "assets/sevede-pe-thumb-transparent.png";
-      if (value === "re") return "assets/sevede-re-thumb-transparent.png";
-      return "assets/sevede-ce-thumb-transparent.png";
+    function productImage(product, mounting = activeMounting(), color = state.color) {
+      return productImageFor(product, color, mounting);
     }
 
     function mountingOptionsForTable() {
@@ -5696,6 +5683,7 @@
       if (!guideModal.classList.contains("hidden")) closeGuideModal();
     });
 
+    preloadProductImages();
     render();
   </script>
 </body>
