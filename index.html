@@ -141,55 +141,31 @@
     }
 
     .language-select select {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      padding: 0;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-
-    .language-buttons {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .lang-btn {
-      border: 1px solid #d9e1d5;
-      border-radius: 999px;
+      position: static;
+      width: auto;
+      min-width: 74px;
+      min-height: 36px;
+      margin: 0;
+      padding: 6px 30px 6px 10px;
+      border: 1px solid #cfd9d4;
+      border-radius: 6px;
       background: #fff;
       color: var(--aura-dark);
-      padding: .32rem .58rem;
-      min-width: 2.35rem;
-      min-height: auto;
-      font-size: .72rem;
+      font-size: .78rem;
       font-weight: 500;
       letter-spacing: .06em;
-      line-height: 1;
-      transition: all .15s;
+      line-height: 1.2;
+      cursor: pointer;
     }
 
-    .lang-btn:hover {
+    .language-select select:hover {
       border-color: var(--aura-lime);
       background: #f4f8ed;
-      color: var(--aura-dark);
     }
 
-    .lang-btn.active {
-      background: #000;
-      color: #fff;
-      border-color: #000;
-    }
-
-    .language-select select.is-visible {
-      min-height: 36px;
-      width: 86px;
-      padding: 6px 8px;
-      font-size: 13px;
+    .language-select select:focus-visible {
+      outline: 2px solid var(--aura-lime);
+      outline-offset: 2px;
     }
 
     h1, h2, h3, h4, p {
@@ -1557,7 +1533,7 @@
     .table-line-thumb.is-black-product {
       background: transparent;
       border-color: transparent;
-      filter: brightness(.62) contrast(1.58) saturate(1.06);
+      filter: none;
     }
 
     .required-card img.is-white-product,
@@ -2862,20 +2838,13 @@
       </div>
       <div class="language-select" aria-label="Språk">
         <span data-i18n="language.label">Språk</span>
-        <select id="languageSelect">
+        <select id="languageSelect" aria-label="Språk">
           <option value="sv">SV</option>
           <option value="en">EN</option>
           <option value="no">NO</option>
           <option value="fi">FI</option>
           <option value="de">DE</option>
         </select>
-        <div class="language-buttons" role="group" aria-label="Språk">
-          <button class="lang-btn" type="button" data-lang-btn="sv" title="Svenska">SV</button>
-          <button class="lang-btn" type="button" data-lang-btn="en" title="English">EN</button>
-          <button class="lang-btn" type="button" data-lang-btn="no" title="Norsk">NO</button>
-          <button class="lang-btn" type="button" data-lang-btn="fi" title="Suomi">FI</button>
-          <button class="lang-btn" type="button" data-lang-btn="de" title="Deutsch">DE</button>
-        </div>
       </div>
       <div class="actions">
         <button class="btn" id="resetBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-reset"></use></svg></span><span data-i18n="action.reset">Återställ</span></button>
@@ -4204,16 +4173,42 @@
     }
 
     const productImageLookup = {
-      "1200:start:white:ce": "Bilder/FIX/1200SV.png",
-      "1200:start:white:pe": "Bilder/FIX/1200SVP.png",
-      "1200:start:black:ce": "Bilder/FIX/1200SS.png",
-      "1200:start:black:pe": "Bilder/FIX/1200SSP.png",
-      "1200:mid:white": "Bilder/FIX/1200MV.png",
-      "1200:mid:black": "Bilder/FIX/1200MS.png",
-      "1200:end:white:ce": "Bilder/FIX/1200EV.png",
-      "1200:end:white:pe": "Bilder/FIX/1200EVP.png",
-      "1200:end:black:ce": "Bilder/FIX/1200ES.png",
-      "1200:end:black:pe": "Bilder/FIX/1200ESP.png"
+      "1200:start:white:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Vit_Utan-Pendelkit-Rampad.png",
+      "1200:start:white:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Vit-Rampad.png",
+      "1200:start:black:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Svart_Utan-Pendelkit-Rampad.png",
+      "1200:start:black:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Start_Svart-Rampad.png",
+      "1200:mid:white:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Mid_Vit-Rampad.png",
+      "1200:mid:white:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Mid_Vit-Rampad.png",
+      "1200:mid:black:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Mid_Svart-Rampad.png",
+      "1200:mid:black:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_Mid_Svart-Rampad.png",
+      "1200:end:white:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_End_Vit_Utan-Pendelkit-Rampad.png",
+      "1200:end:white:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_End_Vit-Rampad.png",
+      "1200:end:black:ce": "assets/sevede-products/SMST_Sevede_CE-PE_1200_End_Svart_Utan-Pendelkit-Rampad.png",
+      "1200:end:black:pe": "assets/sevede-products/SMST_Sevede_CE-PE_1200_End_Svart-Rampad.png",
+      "1700:start:white:ce": "assets/sevede-products/SMST_Sevede_PE_1700_Start_Vit_Utan-Pendelkit-Rampad.png",
+      "1700:start:white:pe": "assets/sevede-products/SMST_Sevede_PE_1700_Start_Vit-Rampad.png",
+      "1700:start:black:ce": "assets/sevede-products/SMST_Sevede_PE_1700_Start_Svart_Utan-Pendelkit-Rampad.png",
+      "1700:start:black:pe": "assets/sevede-products/SMST_Sevede_PE_1700_Start_Svart-Rampad.png",
+      "1700:mid:white:ce": "assets/sevede-products/SMST_Sevede_PE_1700_Mid_Vit_Utan-Pendelkit-Rampad.png",
+      "1700:mid:white:pe": "assets/sevede-products/SMST_Sevede_PE_1700_Mid_Vit-Rampad.png",
+      "1700:mid:black:ce": "assets/sevede-products/SMST_Sevede_PE_1700_Mid_Svart_Utan-Pendelkit-Rampad.png",
+      "1700:mid:black:pe": "assets/sevede-products/SMST_Sevede_PE_1700_Mid_Svart-Rampad.png",
+      "1700:end:white:ce": "assets/sevede-products/SMST_Sevede_PE_1700_End_Vit_Utan-Pendelkit-Rampad.png",
+      "1700:end:white:pe": "assets/sevede-products/SMST_Sevede_PE_1700_End_Vit-Rampad.png",
+      "1700:end:black:ce": "assets/sevede-products/SMST_Sevede_PE_1700_End_Svart_Utan-Pendelkit-Rampad.png",
+      "1700:end:black:pe": "assets/sevede-products/SMST_Sevede_PE_1700_End_Svart-Rampad.png",
+      "1200:start:white:re": "assets/sevede-products/SMST_Sevede_RE_1200_Start_Vit-Rampad.png",
+      "1200:start:black:re": "assets/sevede-products/SMST_Sevede_RE_1200_Start_Svart-Rampad.png",
+      "1200:mid:white:re": "assets/sevede-products/SMST_Sevede_RE_1200_Mid_Vit-Rampad.png",
+      "1200:mid:black:re": "assets/sevede-products/SMST_Sevede_RE_1200_Mid_Svart-Rampad.png",
+      "1200:end:white:re": "assets/sevede-products/SMST_Sevede_RE_1200_End_Vit-Rampad.png",
+      "1200:end:black:re": "assets/sevede-products/SMST_Sevede_RE_1200_End_Svart-Rampad.png",
+      "1700:start:white:re": "assets/sevede-products/SMST_Sevede_RE_1700_Start_Vit-Rampad.png",
+      "1700:start:black:re": "assets/sevede-products/SMST_Sevede_RE_1700_Start_Svart-Rampad.png",
+      "1700:mid:white:re": "assets/sevede-products/SMST_Sevede_RE_1700_Mid_Vit-Rampad.png",
+      "1700:mid:black:re": "assets/sevede-products/SMST_Sevede_RE_1700_Mid_Svart-Rampad.png",
+      "1700:end:white:re": "assets/sevede-products/SMST_Sevede_RE_1700_End_Vit-Rampad.png",
+      "1700:end:black:re": "assets/sevede-products/SMST_Sevede_RE_1700_End_Svart-Rampad.png"
     };
 
     function productSizeKey(product) {
@@ -4224,18 +4219,13 @@
       if (!product?.kind) return "";
       const size = productSizeKey(product);
       const productColor = normalizeColor(color);
-      if (product.kind === "mid") return productImageLookup[`${size}:mid:${productColor}`] || "";
       const productMounting = normalizeMounting(mounting);
-      if (!["ce", "pe"].includes(productMounting)) return "";
       return productImageLookup[`${size}:${product.kind}:${productColor}:${productMounting}`] || "";
     }
 
     function lineThumbnailImage(mounting = activeMounting(), color = state.color) {
       const value = normalizeMounting(mounting);
-      if (["ce", "pe"].includes(value)) {
-        return productImageFor({ kind: "start", length: 1200 }, color, value);
-      }
-      return productImage(value, color);
+      return productImageFor({ kind: "start", length: 1200 }, color, value);
     }
 
     function missingImageMarkup(className, label = "?") {
@@ -4312,6 +4302,41 @@
           image: data.accessory.image
         }
       ];
+    }
+
+    function criteriaAwareProductRequirements(data = activeData()) {
+      const grouped = new Map();
+      data.presets.forEach(preset => {
+        const mounting = presetMounting(preset);
+        const color = presetColor(preset);
+        const systems = Math.max(0, Number(preset.systems || 0));
+        if (!systems) return;
+
+        data.products.forEach((product, index) => {
+          const qty = Math.max(0, Number(preset.amounts[index] || 0)) * systems;
+          if (!qty) return;
+          const key = `${product.id}:${mounting}:${color}`;
+          const current = grouped.get(key);
+          if (current) {
+            current.qty += qty;
+            return;
+          }
+          grouped.set(key, {
+            type: "product",
+            kind: product.kind,
+            mounting,
+            color,
+            title: product.name,
+            meta: [
+              `${product.length.toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} mm`,
+              t("article.configured")
+            ],
+            qty,
+            image: productImage(product, mounting, color)
+          });
+        });
+      });
+      return [...grouped.values()];
     }
 
     function clampComponentPresetIndex(data = activeData()) {
@@ -4752,8 +4777,7 @@
 
     function resultRows() {
       const data = activeData();
-      const totals = totalsForMode(data);
-      return componentRequirements(data, totals)
+      return criteriaAwareProductRequirements(data)
         .filter(item => item.type === "product" && Number(item.qty || 0) > 0)
         .map(item => {
           return {
@@ -4988,9 +5012,6 @@
     function applyTranslations() {
       document.documentElement.lang = state.lang;
       document.title = `${t("hero.title")} | ${languageSelect.value.toUpperCase()}`;
-      document.querySelectorAll("[data-lang-btn]").forEach(button => {
-        button.classList.toggle("active", button.dataset.langBtn === state.lang);
-      });
       document.querySelectorAll("[data-i18n]").forEach(element => {
         element.textContent = t(element.dataset.i18n);
       });
@@ -5264,12 +5285,12 @@
         previewSvg.innerHTML = rows;
       }
 
-      const required = componentRequirements(data, totals)
+      const required = criteriaAwareProductRequirements(data)
         .filter(item => item.type === "product" && Number(item.qty || 0) > 0);
       requiredAssetsEl.innerHTML = required.map(item => `
         <article class="required-card">
           <div class="required-image ${item.image ? "has-lens" : ""}">
-            ${item.image ? `<img class="${item.type === "product" ? (state.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
+            ${item.image ? `<img class="${item.type === "product" ? (item.color === "black" ? "is-black-product" : "is-white-product") : "is-transparent-asset"}" src="${escapeAttr(item.image)}" alt="${escapeAttr(item.title)}"><span class="required-lens" aria-hidden="true"></span>` : missingImageMarkup("required-image-missing")}
             <span class="required-symbol ${item.kind}" aria-hidden="true"></span>
           </div>
           <div class="required-copy">
@@ -5428,13 +5449,6 @@
       saveLanguage(state.lang);
       if (!csvModal.classList.contains("hidden")) openCsvModal(buildCsv());
       render();
-    });
-
-    document.querySelectorAll("[data-lang-btn]").forEach(button => {
-      button.addEventListener("click", () => {
-        languageSelect.value = button.dataset.langBtn;
-        languageSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      });
     });
 
     heroToggleBtn.addEventListener("click", () => {
