@@ -1999,7 +1999,7 @@
 
     .component-stepper {
       display: grid;
-      grid-template-columns: 38px minmax(0, 1fr) 38px;
+      grid-template-columns: minmax(0, 1fr);
       align-items: center;
       gap: 8px;
       padding: 12px 16px 0;
@@ -2034,21 +2034,6 @@
       border-color: #fff;
       color: #fff;
       box-shadow: 0 0 0 1px var(--aura-deep);
-    }
-
-    .step-btn {
-      min-height: 38px;
-      border-radius: 6px;
-      color: var(--aura-deep);
-      background: #fff;
-      border: 1px solid var(--aura-deep);
-      font-size: 18px;
-      font-weight: 500;
-    }
-
-    .step-btn:disabled {
-      cursor: default;
-      opacity: .38;
     }
 
     .step-current {
@@ -5482,12 +5467,10 @@
         </button>
       `).join("");
       componentStepperEl.innerHTML = `
-        <button class="step-btn" type="button" data-component-step="-1" aria-label="${t("action.previous")}" ${state.componentPresetIndex === 0 ? "disabled" : ""}>‹</button>
         <div class="step-current">
           <strong>${t("components.systemLabel")} ${presetLetter(selectedPreset, state.componentPresetIndex)} · ${selectedPreset.name}</strong>
           <span>${t("components.systemView")} · ${t("components.systemCount")}: ${selectedPreset.systems} · ${formatM(presetLength(data, selectedPreset))}</span>
         </div>
-        <button class="step-btn" type="button" data-component-step="1" aria-label="${t("action.next")}" ${state.componentPresetIndex === data.presets.length - 1 ? "disabled" : ""}>›</button>
         <div class="system-tabs" aria-label="${t("components.systemLabel")}">${systemTabs}</div>
       `;
       componentsEl.innerHTML = requirements.length ? requirements.map(item => {
@@ -5573,16 +5556,10 @@
     });
 
     componentStepperEl.addEventListener("click", event => {
-      const button = event.target.closest("[data-component-step]");
       const data = activeData();
       const presetButton = event.target.closest("[data-component-preset]");
-      if (presetButton) {
-        state.componentPresetIndex = Number(presetButton.dataset.componentPreset);
-      } else if (button && !button.disabled) {
-        state.componentPresetIndex += Number(button.dataset.componentStep);
-      } else {
-        return;
-      }
+      if (!presetButton) return;
+      state.componentPresetIndex = Number(presetButton.dataset.componentPreset);
       clampComponentPresetIndex(data);
       render();
     });
