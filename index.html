@@ -2255,6 +2255,25 @@
       font-weight: 750;
     }
 
+    .source-sync-status {
+      margin: 0 18px 16px;
+      padding: 11px 12px;
+      border: 1px solid #b9d8c9;
+      border-radius: 8px;
+      background: #f1f8f4;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .source-sync-status strong,
+    .source-sync-status span { display: block; }
+
+    .source-sync-status.is-warning {
+      border-color: #edd47a;
+      background: #fff8df;
+    }
+
     .toast {
       position: fixed;
       right: 18px;
@@ -3215,6 +3234,7 @@
             <a href="https://www.auralight.com/en/luminaires/accessories-luminaires/joint-bracket-kit">Joint bracket kit</a><br>
             <a href="https://www.auralight.com/en/luminaires/accessories-luminaires/bracket-kit-sevede-re-plaster-ceiling">Bracket kit Sevede RE plaster ceiling</a>
           </div>
+          <div class="source-sync-status" id="sourceSyncStatus" role="status" aria-live="polite"></div>
         </div>
       </aside>
     </section>
@@ -3367,6 +3387,7 @@
 
   <script src="assets/vendor/pdf.min.js"></script>
   <script src="assets/document-import.js"></script>
+  <script src="data/sevede-current.js"></script>
   <script>
     const pageParams = new URLSearchParams(window.location.search);
     const guidePreviewMode = pageParams.get("guidePreview");
@@ -3501,6 +3522,10 @@
         "required.accessory": "Tillbehör",
         "sources.title": "Källor",
         "sources.body": "Produktbilder och produkttexter.",
+        "sources.syncOk": "API-synk verifierad",
+        "sources.syncMissing": "Ingen verifierad API-cache är tillgänglig",
+        "sources.syncDetail": "Litium PIM och Monitor ERP · senast {time}",
+        "sources.syncPolicy": "Exakta längder behålls tills PIM:s avrundade mått har granskats.",
         "csv.preview": "Förhandsgranskning av aktuell komponentlista.",
         "csv.mode": "Läge",
         "csv.totalLength": "Total längd m",
@@ -3676,6 +3701,10 @@
         "required.accessory": "Accessories",
         "sources.title": "Sources",
         "sources.body": "Product images and product texts.",
+        "sources.syncOk": "API sync verified",
+        "sources.syncMissing": "No verified API cache is available",
+        "sources.syncDetail": "Litium PIM and Monitor ERP · last synced {time}",
+        "sources.syncPolicy": "Exact lengths are retained until PIM's rounded values have been reviewed.",
         "csv.preview": "Preview of the current component list.",
         "csv.mode": "Mode",
         "csv.totalLength": "Total length m",
@@ -3851,6 +3880,10 @@
         "required.accessory": "Tilbehør",
         "sources.title": "Kilder",
         "sources.body": "Produktbilder og produkttekster.",
+        "sources.syncOk": "API-synk verifisert",
+        "sources.syncMissing": "Ingen verifisert API-cache er tilgjengelig",
+        "sources.syncDetail": "Litium PIM og Monitor ERP · sist synkronisert {time}",
+        "sources.syncPolicy": "Eksakte lengder beholdes til PIMs avrundede verdier er kontrollert.",
         "csv.preview": "Forhåndsvisning av gjeldende komponentliste.",
         "csv.mode": "Modus",
         "csv.totalLength": "Total lengde m",
@@ -4026,6 +4059,10 @@
         "required.accessory": "Tarvikkeet",
         "sources.title": "Lähteet",
         "sources.body": "Tuotekuvat ja tuotetekstit.",
+        "sources.syncOk": "API-synkronointi vahvistettu",
+        "sources.syncMissing": "Vahvistettua API-välimuistia ei ole saatavilla",
+        "sources.syncDetail": "Litium PIM ja Monitor ERP · synkronoitu {time}",
+        "sources.syncPolicy": "Tarkat pituudet säilytetään, kunnes PIM:n pyöristetyt arvot on tarkistettu.",
         "csv.preview": "Nykyisen komponenttilistan esikatselu.",
         "csv.mode": "Tila",
         "csv.totalLength": "Kokonaispituus m",
@@ -4201,6 +4238,10 @@
         "required.accessory": "Zubehör",
         "sources.title": "Quellen",
         "sources.body": "Produktbilder und Produkttexte.",
+        "sources.syncOk": "API-Synchronisierung verifiziert",
+        "sources.syncMissing": "Kein verifizierter API-Cache verfügbar",
+        "sources.syncDetail": "Litium PIM und Monitor ERP · zuletzt {time}",
+        "sources.syncPolicy": "Exakte Längen bleiben erhalten, bis die gerundeten PIM-Werte geprüft wurden.",
         "csv.preview": "Vorschau der aktuellen Komponentenliste.",
         "csv.mode": "Modus",
         "csv.totalLength": "Gesamtlänge m",
@@ -4410,6 +4451,22 @@
       }
     };
 
+    const sourceSnapshot = window.SEVEDE_SYNC_SNAPSHOT || null;
+
+    function applySourceSnapshotToBaseData() {
+      if (!sourceSnapshot || sourceSnapshot.sources?.litium?.status !== "ok" || sourceSnapshot.sources?.monitor?.status !== "ok") return;
+      (sourceSnapshot.accessories || []).forEach(accessory => {
+        const target = accessory.mode === "re" ? baseData.re : baseData.cepe;
+        if (!target || !accessory.erpVerified || !accessory.articleNumber) return;
+        target.accessory.article = `Art.nr ${accessory.articleNumber}`;
+        target.accessory.name = accessory.name || target.accessory.name;
+      });
+      baseData.cepe.sourceVariants = (sourceSnapshot.modules || []).filter(item => item.mode === "ce" || item.mode === "pe");
+      baseData.re.sourceVariants = (sourceSnapshot.modules || []).filter(item => item.mode === "re");
+    }
+
+    applySourceSnapshotToBaseData();
+
     function zeroedDataFromTemplate() {
       const data = JSON.parse(JSON.stringify(baseData));
       Object.entries(data).forEach(([modeKey, modeData]) => {
@@ -4460,6 +4517,7 @@
     const mountingSelect = document.getElementById("mountingSelect");
     const colorSelect = document.getElementById("colorSelect");
     const toastEl = document.getElementById("toast");
+    const sourceSyncStatusEl = document.getElementById("sourceSyncStatus");
     const csvModal = document.getElementById("csvModal");
     const csvText = document.getElementById("csvText");
     const guideModal = document.getElementById("guideModal");
@@ -6116,10 +6174,30 @@
       if (titleEl) titleEl.textContent = data.title;
     }
 
+    function renderSourceSyncStatus() {
+      if (!sourceSyncStatusEl) return;
+      const healthy = sourceSnapshot?.sources?.litium?.status === "ok" && sourceSnapshot?.sources?.monitor?.status === "ok";
+      sourceSyncStatusEl.classList.toggle("is-warning", !healthy);
+      if (!healthy) {
+        sourceSyncStatusEl.innerHTML = `<strong>${escapeHtml(t("sources.syncMissing"))}</strong>`;
+        return;
+      }
+      const timestamp = new Date(sourceSnapshot.generatedAt);
+      const formatted = Number.isNaN(timestamp.getTime())
+        ? sourceSnapshot.generatedAt
+        : timestamp.toLocaleString(currentLocale(), { dateStyle: "short", timeStyle: "short" });
+      sourceSyncStatusEl.innerHTML = `
+        <strong>${escapeHtml(t("sources.syncOk"))}</strong>
+        <span>${escapeHtml(t("sources.syncDetail").replace("{time}", formatted))}</span>
+        <span>${escapeHtml(t("sources.syncPolicy"))}</span>
+      `;
+    }
+
     function render() {
       applyTranslations();
       renderHeroState();
       renderHeader();
+      renderSourceSyncStatus();
       renderPreview();
       renderTable();
       renderSummary();
