@@ -2330,6 +2330,139 @@
       background: #f8faf9;
     }
 
+    .import-modal {
+      width: min(980px, 100%);
+      max-height: min(880px, calc(100vh - 28px));
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .import-body {
+      display: grid;
+      gap: 16px;
+      overflow: auto;
+      padding: 18px;
+      background: #f6f9f7;
+    }
+
+    .import-notice,
+    .import-status,
+    .import-empty {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+      background: #fff;
+      color: #31434c;
+    }
+
+    .import-notice strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--aura-deep);
+    }
+
+    .import-status.is-error {
+      border-color: #d86b6b;
+      background: #fff5f5;
+      color: #8d1d1d;
+    }
+
+    .import-status.is-loading {
+      border-color: #e4b652;
+      background: #fff9e8;
+    }
+
+    .import-proposals {
+      display: grid;
+      gap: 14px;
+    }
+
+    .import-proposal {
+      display: grid;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--aura-lime);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .import-proposal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .import-proposal-head h3 {
+      color: var(--aura-deep);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .confidence-badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff3cc;
+      color: #604600;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .confidence-badge.is-high { background: #dff3e8; color: #075b35; }
+    .confidence-badge.is-low { background: #fde0e0; color: #8d1d1d; }
+
+    .import-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .import-field {
+      display: grid;
+      gap: 5px;
+      color: var(--aura-deep);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .import-field input,
+    .import-field select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid #cfd9d4;
+      border-radius: 6px;
+      padding: 7px 9px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .import-evidence {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: #52656e;
+      font-size: 12px;
+    }
+
+    .import-evidence summary {
+      cursor: pointer;
+      color: var(--aura-deep);
+      font-weight: 700;
+    }
+
+    .import-evidence ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .import-missing {
+      color: #8d1d1d;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
     .guide-backdrop {
       z-index: 50;
     }
@@ -2841,6 +2974,10 @@
         justify-content: flex-start;
       }
 
+      .import-fields {
+        grid-template-columns: 1fr;
+      }
+
       .guide-body {
         padding: 12px;
       }
@@ -2961,6 +3098,9 @@
     <symbol id="icon-folder" viewBox="0 0 24 24">
       <path d="M3.5 7.5h6l2 2h9v9.5h-17z"></path><path d="M3.5 7.5v-2h5.8l2 2"></path>
     </symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24">
+      <path d="M12 15V4.5"></path><path d="m8 8.5 4-4 4 4"></path><path d="M5 13.5v6h14v-6"></path>
+    </symbol>
     <symbol id="icon-reset" viewBox="0 0 24 24">
       <path d="M6.8 8.2A7 7 0 1 1 5 13"></path><path d="M6.8 8.2H3.8V5.2"></path>
     </symbol>
@@ -2992,6 +3132,7 @@
         <button class="btn" id="resetBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-reset"></use></svg></span><span data-i18n="action.reset">Återställ</span></button>
         <button class="btn" id="csvBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-save"></use></svg></span><span data-i18n="action.save">Spara</span></button>
         <button class="btn" id="loadConfigBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-folder"></use></svg></span><span data-i18n="action.load">Ladda sparad kalkyl</span></button>
+        <button class="btn" id="documentImportBtn" type="button" aria-haspopup="dialog"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-upload"></use></svg></span><span data-i18n="import.button">Ladda upp dokument</span></button>
         <button class="btn primary" id="printBtn" type="button"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-print"></use></svg></span><span data-i18n="action.print">Skriv ut</span></button>
         <button class="btn" id="guideBtn" type="button" aria-haspopup="dialog"><span class="ui-icon" aria-hidden="true"><svg><use href="#icon-help"></use></svg></span><span data-i18n="guide.button">Guide</span></button>
       </div>
@@ -3115,6 +3256,30 @@
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <input class="hidden" id="documentImportInput" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+  <div class="modal-backdrop hidden" id="documentImportModal" role="dialog" aria-modal="true" aria-labelledby="documentImportTitle">
+    <div class="modal import-modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="documentImportTitle" data-i18n="import.title">Skapa system från dokument</h2>
+          <p class="sub" id="documentImportSubtitle" data-i18n="import.subtitle">Granska avlästa uppgifter innan de förs in i konfiguratorn.</p>
+        </div>
+        <button class="btn" id="closeDocumentImportBtn" type="button" data-i18n="action.close">Stäng</button>
+      </div>
+      <div class="import-body">
+        <div class="import-notice">
+          <strong data-i18n="import.localTitle">Lokal och granskningsstyrd analys</strong>
+          <span data-i18n="import.localBody">PDF- och Word-filen behandlas i webbläsaren och laddas inte upp till någon extern tjänst. Förslagen får status Behöver granskas tills du godkänner dem.</span>
+        </div>
+        <div class="import-status" id="documentImportStatus" role="status" aria-live="polite"></div>
+        <div class="import-proposals" id="documentImportProposals"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="chooseAnotherDocumentBtn" type="button" data-i18n="import.chooseAnother">Välj annan fil</button>
+        <button class="btn primary" id="applyDocumentImportBtn" type="button" disabled data-i18n="import.apply">Använd granskade förslag</button>
+      </div>
+    </div>
+  </div>
   <div class="modal-backdrop hidden" id="csvModal" role="dialog" aria-modal="true" aria-labelledby="csvTitle">
     <div class="modal">
       <div class="modal-head">
@@ -3200,6 +3365,8 @@
     </div>
   </div>
 
+  <script src="assets/vendor/pdf.min.js"></script>
+  <script src="assets/document-import.js"></script>
   <script>
     const pageParams = new URLSearchParams(window.location.search);
     const guidePreviewMode = pageParams.get("guidePreview");
@@ -4085,6 +4252,60 @@
       }
     };
 
+    const documentImportTranslations = {
+      sv: {
+        "import.button": "Ladda upp dokument",
+        "import.title": "Skapa system från dokument",
+        "import.subtitle": "Granska avlästa uppgifter innan de förs in i konfiguratorn.",
+        "import.localTitle": "Lokal och granskningsstyrd analys",
+        "import.localBody": "PDF- och Word-filen behandlas i webbläsaren och laddas inte upp till någon extern tjänst. Förslagen får status Behöver granskas tills du godkänner dem.",
+        "import.chooseAnother": "Välj annan fil",
+        "import.apply": "Använd granskade förslag",
+        "import.loading": "Läser {file} …",
+        "import.ready": "{count} systemförslag hittades i {file}. Kontrollera markerade fält och källtext.",
+        "import.noText": "Ingen läsbar text hittades. En skannad PDF behöver OCR innan den kan analyseras.",
+        "import.noSystems": "Texten kunde läsas, men ingen verifierbar systemlängd hittades. Lägg till tydliga rubriker som System A och Längd: 12,000 m.",
+        "import.unsupported": "Välj en PDF- eller Word-fil i DOCX-format.",
+        "import.tooLarge": "Filen är större än 20 MB och behandlas inte i webbläsaren.",
+        "import.readError": "Dokumentet kunde inte läsas. Kontrollera att filen inte är lösenordsskyddad eller skadad.",
+        "import.system": "Systemförslag",
+        "import.confidence.high": "Hög säkerhet",
+        "import.confidence.medium": "Medel säkerhet",
+        "import.confidence.low": "Låg säkerhet",
+        "import.length": "Önskad längd (m)",
+        "import.mounting": "Montage",
+        "import.color": "Färg",
+        "import.systems": "Antal system",
+        "import.flux": "Ljusflöde (lm)",
+        "import.sArticle": "S-artikel",
+        "import.select": "Välj",
+        "import.sourceEvidence": "Källtext och avlästa värden",
+        "import.missing": "Behöver kompletteras: {fields}",
+        "import.applied": "Dokumentförslagen har lagts in och beräknats.",
+        "import.validation": "Fyll i längd, montage och färg för samtliga förslag innan de används.",
+        "import.replaces": "När du godkänner ersätts systemraderna i berörda montagegrupper. Övriga data lämnas orörda."
+      },
+      en: {
+        "import.button": "Upload document", "import.title": "Create systems from document", "import.subtitle": "Review extracted information before it is added to the configurator.",
+        "import.localTitle": "Local, review-controlled analysis", "import.localBody": "The PDF or Word file is processed in your browser and is not uploaded to an external service. Proposals remain Needs review until you approve them.",
+        "import.chooseAnother": "Choose another file", "import.apply": "Use reviewed proposals", "import.loading": "Reading {file} …", "import.ready": "{count} system proposals were found in {file}. Check highlighted fields and source text.",
+        "import.noText": "No readable text was found. A scanned PDF needs OCR before it can be analysed.", "import.noSystems": "The text was read, but no verifiable system length was found. Add clear headings such as System A and Length: 12.000 m.",
+        "import.unsupported": "Choose a PDF or Word file in DOCX format.", "import.tooLarge": "The file is larger than 20 MB and is not processed in the browser.", "import.readError": "The document could not be read. Check that it is not password protected or damaged.",
+        "import.system": "System proposal", "import.confidence.high": "High confidence", "import.confidence.medium": "Medium confidence", "import.confidence.low": "Low confidence", "import.length": "Requested length (m)", "import.mounting": "Mounting", "import.color": "Colour", "import.systems": "Number of systems", "import.flux": "Luminous flux (lm)", "import.sArticle": "S article", "import.select": "Select", "import.sourceEvidence": "Source text and extracted values", "import.missing": "Needs completion: {fields}", "import.applied": "The document proposals have been added and calculated.", "import.validation": "Enter length, mounting and colour for every proposal before using them.", "import.replaces": "Approval replaces the system rows in affected mounting groups. Other data remains unchanged."
+      },
+      no: {
+        "import.button": "Last opp dokument", "import.title": "Opprett systemer fra dokument", "import.subtitle": "Kontroller avlest informasjon før den legges inn i konfiguratoren.", "import.localTitle": "Lokal og kontrollstyrt analyse", "import.localBody": "PDF- eller Word-filen behandles i nettleseren og lastes ikke opp til en ekstern tjeneste. Forslagene må kontrolleres før godkjenning.", "import.chooseAnother": "Velg en annen fil", "import.apply": "Bruk kontrollerte forslag", "import.loading": "Leser {file} …", "import.ready": "{count} systemforslag ble funnet i {file}. Kontroller feltene og kildeteksten.", "import.noText": "Ingen lesbar tekst ble funnet. En skannet PDF trenger OCR.", "import.noSystems": "Teksten ble lest, men ingen verifiserbar systemlengde ble funnet.", "import.unsupported": "Velg en PDF- eller Word-fil i DOCX-format.", "import.tooLarge": "Filen er større enn 20 MB.", "import.readError": "Dokumentet kunne ikke leses.", "import.system": "Systemforslag", "import.confidence.high": "Høy sikkerhet", "import.confidence.medium": "Middels sikkerhet", "import.confidence.low": "Lav sikkerhet", "import.length": "Ønsket lengde (m)", "import.mounting": "Montasje", "import.color": "Farge", "import.systems": "Antall systemer", "import.flux": "Lysstrøm (lm)", "import.sArticle": "S-artikkel", "import.select": "Velg", "import.sourceEvidence": "Kildetekst og avleste verdier", "import.missing": "Må kompletteres: {fields}", "import.applied": "Dokumentforslagene er lagt inn og beregnet.", "import.validation": "Fyll inn lengde, montasje og farge for alle forslag.", "import.replaces": "Godkjenning erstatter systemradene i berørte montasjegrupper."
+      },
+      fi: {
+        "import.button": "Lataa asiakirja", "import.title": "Luo järjestelmät asiakirjasta", "import.subtitle": "Tarkista luetut tiedot ennen niiden lisäämistä.", "import.localTitle": "Paikallinen ja tarkistettava analyysi", "import.localBody": "PDF- tai Word-tiedosto käsitellään selaimessa eikä sitä lähetetä ulkoiseen palveluun.", "import.chooseAnother": "Valitse toinen tiedosto", "import.apply": "Käytä tarkistettuja ehdotuksia", "import.loading": "Luetaan {file} …", "import.ready": "Tiedostosta {file} löytyi {count} järjestelmäehdotusta.", "import.noText": "Luettavaa tekstiä ei löytynyt. Skannattu PDF tarvitsee OCR-käsittelyn.", "import.noSystems": "Teksti luettiin, mutta järjestelmän pituutta ei voitu varmistaa.", "import.unsupported": "Valitse PDF- tai DOCX-muotoinen Word-tiedosto.", "import.tooLarge": "Tiedosto on yli 20 Mt.", "import.readError": "Asiakirjaa ei voitu lukea.", "import.system": "Järjestelmäehdotus", "import.confidence.high": "Korkea varmuus", "import.confidence.medium": "Keskitasoinen varmuus", "import.confidence.low": "Matala varmuus", "import.length": "Haluttu pituus (m)", "import.mounting": "Asennus", "import.color": "Väri", "import.systems": "Järjestelmien määrä", "import.flux": "Valovirta (lm)", "import.sArticle": "S-artikkeli", "import.select": "Valitse", "import.sourceEvidence": "Lähdeteksti ja luetut arvot", "import.missing": "Täydennettävä: {fields}", "import.applied": "Asiakirjaehdotukset lisättiin ja laskettiin.", "import.validation": "Täytä kaikkien ehdotusten pituus, asennus ja väri.", "import.replaces": "Hyväksyntä korvaa asianomaisten asennusryhmien järjestelmärivit."
+      },
+      de: {
+        "import.button": "Dokument hochladen", "import.title": "Systeme aus Dokument erstellen", "import.subtitle": "Gelesene Angaben prüfen, bevor sie übernommen werden.", "import.localTitle": "Lokale, prüfungsgesteuerte Analyse", "import.localBody": "Die PDF- oder Word-Datei wird im Browser verarbeitet und nicht an einen externen Dienst hochgeladen.", "import.chooseAnother": "Andere Datei wählen", "import.apply": "Geprüfte Vorschläge verwenden", "import.loading": "{file} wird gelesen …", "import.ready": "In {file} wurden {count} Systemvorschläge gefunden.", "import.noText": "Kein lesbarer Text gefunden. Ein gescanntes PDF benötigt OCR.", "import.noSystems": "Der Text wurde gelesen, aber keine prüfbare Systemlänge gefunden.", "import.unsupported": "Wählen Sie eine PDF- oder DOCX-Datei.", "import.tooLarge": "Die Datei ist größer als 20 MB.", "import.readError": "Das Dokument konnte nicht gelesen werden.", "import.system": "Systemvorschlag", "import.confidence.high": "Hohe Sicherheit", "import.confidence.medium": "Mittlere Sicherheit", "import.confidence.low": "Niedrige Sicherheit", "import.length": "Gewünschte Länge (m)", "import.mounting": "Montage", "import.color": "Farbe", "import.systems": "Anzahl Systeme", "import.flux": "Lichtstrom (lm)", "import.sArticle": "S-Artikel", "import.select": "Auswählen", "import.sourceEvidence": "Quelltext und gelesene Werte", "import.missing": "Zu ergänzen: {fields}", "import.applied": "Die Dokumentvorschläge wurden übernommen und berechnet.", "import.validation": "Länge, Montage und Farbe für alle Vorschläge ausfüllen.", "import.replaces": "Die Freigabe ersetzt die Systemzeilen der betroffenen Montagegruppen."
+      }
+    };
+
+    Object.entries(documentImportTranslations).forEach(([lang, values]) => Object.assign(translations[lang], values));
+
     const localeByLang = {
       sv: "sv-SE",
       en: "en-GB",
@@ -4246,11 +4467,20 @@
     const closeGuideBtn = document.getElementById("closeGuideBtn");
     const guideFrames = document.querySelectorAll("[data-guide-frame]");
     const languageSelect = document.getElementById("languageSelect");
+    const documentImportBtn = document.getElementById("documentImportBtn");
+    const documentImportInput = document.getElementById("documentImportInput");
+    const documentImportModal = document.getElementById("documentImportModal");
+    const documentImportStatus = document.getElementById("documentImportStatus");
+    const documentImportProposals = document.getElementById("documentImportProposals");
+    const closeDocumentImportBtn = document.getElementById("closeDocumentImportBtn");
+    const chooseAnotherDocumentBtn = document.getElementById("chooseAnotherDocumentBtn");
+    const applyDocumentImportBtn = document.getElementById("applyDocumentImportBtn");
     let toastTimer;
     let latestCsv = "";
     let presetLengthTimer;
     let guideFrameRefreshTimer;
     let guideFrameVersion = 0;
+    let currentDocumentImport = null;
 
     function t(key) {
       return translations[state.lang]?.[key] || translations.sv[key] || key;
@@ -5235,6 +5465,238 @@
       input.click();
     }
 
+    function translatedImportMessage(key, values = {}) {
+      return Object.entries(values).reduce((message, [name, value]) => message.replaceAll(`{${name}}`, String(value)), t(key));
+    }
+
+    function setDocumentImportStatus(message, kind = "") {
+      documentImportStatus.textContent = message;
+      documentImportStatus.className = `import-status${kind ? ` is-${kind}` : ""}`;
+    }
+
+    function openDocumentImportModal() {
+      documentImportModal.classList.remove("hidden");
+      closeDocumentImportBtn.focus();
+    }
+
+    function closeDocumentImportModal() {
+      documentImportModal.classList.add("hidden");
+      documentImportBtn.focus();
+    }
+
+    function findZipEntry(arrayBuffer, requestedName) {
+      const bytes = new Uint8Array(arrayBuffer);
+      const view = new DataView(arrayBuffer);
+      let eocdOffset = -1;
+      for (let offset = Math.max(0, bytes.length - 65557); offset <= bytes.length - 22; offset += 1) {
+        if (view.getUint32(offset, true) === 0x06054b50) eocdOffset = offset;
+      }
+      if (eocdOffset < 0) throw new Error("ZIP directory not found");
+      const entries = view.getUint16(eocdOffset + 10, true);
+      let offset = view.getUint32(eocdOffset + 16, true);
+      const decoder = new TextDecoder("utf-8");
+      for (let index = 0; index < entries; index += 1) {
+        if (view.getUint32(offset, true) !== 0x02014b50) throw new Error("Invalid ZIP directory");
+        const compression = view.getUint16(offset + 10, true);
+        const compressedSize = view.getUint32(offset + 20, true);
+        const fileNameLength = view.getUint16(offset + 28, true);
+        const extraLength = view.getUint16(offset + 30, true);
+        const commentLength = view.getUint16(offset + 32, true);
+        const localOffset = view.getUint32(offset + 42, true);
+        const fileName = decoder.decode(bytes.slice(offset + 46, offset + 46 + fileNameLength));
+        if (fileName === requestedName) {
+          if (view.getUint32(localOffset, true) !== 0x04034b50) throw new Error("Invalid ZIP entry");
+          const localNameLength = view.getUint16(localOffset + 26, true);
+          const localExtraLength = view.getUint16(localOffset + 28, true);
+          const dataStart = localOffset + 30 + localNameLength + localExtraLength;
+          return { compression, bytes: bytes.slice(dataStart, dataStart + compressedSize) };
+        }
+        offset += 46 + fileNameLength + extraLength + commentLength;
+      }
+      return null;
+    }
+
+    async function inflateZipEntry(entry) {
+      if (entry.compression === 0) return entry.bytes;
+      if (entry.compression !== 8 || typeof DecompressionStream === "undefined") throw new Error("Unsupported DOCX compression");
+      const stream = new Blob([entry.bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+
+    async function readDocxText(arrayBuffer) {
+      const entry = findZipEntry(arrayBuffer, "word/document.xml");
+      if (!entry) throw new Error("DOCX document.xml is missing");
+      const xml = new TextDecoder("utf-8").decode(await inflateZipEntry(entry));
+      const documentXml = new DOMParser().parseFromString(xml, "application/xml");
+      if (documentXml.querySelector("parsererror")) throw new Error("Invalid DOCX XML");
+      return [...documentXml.getElementsByTagNameNS("*", "p")]
+        .map(paragraph => paragraph.textContent.trim())
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    async function readPdfText(arrayBuffer) {
+      if (!window.pdfjsLib) throw new Error("PDF reader is unavailable");
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("assets/vendor/pdf.worker.min.js", window.location.href).href;
+      const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+      const pages = [];
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+        const page = await pdf.getPage(pageNumber);
+        const content = await page.getTextContent();
+        pages.push(`[Sida ${pageNumber}]\n${content.items.map(item => item.str).join(" ")}`);
+      }
+      return pages.join("\n\n");
+    }
+
+    async function readImportDocument(file) {
+      const lowerName = file.name.toLowerCase();
+      if (!lowerName.endsWith(".pdf") && !lowerName.endsWith(".docx")) throw new Error("unsupported");
+      if (file.size > 20 * 1024 * 1024) throw new Error("too_large");
+      const buffer = await file.arrayBuffer();
+      return lowerName.endsWith(".pdf") ? readPdfText(buffer) : readDocxText(buffer);
+    }
+
+    function importFieldLabel(field) {
+      const labels = {
+        length: t("import.length"),
+        lengthM: t("import.length"),
+        mounting: t("import.mounting"),
+        color: t("import.color"),
+        luminousFlux: t("import.flux"),
+        systems: t("import.systems"),
+        sArticle: t("import.sArticle"),
+        "component.start": "Start",
+        "component.mid": "Mid",
+        "component.end": "End"
+      };
+      return labels[field] || field;
+    }
+
+    function renderDocumentImportReview(result) {
+      currentDocumentImport = result;
+      applyDocumentImportBtn.disabled = !result.proposals.length;
+      if (!result.proposals.length) {
+        const messageKey = result.warnings.includes("no_readable_text") ? "import.noText" : "import.noSystems";
+        setDocumentImportStatus(t(messageKey), "error");
+        documentImportProposals.innerHTML = "";
+        return;
+      }
+      setDocumentImportStatus(`${translatedImportMessage("import.ready", { count: result.proposals.length, file: result.fileName })} ${t("import.replaces")}`);
+      documentImportProposals.innerHTML = result.proposals.map((proposal, index) => {
+        const lengthValue = proposal.lengthM === null ? "" : proposal.lengthM.toLocaleString(currentLocale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+        const missing = proposal.missing.length
+          ? `<p class="import-missing">${escapeHtml(translatedImportMessage("import.missing", { fields: proposal.missing.map(importFieldLabel).join(", ") }))}</p>`
+          : "";
+        const evidence = proposal.evidence.length
+          ? proposal.evidence.map(item => `<li><strong>${escapeHtml(importFieldLabel(item.field))}:</strong> ${escapeHtml(item.excerpt)}</li>`).join("")
+          : `<li>${escapeHtml(proposal.sourceExcerpt)}</li>`;
+        return `
+          <article class="import-proposal" data-import-proposal="${index}">
+            <div class="import-proposal-head">
+              <div><h3>${t("import.system")} ${escapeHtml(proposal.sourceLabel)}</h3>${missing}</div>
+              <span class="confidence-badge is-${escapeAttr(proposal.confidence)}">${t(`import.confidence.${proposal.confidence}`)}</span>
+            </div>
+            <div class="import-fields">
+              <label class="import-field">${t("import.length")}<input type="text" inputmode="decimal" data-import-field="length" value="${escapeAttr(lengthValue)}"></label>
+              <label class="import-field">${t("import.mounting")}<select data-import-field="mounting"><option value="">${t("import.select")}</option><option value="ce" ${proposal.mounting === "ce" ? "selected" : ""}>${t("mount.ce")}</option><option value="pe" ${proposal.mounting === "pe" ? "selected" : ""}>${t("mount.pe")}</option><option value="re" ${proposal.mounting === "re" ? "selected" : ""}>${t("mount.re")}</option></select></label>
+              <label class="import-field">${t("import.color")}<select data-import-field="color"><option value="">${t("import.select")}</option><option value="white" ${proposal.color === "white" ? "selected" : ""}>${t("color.white")}</option><option value="black" ${proposal.color === "black" ? "selected" : ""}>${t("color.black")}</option></select></label>
+              <label class="import-field">${t("import.systems")}<input type="number" min="1" max="999" step="1" data-import-field="systems" value="${Math.max(1, Number(proposal.systems || 1))}"></label>
+              <label class="import-field">${t("import.flux")}<input type="number" min="0" step="1" data-import-field="luminousFlux" value="${escapeAttr(proposal.luminousFlux)}"></label>
+              <label class="import-field">${t("import.sArticle")}<input type="text" maxlength="32" data-import-field="sArticle" value="${escapeAttr(proposal.sArticle)}"></label>
+            </div>
+            <details class="import-evidence"><summary>${t("import.sourceEvidence")}</summary><ul>${evidence}</ul></details>
+          </article>`;
+      }).join("");
+    }
+
+    async function handleDocumentImportFile(file) {
+      if (!file) return;
+      openDocumentImportModal();
+      currentDocumentImport = null;
+      applyDocumentImportBtn.disabled = true;
+      documentImportProposals.innerHTML = "";
+      setDocumentImportStatus(translatedImportMessage("import.loading", { file: file.name }), "loading");
+      try {
+        const text = await readImportDocument(file);
+        const result = window.SevedeDocumentImport.parseDocumentSystems(text, { fileName: file.name });
+        renderDocumentImportReview(result);
+      } catch (error) {
+        console.error(error);
+        const messageKey = error.message === "unsupported" ? "import.unsupported" : error.message === "too_large" ? "import.tooLarge" : "import.readError";
+        setDocumentImportStatus(t(messageKey), "error");
+      } finally {
+        documentImportInput.value = "";
+      }
+    }
+
+    function explicitAmountsForProposal(data, proposal) {
+      if (!proposal.components.length || proposal.components.some(component => !component.size)) return null;
+      const amounts = data.products.map(() => 0);
+      for (const component of proposal.components) {
+        const productIndex = data.products.findIndex(product => product.kind === component.kind && product.id.includes(String(component.size)));
+        if (productIndex < 0) return null;
+        amounts[productIndex] += Math.max(0, Number(component.count || 0));
+      }
+      const hasStart = data.products.some((product, index) => product.kind === "start" && amounts[index] > 0);
+      const hasEnd = data.products.some((product, index) => product.kind === "end" && amounts[index] > 0);
+      return hasStart && hasEnd ? amounts : null;
+    }
+
+    function applyReviewedDocumentImport() {
+      if (!currentDocumentImport?.proposals?.length) return;
+      const reviewed = [];
+      for (const [index, proposal] of currentDocumentImport.proposals.entries()) {
+        const card = documentImportProposals.querySelector(`[data-import-proposal="${index}"]`);
+        const lengthInput = card?.querySelector('[data-import-field="length"]');
+        const lengthMm = parseRequestedLength(lengthInput?.value);
+        const mounting = card?.querySelector('[data-import-field="mounting"]')?.value;
+        const color = card?.querySelector('[data-import-field="color"]')?.value;
+        if (!lengthMm || !["ce", "pe", "re"].includes(mounting) || !["white", "black"].includes(color)) {
+          setDocumentImportStatus(t("import.validation"), "error");
+          card?.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        reviewed.push({
+          ...proposal,
+          lengthMm,
+          mounting,
+          color,
+          systems: Math.max(1, Number(card.querySelector('[data-import-field="systems"]').value || 1)),
+          luminousFlux: normalizeLuminousFlux(card.querySelector('[data-import-field="luminousFlux"]').value),
+          sArticle: normalizeSArticle(card.querySelector('[data-import-field="sArticle"]').value)
+        });
+      }
+
+      const grouped = { cepe: [], re: [] };
+      reviewed.forEach(item => grouped[item.mounting === "re" ? "re" : "cepe"].push(item));
+      Object.entries(grouped).forEach(([modeKey, proposals]) => {
+        if (!proposals.length) return;
+        const data = state.data[modeKey];
+        data.presets = proposals.map((proposal, index) => {
+          const explicitAmounts = explicitAmountsForProposal(data, proposal);
+          const solution = explicitAmounts ? null : solveLineForLength(data, proposal.lengthMm);
+          return {
+            name: (proposal.lengthMm / 1000).toLocaleString(currentLocale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 }),
+            letter: systemLetter(index),
+            systems: proposal.systems,
+            amounts: explicitAmounts || solution?.amounts || data.products.map(() => 0),
+            luminousFlux: proposal.luminousFlux,
+            sArticle: proposal.sArticle,
+            mounting: modeKey === "re" ? "re" : proposal.mounting,
+            color: proposal.color
+          };
+        });
+      });
+      const first = reviewed[0];
+      state.mode = first.mounting === "re" ? "re" : "cepe";
+      state.mounting = first.mounting === "re" ? "ce" : first.mounting;
+      state.color = first.color;
+      state.componentPresetIndex = 0;
+      closeDocumentImportModal();
+      render();
+      showToast(t("import.applied"));
+    }
+
     function openCsvModal(csv) {
       latestCsv = csv;
       csvText.value = csv;
@@ -5945,6 +6407,15 @@
 
     document.getElementById("loadConfigBtn").addEventListener("click", loadSavedConfiguration);
 
+    documentImportBtn.addEventListener("click", () => documentImportInput.click());
+    chooseAnotherDocumentBtn.addEventListener("click", () => documentImportInput.click());
+    documentImportInput.addEventListener("change", () => handleDocumentImportFile(documentImportInput.files?.[0]));
+    closeDocumentImportBtn.addEventListener("click", closeDocumentImportModal);
+    applyDocumentImportBtn.addEventListener("click", applyReviewedDocumentImport);
+    documentImportModal.addEventListener("click", event => {
+      if (event.target === documentImportModal) closeDocumentImportModal();
+    });
+
     guideBtn.addEventListener("click", openGuideModal);
 
     document.getElementById("exportResultExcelBtn").addEventListener("click", () => {
@@ -5997,6 +6468,7 @@
     document.addEventListener("keydown", event => {
       if (event.key !== "Escape") return;
       csvModal.classList.add("hidden");
+      if (!documentImportModal.classList.contains("hidden")) closeDocumentImportModal();
       if (!guideModal.classList.contains("hidden")) closeGuideModal();
     });
 
